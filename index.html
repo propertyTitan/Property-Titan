@@ -100,6 +100,8 @@ footer span{font-size:10px;color:#39495e}
       <button class="lang-btn" onclick="pickLang('ro')"><div class="flag">🇷🇴</div><div class="lname">Română</div></button>
     </div>
     <p style="margin-top:28px;font-size:11px;color:#39495e">Claude Sonnet AI · 10 Countries · 9 Languages</p>
+    <button onclick="testBtn()" style="margin-top:20px;padding:10px 20px;background:#ef4444;color:#fff;border:none;border-radius:8px;font-size:14px;cursor:pointer">DEBUG TEST</button>
+    <div id="debug-out" style="color:#e0be70;margin-top:10px;font-size:12px"></div>
   </div>
 </div>
 
@@ -186,6 +188,23 @@ footer span{font-size:10px;color:#39495e}
 
 <script>
 "use strict";
+
+function testBtn() {
+  var out = document.getElementById("debug-out");
+  var uid = localStorage.getItem("pt_uid");
+  var country = localStorage.getItem("pt_country");
+  var lang = localStorage.getItem("pt_lang");
+  out.textContent = "uid:"+uid+" country:"+country+" lang:"+lang;
+  
+  // Try to show login page
+  var loginPage = document.getElementById("p-login");
+  if (loginPage) {
+    loginPage.style.display = "flex";
+    out.textContent += " | login page found";
+  } else {
+    out.textContent += " | LOGIN PAGE NOT FOUND!";
+  }
+}
 
 // ── SUPABASE ──
 var SBU = "https://lmculupmpfapqonaxfqi.supabase.co/rest/v1";
