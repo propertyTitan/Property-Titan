@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="hu">
 <head>
 <meta charset="UTF-8"/>
@@ -401,15 +402,38 @@ function initCountry() {
 }
 
 function pickCountry(code) {
-  S.country = code;
-  lsSet("pt_country", code);
-  // If no lang set yet, use country default lang
-  if (!S.lang) {
-    var langMap = {SE:"sv",NO:"no",DK:"da",PL:"pl",DE:"de",FR:"fr",GB:"en",HU:"hu",RO:"ro",AT:"de"};
-    S.lang = langMap[code] || "en";
-    lsSet("pt_lang", S.lang);
+  try {
+    S.country = code;
+    lsSet("pt_country", code);
+    if (!S.lang) {
+      var langMap = {SE:"sv",NO:"no",DK:"da",PL:"pl",DE:"de",FR:"fr",GB:"en",HU:"hu",RO:"ro",AT:"de"};
+      S.lang = langMap[code] || "en";
+      lsSet("pt_lang", S.lang);
+    }
+    // Hide country page first
+    var cp = document.getElementById("p-country");
+    if (cp) cp.style.display = "none";
+    // Show dash
+    var dash = document.getElementById("dash");
+    if (dash) dash.style.display = "flex";
+    // Update UI
+    updateDashUI();
+    // Load data
+    Promise.all([
+      dbsel("projects","user_id=eq."+S.uid+"&order=created_at.desc"),
+      dbsel("clients","user_id=eq."+S.uid+"&order=created_at.desc"),
+      dbsel("templates","user_id=eq."+S.uid+"&order=created_at.desc"),
+      dbsel("agents","user_id=eq."+S.uid)
+    ]).then(function(results) {
+      if (Array.isArray(results[0])) S.projects = results[0];
+      if (Array.isArray(results[1])) S.clients = results[1];
+      if (Array.isArray(results[2])) S.templates = results[2];
+      if (Array.isArray(results[3]) && results[3].length > 0) S.agent = results[3][0];
+      renderTab();
+    }).catch(function(e) { console.error(e); renderTab(); });
+  } catch(ex) {
+    alert("pickCountry error: " + ex.message);
   }
-  initDash();
 }
 
 // ── LOGOUT ──
@@ -563,11 +587,7 @@ return ‘<div style="display:grid;grid-template-columns:1fr 295px;gap:18px;alig
 ‘<div class="dv"><span>’+u.es+’</span><hr/></div>’+
 ‘<div class="g2" style="margin-bottom:0"><div><div class="flbl">’+u.fv+’</div><input class="finp" value="'+esc(F.view)+'" oninput="F.view=this.value"/></div><div><div class="flbl">’+u.fho+’</div><input class="finp" value="'+esc(F.hood)+'" oninput="F.hood=this.value"/></div></div>’+
 ‘<div class="flbl" style="margin-top:0">’+u.fx+’</div><textarea class="finp" oninput="F.extra=this.value">’+esc(F.extra)+’</textarea>’+
-‘<div class="flbl" style="margin-top:10px">📷 Képek (max 5)</div>’+
-‘<div onclick="document.getElementById('img-inp').click()" style="border:2px dashed #232d44;border-radius:10px;padding:14px;text-align:center;cursor:pointer;background:#0c0f1a;margin-bottom:10px" onmouseover="this.style.borderColor='#c9a84c'" onmouseout="this.style.borderColor='#232d44'">’+
 ‘<div style="font-size:20px;margin-bottom:4px">📷</div><div style="font-size:11px;color:#39495e">Kattints vagy húzd ide a képeket</div>’+
-‘<input type="file" id="img-inp" accept="image/*" multiple style="display:none" onchange="addImages(this.files)"/></div>’+
-‘<div id="img-prev" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px"></div>’+
 ‘<div style="display:flex;gap:9px;margin-top:16px">’+
 ‘<button onclick="saveProj()" class="bgh" id="bsv">’+u.sb+’</button>’+
 ‘<button onclick="genList()" style="flex:1;padding:12px;border:none;border-radius:9px;background:linear-gradient(135deg,#c9a84c,#e0be70);color:#07080c;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px" id="bgen">’+u.gb+’</button>’+
@@ -796,32 +816,6 @@ function delClient(id) {
 S.clients = S.clients.filter(function(c){return c.id!==id;});
 renderTab();
 dbdel(“clients”,“id=eq.”+id).catch(function(){});
-}
-
-// ── IMAGES ──
-var IMGS = [];
-function addImages(files) {
-var arr = Array.from(files);
-arr.slice(0, 5 - IMGS.length).forEach(function(f) {
-if (!f.type.startsWith(‘image/’)) return;
-var r = new FileReader();
-r.onload = function(e) {
-IMGS.push({id: Date.now() + Math.random(), url: e.target.result, name: f.name});
-renderImgPrev();
-};
-r.readAsDataURL(f);
-});
-}
-function renderImgPrev() {
-var el = document.getElementById(‘img-prev’);
-if (!el) return;
-el.innerHTML = IMGS.map(function(img) {
-return ‘<div style="position:relative;width:64px;height:64px"><img src="'+img.url+'" style="width:64px;height:64px;border-radius:8px;object-fit:cover;border:1px solid #232d44"/><button onclick="removeImg(''+img.id+'')" style="position:absolute;top:-5px;right:-5px;width:17px;height:17px;border-radius:50%;background:#ef4444;border:none;color:#fff;font-size:11px;cursor:pointer;font-weight:700;line-height:1">×</button></div>’;
-}).join(’’);
-}
-function removeImg(id) {
-IMGS = IMGS.filter(function(i) { return i.id !== id; });
-renderImgPrev();
 }
 
 // ── BOOT ──
