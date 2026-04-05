@@ -607,12 +607,15 @@ async function addClient(){
 async function delClient(id){S.clients=S.clients.filter(c=>c.id!==id);renderTab();try{await dbdel("clients","id=eq."+id);}catch{}}
 
 /* BOOT */
+function boot(){
 initLang();
 if(S.lang){
 if(S.uid&&S.country)initDash();
 else if(S.uid)initCountry();
 else{initLogin();go(“s-login”);}
 }
+}
+if(document.readyState===“loading”){document.addEventListener(“DOMContentLoaded”,boot);}else{boot();}
 </script>
 
 </body>
