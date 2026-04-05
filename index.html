@@ -189,19 +189,7 @@ footer span{font-size:10px;color:#39495e}
 <script>
 function testBtn() {
   var out = document.getElementById("debug-out");
-  var uid = localStorage.getItem("pt_uid");
-  var country = localStorage.getItem("pt_country");
-  var lang = localStorage.getItem("pt_lang");
-  out.textContent = "uid:"+uid+" country:"+country+" lang:"+lang;
-  
-  // Try to show login page
-  var loginPage = document.getElementById("p-login");
-  if (loginPage) {
-    loginPage.style.display = "flex";
-    out.textContent += " | login page found";
-  } else {
-    out.textContent += " | LOGIN PAGE NOT FOUND!";
-  }
+  out.textContent = "JS WORKS!";
 }
 
 // -- SUPABASE --
@@ -234,8 +222,17 @@ function hashPw(pw) {
 }
 
 // -- STORAGE --
-function lsGet(k, d) { try { var v = JSON.parse(localStorage.getItem(k)); return v !== null ? v : d; } catch(e) { return d; } }
-function lsSet(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch(e) {} }
+var LS_CACHE = {};
+function lsGet(k, d) {
+  try {
+    if (LS_CACHE[k] !== undefined) return LS_CACHE[k];
+    var v = JSON.parse(localStorage.getItem(k));
+    return v !== null ? v : (d !== undefined ? d : null);
+  } catch(e) { return d !== undefined ? d : null; }
+}
+function lsSet(k, v) {
+  try { LS_CACHE[k] = v; localStorage.setItem(k, JSON.stringify(v)); } catch(e) { LS_CACHE[k] = v; }
+}
 
 // -- STATE --
 var S = {
