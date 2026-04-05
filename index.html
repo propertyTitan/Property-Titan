@@ -310,8 +310,16 @@ function pickLang(code) {
   lsSet("pt_lang", code);
   try {
     if (S.uid) {
-      if (S.country) { initDash(); }
-      else { initCountry(); }
+      if (S.country) {
+        // Already logged in - just refresh UI without reloading data
+        if (document.getElementById("dash").style.display === "flex") {
+          updateDashUI();
+        } else {
+          initDash();
+        }
+      } else {
+        initCountry();
+      }
     } else {
       initLogin();
       showPage("p-login");
@@ -387,6 +395,12 @@ function initCountry() {
 function pickCountry(code) {
   S.country = code;
   lsSet("pt_country", code);
+  // If no lang set yet, use country default lang
+  if (!S.lang) {
+    var langMap = {SE:"sv",NO:"no",DK:"da",PL:"pl",DE:"de",FR:"fr",GB:"en",HU:"hu",RO:"ro",AT:"de"};
+    S.lang = langMap[code] || "en";
+    lsSet("pt_lang", S.lang);
+  }
   initDash();
 }
 
@@ -432,7 +446,7 @@ function buildPrompt(type, d, cc, lang) {
   var props = rows.filter(function(r) { return r[1] && String(r[1]).trim(); }).map(function(r) { return r[0]+": "+r[1]; }).join("\n");
   var h = "Market: "+c.market+"\n"+li+"\n\nProperty:\n"+(props||"(minimal data)")+"\n\nOnly use provided data.\n\n";
   var prompts = {
-    listing: h+"Write a compelling listing.\n1.HEADLINE\n2.OPENING(2-3 sentences)\n3.HIGHLIGHTS(5-7 bullets)\n4.NEIGHBOURHOOD\n5.CTA\nMax 380 words.",
+    listing: h+"Write a warm, lifestyle-focused property listing.\n1.HEADLINE - emotional and evocative, max 10 words\n2.OPENING - paint a picture of daily life here, 2-3 sentences\n3.HIGHLIGHTS - 5-7 bullet points about lifestyle and features\n4.NEIGHBOURHOOD - local character, cafes, parks, community\n5.CTA - warm and inviting\nFocus on lifestyle and living experience. You may briefly mention investment value once if relevant, but do not let it dominate.\nMax 380 words.",
     brochure: h+"Write a premium brochure.\n1.HEADLINE\n2.STORY\n3.HIGHLIGHTS\n4.LOCATION\n5.TECHNICAL\n6.CLOSING\nMax 500 words.",
     lead: h+"Create a lead magnet.\n1.TITLE\n2.INTRO\n3.5 TIPS\n4.PROPERTY\n5.CTA\nMax 400 words.",
     email: h+"Write a prospecting email.\nSUBJECT:[subject]\n---\nOpening, highlights, CTA.\nMax 280 words.",
@@ -451,17 +465,28 @@ function exportPDF(text, name) {
 }
 
 // ── DASH ──
-function initDash() {
+function updateDashUI() {
   var u = t();
   var c = CC[S.country] || CC.GB;
-  document.getElementById("d-cc").innerHTML = '<span style="font-size:16px">'+c.flag+'</span><span style="font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#e0be70">'+c.name+'</span>';
-  document.getElementById("d-lo").textContent = u.lo;
-  document.getElementById("d-akl").textContent = u.akl;
-  document.getElementById("d-aks").textContent = u.aks;
-  document.getElementById("d-ts").textContent = u.ts2;
-  document.getElementById("d-ft").textContent = c.flag+" Property Titan · "+S.email;
-  if (S.key) document.getElementById("d-aka").style.display = "inline";
+  var cc = document.getElementById("d-cc");
+  var dlo = document.getElementById("d-lo");
+  var dakl = document.getElementById("d-akl");
+  var daks = document.getElementById("d-aks");
+  var dts = document.getElementById("d-ts");
+  var dft = document.getElementById("d-ft");
+  if (cc) cc.innerHTML = '<span style="font-size:16px">'+c.flag+'</span><span style="font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#e0be70">'+c.name+'</span>';
+  if (dlo) dlo.textContent = u.lo;
+  if (dakl) dakl.textContent = u.akl;
+  if (daks) daks.textContent = u.aks;
+  if (dts) dts.textContent = u.ts2;
+  if (dft) dft.textContent = c.flag+" Property Titan · "+S.email;
+  if (S.key) { var daka = document.getElementById("d-aka"); if (daka) daka.style.display = "inline"; }
   renderTabs();
+  renderTab();
+}
+
+function initDash() {
+  updateDashUI();
   showDash();
   Promise.all([
     dbsel("projects","user_id=eq."+S.uid+"&order=created_at.desc"),
@@ -529,6 +554,11 @@ function rListing() {
     '<div class="dv"><span>'+u.es+'</span><hr/></div>'+
     '<div class="g2" style="margin-bottom:0"><div><div class="flbl">'+u.fv+'</div><input class="finp" value="'+esc(F.view)+'" oninput="F.view=this.value"/></div><div><div class="flbl">'+u.fho+'</div><input class="finp" value="'+esc(F.hood)+'" oninput="F.hood=this.value"/></div></div>'+
     '<div class="flbl" style="margin-top:0">'+u.fx+'</div><textarea class="finp" oninput="F.extra=this.value">'+esc(F.extra)+'</textarea>'+
+    '<div class="flbl" style="margin-top:10px">📷 Képek (max 5)</div>'+
+    '<div onclick="document.getElementById('img-inp').click()" style="border:2px dashed #232d44;border-radius:10px;padding:14px;text-align:center;cursor:pointer;background:#0c0f1a;margin-bottom:10px" onmouseover="this.style.borderColor='#c9a84c'" onmouseout="this.style.borderColor='#232d44'">'+
+    '<div style="font-size:20px;margin-bottom:4px">📷</div><div style="font-size:11px;color:#39495e">Kattints vagy húzd ide a képeket</div>'+
+    '<input type="file" id="img-inp" accept="image/*" multiple style="display:none" onchange="addImages(this.files)"/></div>'+
+    '<div id="img-prev" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px"></div>'+
     '<div style="display:flex;gap:9px;margin-top:16px">'+
       '<button onclick="saveProj()" class="bgh" id="bsv">'+u.sb+'</button>'+
       '<button onclick="genList()" style="flex:1;padding:12px;border:none;border-radius:9px;background:linear-gradient(135deg,#c9a84c,#e0be70);color:#07080c;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px" id="bgen">'+u.gb+'</button>'+
@@ -757,6 +787,32 @@ function delClient(id) {
   S.clients = S.clients.filter(function(c){return c.id!==id;});
   renderTab();
   dbdel("clients","id=eq."+id).catch(function(){});
+}
+
+// ── IMAGES ──
+var IMGS = [];
+function addImages(files) {
+  var arr = Array.from(files);
+  arr.slice(0, 5 - IMGS.length).forEach(function(f) {
+    if (!f.type.startsWith('image/')) return;
+    var r = new FileReader();
+    r.onload = function(e) {
+      IMGS.push({id: Date.now() + Math.random(), url: e.target.result, name: f.name});
+      renderImgPrev();
+    };
+    r.readAsDataURL(f);
+  });
+}
+function renderImgPrev() {
+  var el = document.getElementById('img-prev');
+  if (!el) return;
+  el.innerHTML = IMGS.map(function(img) {
+    return '<div style="position:relative;width:64px;height:64px"><img src="'+img.url+'" style="width:64px;height:64px;border-radius:8px;object-fit:cover;border:1px solid #232d44"/><button onclick="removeImg(''+img.id+'')" style="position:absolute;top:-5px;right:-5px;width:17px;height:17px;border-radius:50%;background:#ef4444;border:none;color:#fff;font-size:11px;cursor:pointer;font-weight:700;line-height:1">×</button></div>';
+  }).join('');
+}
+function removeImg(id) {
+  IMGS = IMGS.filter(function(i) { return i.id !== id; });
+  renderImgPrev();
 }
 
 // ── BOOT ──
