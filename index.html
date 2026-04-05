@@ -317,24 +317,24 @@ function showErr(msg) {
 function pickLang(code) {
   S.lang = code;
   lsSet("pt_lang", code);
+  var allPages = ["p-lang","p-login","p-country"];
+  for (var i=0; i<allPages.length; i++) {
+    var el = document.getElementById(allPages[i]);
+    if (el) el.style.display = "none";
+  }
   try {
-    if (S.uid) {
-      if (S.country) {
-        // Already logged in - just refresh UI without reloading data
-        if (document.getElementById("dash").style.display === "flex") {
-          updateDashUI();
-        } else {
-          initDash();
-        }
-      } else {
-        initCountry();
-      }
+    if (S.uid && S.country) {
+      document.getElementById("dash").style.display = "flex";
+      updateDashUI();
+      renderTab();
+    } else if (S.uid) {
+      initCountry();
     } else {
       initLogin();
-      showPage("p-login");
+      document.getElementById("p-login").style.display = "flex";
     }
   } catch(ex) {
-    alert("Error: " + ex.message);
+    alert("Hiba: " + ex.message + " | stack: " + (ex.stack||"").slice(0,200));
   }
 }
 
@@ -821,11 +821,14 @@ dbdel(“clients”,“id=eq.”+id).catch(function(){});
 // ── BOOT ──
 (function() {
 if (S.lang) {
+try {
 if (S.uid && S.country) { initDash(); }
 else if (S.uid) { initCountry(); }
 else { initLogin(); showPage(“p-login”); }
+} catch(ex) {
+alert(“Boot hiba: “ + ex.message + “ | “ + (ex.stack||””).slice(0,300));
 }
-// else: lang screen is already shown by default
+}
 })();
 </script>
 
