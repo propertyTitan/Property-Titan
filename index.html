@@ -76,117 +76,8 @@ footer{border-top:1px solid #1a2238;padding:10px 16px;display:flex;align-items:c
 footer span{font-size:10px;color:#39495e}
 </style>
 
-</head>
-<body>
+<script defer>
 
-<!-- LANG -->
-
-<div id="p-lang" class="page active">
-  <div class="grid"></div>
-  <div class="wrap">
-    <div class="badge"><span class="dot"></span><span style="font-size:10px;font-weight:700;letter-spacing:.26em;text-transform:uppercase;color:#e0be70">Premium AI Platform ? Europe</span></div>
-    <h1 class="serif big">Property</h1>
-    <h1 class="serif gold">Titan</h1>
-    <p style="font-size:14px;color:#7e8fa8;margin-top:16px">Choose your language to continue</p>
-    <div class="lang-grid">
-      <button class="lang-btn" onclick="pickLang('sv')"><div class="flag">??</div><div class="lname">Svenska</div></button>
-      <button class="lang-btn" onclick="pickLang('no')"><div class="flag">??</div><div class="lname">Norsk</div></button>
-      <button class="lang-btn" onclick="pickLang('da')"><div class="flag">??</div><div class="lname">Dansk</div></button>
-      <button class="lang-btn" onclick="pickLang('pl')"><div class="flag">??</div><div class="lname">Polski</div></button>
-      <button class="lang-btn" onclick="pickLang('de')"><div class="flag">??</div><div class="lname">Deutsch</div></button>
-      <button class="lang-btn" onclick="pickLang('fr')"><div class="flag">??</div><div class="lname">Fran?ais</div></button>
-      <button class="lang-btn" onclick="pickLang('en')"><div class="flag">??</div><div class="lname">English</div></button>
-      <button class="lang-btn" onclick="pickLang('hu')"><div class="flag">??</div><div class="lname">Magyar</div></button>
-      <button class="lang-btn" onclick="pickLang('ro')"><div class="flag">??</div><div class="lname">Rom?n?</div></button>
-    </div>
-    <p style="margin-top:28px;font-size:11px;color:#39495e">Claude Sonnet AI ? 10 Countries ? 9 Languages</p>
-    <button onclick="testBtn()" style="margin-top:20px;padding:10px 20px;background:#ef4444;color:#fff;border:none;border-radius:8px;font-size:14px;cursor:pointer">DEBUG TEST</button>
-    <div id="debug-out" style="color:#e0be70;margin-top:10px;font-size:12px"></div>
-  </div>
-</div>
-
-<!-- LOGIN -->
-
-<div id="p-login" class="page">
-  <div class="grid"></div>
-  <div class="login-box" style="position:relative;z-index:1">
-    <div style="text-align:center;margin-bottom:28px">
-      <h1 class="serif gold" style="font-size:42px;font-weight:600;font-style:italic;margin-bottom:6px">Titan</h1>
-      <h2 class="serif" id="l-title" style="font-size:21px;font-weight:600;color:#e5e8f2;margin-bottom:6px"></h2>
-      <p style="font-size:13px;color:#39495e">Property Titan AI Platform</p>
-    </div>
-    <div class="inp-wrap"><label id="l-email"></label><input type="email" id="i-email" placeholder="name@email.com"/></div>
-    <div class="inp-wrap"><label id="l-pass"></label><input type="password" id="i-pass" placeholder="min. 6 karakter"/></div>
-    <div class="err" id="l-err"></div>
-    <button class="btn-gold" id="l-btn" onclick="doAuth()" style="margin-top:16px"></button>
-    <div style="text-align:center;margin-top:16px">
-      <span id="l-sw1" style="font-size:12px;color:#39495e"></span>
-      <button onclick="toggleReg()" style="background:none;border:none;color:#e0be70;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit" id="l-sw2"></button>
-    </div>
-    <button onclick="showPage('p-lang')" style="background:none;border:none;color:#39495e;font-size:11px;cursor:pointer;font-family:inherit;margin-top:10px;display:block;width:100%;text-align:center">? Back</button>
-  </div>
-</div>
-
-<!-- COUNTRY -->
-
-<div id="p-country" class="page">
-  <div class="grid"></div>
-  <div style="position:fixed;top:16px;right:16px;display:flex;align-items:center;gap:10px;background:#101524;border:1px solid #1a2238;border-radius:10px;padding:8px 14px;z-index:100">
-    <span id="c-email" style="font-size:11px;color:#39495e"></span>
-    <button onclick="doLogout()" class="bgh" style="font-size:10px;padding:4px 10px" id="c-lo"></button>
-  </div>
-  <div class="wrap">
-    <h1 class="serif big">Property</h1>
-    <h1 class="serif gold" style="margin-bottom:20px">Titan</h1>
-    <div style="background:rgba(201,168,76,.09);border:1px solid rgba(201,168,76,.18);border-radius:12px;padding:12px 20px;display:inline-block;margin-bottom:22px">
-      <div style="font-size:14px;font-weight:700;color:#e0be70" id="c-ts"></div>
-    </div>
-    <p style="font-size:11px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:#39495e;margin-bottom:16px" id="c-pc"></p>
-    <div class="country-grid">
-      <button class="country-btn" onclick="pickCountry('SE')"><div class="flag">??</div><div style="font-size:12px;font-weight:700;color:#7e8fa8">Sverige</div><div style="font-size:10px;color:#39495e">Svenska</div></button>
-      <button class="country-btn" onclick="pickCountry('NO')"><div class="flag">??</div><div style="font-size:12px;font-weight:700;color:#7e8fa8">Norge</div><div style="font-size:10px;color:#39495e">Norsk</div></button>
-      <button class="country-btn" onclick="pickCountry('DK')"><div class="flag">??</div><div style="font-size:12px;font-weight:700;color:#7e8fa8">Danmark</div><div style="font-size:10px;color:#39495e">Dansk</div></button>
-      <button class="country-btn" onclick="pickCountry('PL')"><div class="flag">??</div><div style="font-size:12px;font-weight:700;color:#7e8fa8">Polska</div><div style="font-size:10px;color:#39495e">Polski</div></button>
-      <button class="country-btn" onclick="pickCountry('DE')"><div class="flag">??</div><div style="font-size:12px;font-weight:700;color:#7e8fa8">Deutschland</div><div style="font-size:10px;color:#39495e">Deutsch</div></button>
-      <button class="country-btn" onclick="pickCountry('FR')"><div class="flag">??</div><div style="font-size:12px;font-weight:700;color:#7e8fa8">France</div><div style="font-size:10px;color:#39495e">Fran?ais</div></button>
-      <button class="country-btn" onclick="pickCountry('GB')"><div class="flag">??</div><div style="font-size:12px;font-weight:700;color:#7e8fa8">United Kingdom</div><div style="font-size:10px;color:#39495e">English</div></button>
-      <button class="country-btn" onclick="pickCountry('HU')"><div class="flag">??</div><div style="font-size:12px;font-weight:700;color:#7e8fa8">Magyarorsz?g</div><div style="font-size:10px;color:#39495e">Magyar</div></button>
-      <button class="country-btn" onclick="pickCountry('RO')"><div class="flag">??</div><div style="font-size:12px;font-weight:700;color:#7e8fa8">Rom?nia</div><div style="font-size:10px;color:#39495e">Rom?n?</div></button>
-      <button class="country-btn" onclick="pickCountry('AT')"><div class="flag">??</div><div style="font-size:12px;font-weight:700;color:#7e8fa8">?sterreich</div><div style="font-size:10px;color:#39495e">Deutsch</div></button>
-    </div>
-  </div>
-</div>
-
-<!-- DASHBOARD -->
-
-<div id="dash">
-  <div class="topbar">
-    <span class="serif" style="font-size:18px;font-weight:600;color:#e5e8f2">Property <span style="background:linear-gradient(135deg,#c9a84c,#e0be70);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">Titan</span></span>
-    <div id="d-cc" style="display:inline-flex;align-items:center;gap:6px;background:rgba(201,168,76,.09);border:1px solid rgba(201,168,76,.18);border-radius:99px;padding:3px 10px"></div>
-    <div id="d-sync" style="display:none;background:rgba(16,185,129,.09);border:1px solid rgba(16,185,129,.2);border-radius:99px;padding:3px 10px;font-size:9px;font-weight:700;color:#6ee7b7"></div>
-    <div style="flex:1"></div>
-    <button onclick="showPage('p-country')" class="bgh" style="font-size:10px;padding:5px 10px">?</button>
-    <button onclick="doLogout()" class="bgh" id="d-lo" style="font-size:10px;padding:5px 10px"></button>
-  </div>
-  <div class="apibar">
-    <div class="apibar-inner">
-      <span style="font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#1a3358;white-space:nowrap" id="d-akl"></span>
-      <input type="password" id="d-ak" class="api-inp" placeholder="sk-ant-api03-..."/>
-      <button onclick="saveKey()" class="api-btn" id="d-aks"></button>
-      <span id="d-aka" style="display:none;font-size:9px;color:#1a4a28;font-weight:700"></span>
-    </div>
-  </div>
-  <div class="banner" id="d-ts"></div>
-  <div class="ebar" id="d-err"><span id="d-errm"></span><button onclick="this.parentElement.style.display='none'">?</button></div>
-  <div class="tabs" id="d-tabs"></div>
-  <div class="main" id="d-main"></div>
-  <footer>
-    <span id="d-ft"></span>
-    <span style="padding:3px 9px;border-radius:99px;font-size:9px;font-weight:700;background:rgba(16,185,129,.09);color:#6ee7b7;border:1px solid rgba(16,185,129,.2)">? Supabase Live</span>
-  </footer>
-</div>
-
-<script>
 function testBtn() {
   var out = document.getElementById("debug-out");
   out.textContent = "JS WORKS!";
@@ -845,7 +736,117 @@ alert(“Boot hiba: “ + ex.message + “ | “ + (ex.stack||””).slice(0,30
 }
 }
 })();
+
 </script>
+</head>
+<body>
+
+<!-- LANG -->
+
+<div id="p-lang" class="page active">
+  <div class="grid"></div>
+  <div class="wrap">
+    <div class="badge"><span class="dot"></span><span style="font-size:10px;font-weight:700;letter-spacing:.26em;text-transform:uppercase;color:#e0be70">Premium AI Platform ? Europe</span></div>
+    <h1 class="serif big">Property</h1>
+    <h1 class="serif gold">Titan</h1>
+    <p style="font-size:14px;color:#7e8fa8;margin-top:16px">Choose your language to continue</p>
+    <div class="lang-grid">
+      <button class="lang-btn" onclick="pickLang('sv')"><div class="flag">??</div><div class="lname">Svenska</div></button>
+      <button class="lang-btn" onclick="pickLang('no')"><div class="flag">??</div><div class="lname">Norsk</div></button>
+      <button class="lang-btn" onclick="pickLang('da')"><div class="flag">??</div><div class="lname">Dansk</div></button>
+      <button class="lang-btn" onclick="pickLang('pl')"><div class="flag">??</div><div class="lname">Polski</div></button>
+      <button class="lang-btn" onclick="pickLang('de')"><div class="flag">??</div><div class="lname">Deutsch</div></button>
+      <button class="lang-btn" onclick="pickLang('fr')"><div class="flag">??</div><div class="lname">Fran?ais</div></button>
+      <button class="lang-btn" onclick="pickLang('en')"><div class="flag">??</div><div class="lname">English</div></button>
+      <button class="lang-btn" onclick="pickLang('hu')"><div class="flag">??</div><div class="lname">Magyar</div></button>
+      <button class="lang-btn" onclick="pickLang('ro')"><div class="flag">??</div><div class="lname">Rom?n?</div></button>
+    </div>
+    <p style="margin-top:28px;font-size:11px;color:#39495e">Claude Sonnet AI ? 10 Countries ? 9 Languages</p>
+    <button onclick="testBtn()" style="margin-top:20px;padding:10px 20px;background:#ef4444;color:#fff;border:none;border-radius:8px;font-size:14px;cursor:pointer">DEBUG TEST</button>
+    <div id="debug-out" style="color:#e0be70;margin-top:10px;font-size:12px"></div>
+  </div>
+</div>
+
+<!-- LOGIN -->
+
+<div id="p-login" class="page">
+  <div class="grid"></div>
+  <div class="login-box" style="position:relative;z-index:1">
+    <div style="text-align:center;margin-bottom:28px">
+      <h1 class="serif gold" style="font-size:42px;font-weight:600;font-style:italic;margin-bottom:6px">Titan</h1>
+      <h2 class="serif" id="l-title" style="font-size:21px;font-weight:600;color:#e5e8f2;margin-bottom:6px"></h2>
+      <p style="font-size:13px;color:#39495e">Property Titan AI Platform</p>
+    </div>
+    <div class="inp-wrap"><label id="l-email"></label><input type="email" id="i-email" placeholder="name@email.com"/></div>
+    <div class="inp-wrap"><label id="l-pass"></label><input type="password" id="i-pass" placeholder="min. 6 karakter"/></div>
+    <div class="err" id="l-err"></div>
+    <button class="btn-gold" id="l-btn" onclick="doAuth()" style="margin-top:16px"></button>
+    <div style="text-align:center;margin-top:16px">
+      <span id="l-sw1" style="font-size:12px;color:#39495e"></span>
+      <button onclick="toggleReg()" style="background:none;border:none;color:#e0be70;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit" id="l-sw2"></button>
+    </div>
+    <button onclick="showPage('p-lang')" style="background:none;border:none;color:#39495e;font-size:11px;cursor:pointer;font-family:inherit;margin-top:10px;display:block;width:100%;text-align:center">? Back</button>
+  </div>
+</div>
+
+<!-- COUNTRY -->
+
+<div id="p-country" class="page">
+  <div class="grid"></div>
+  <div style="position:fixed;top:16px;right:16px;display:flex;align-items:center;gap:10px;background:#101524;border:1px solid #1a2238;border-radius:10px;padding:8px 14px;z-index:100">
+    <span id="c-email" style="font-size:11px;color:#39495e"></span>
+    <button onclick="doLogout()" class="bgh" style="font-size:10px;padding:4px 10px" id="c-lo"></button>
+  </div>
+  <div class="wrap">
+    <h1 class="serif big">Property</h1>
+    <h1 class="serif gold" style="margin-bottom:20px">Titan</h1>
+    <div style="background:rgba(201,168,76,.09);border:1px solid rgba(201,168,76,.18);border-radius:12px;padding:12px 20px;display:inline-block;margin-bottom:22px">
+      <div style="font-size:14px;font-weight:700;color:#e0be70" id="c-ts"></div>
+    </div>
+    <p style="font-size:11px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:#39495e;margin-bottom:16px" id="c-pc"></p>
+    <div class="country-grid">
+      <button class="country-btn" onclick="pickCountry('SE')"><div class="flag">??</div><div style="font-size:12px;font-weight:700;color:#7e8fa8">Sverige</div><div style="font-size:10px;color:#39495e">Svenska</div></button>
+      <button class="country-btn" onclick="pickCountry('NO')"><div class="flag">??</div><div style="font-size:12px;font-weight:700;color:#7e8fa8">Norge</div><div style="font-size:10px;color:#39495e">Norsk</div></button>
+      <button class="country-btn" onclick="pickCountry('DK')"><div class="flag">??</div><div style="font-size:12px;font-weight:700;color:#7e8fa8">Danmark</div><div style="font-size:10px;color:#39495e">Dansk</div></button>
+      <button class="country-btn" onclick="pickCountry('PL')"><div class="flag">??</div><div style="font-size:12px;font-weight:700;color:#7e8fa8">Polska</div><div style="font-size:10px;color:#39495e">Polski</div></button>
+      <button class="country-btn" onclick="pickCountry('DE')"><div class="flag">??</div><div style="font-size:12px;font-weight:700;color:#7e8fa8">Deutschland</div><div style="font-size:10px;color:#39495e">Deutsch</div></button>
+      <button class="country-btn" onclick="pickCountry('FR')"><div class="flag">??</div><div style="font-size:12px;font-weight:700;color:#7e8fa8">France</div><div style="font-size:10px;color:#39495e">Fran?ais</div></button>
+      <button class="country-btn" onclick="pickCountry('GB')"><div class="flag">??</div><div style="font-size:12px;font-weight:700;color:#7e8fa8">United Kingdom</div><div style="font-size:10px;color:#39495e">English</div></button>
+      <button class="country-btn" onclick="pickCountry('HU')"><div class="flag">??</div><div style="font-size:12px;font-weight:700;color:#7e8fa8">Magyarorsz?g</div><div style="font-size:10px;color:#39495e">Magyar</div></button>
+      <button class="country-btn" onclick="pickCountry('RO')"><div class="flag">??</div><div style="font-size:12px;font-weight:700;color:#7e8fa8">Rom?nia</div><div style="font-size:10px;color:#39495e">Rom?n?</div></button>
+      <button class="country-btn" onclick="pickCountry('AT')"><div class="flag">??</div><div style="font-size:12px;font-weight:700;color:#7e8fa8">?sterreich</div><div style="font-size:10px;color:#39495e">Deutsch</div></button>
+    </div>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+
+<div id="dash">
+  <div class="topbar">
+    <span class="serif" style="font-size:18px;font-weight:600;color:#e5e8f2">Property <span style="background:linear-gradient(135deg,#c9a84c,#e0be70);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">Titan</span></span>
+    <div id="d-cc" style="display:inline-flex;align-items:center;gap:6px;background:rgba(201,168,76,.09);border:1px solid rgba(201,168,76,.18);border-radius:99px;padding:3px 10px"></div>
+    <div id="d-sync" style="display:none;background:rgba(16,185,129,.09);border:1px solid rgba(16,185,129,.2);border-radius:99px;padding:3px 10px;font-size:9px;font-weight:700;color:#6ee7b7"></div>
+    <div style="flex:1"></div>
+    <button onclick="showPage('p-country')" class="bgh" style="font-size:10px;padding:5px 10px">?</button>
+    <button onclick="doLogout()" class="bgh" id="d-lo" style="font-size:10px;padding:5px 10px"></button>
+  </div>
+  <div class="apibar">
+    <div class="apibar-inner">
+      <span style="font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#1a3358;white-space:nowrap" id="d-akl"></span>
+      <input type="password" id="d-ak" class="api-inp" placeholder="sk-ant-api03-..."/>
+      <button onclick="saveKey()" class="api-btn" id="d-aks"></button>
+      <span id="d-aka" style="display:none;font-size:9px;color:#1a4a28;font-weight:700"></span>
+    </div>
+  </div>
+  <div class="banner" id="d-ts"></div>
+  <div class="ebar" id="d-err"><span id="d-errm"></span><button onclick="this.parentElement.style.display='none'">?</button></div>
+  <div class="tabs" id="d-tabs"></div>
+  <div class="main" id="d-main"></div>
+  <footer>
+    <span id="d-ft"></span>
+    <span style="padding:3px 9px;border-radius:99px;font-size:9px;font-weight:700;background:rgba(16,185,129,.09);color:#6ee7b7;border:1px solid rgba(16,185,129,.2)">? Supabase Live</span>
+  </footer>
+</div>
 
 </body>
 </html>
