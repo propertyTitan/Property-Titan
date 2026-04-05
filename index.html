@@ -206,7 +206,7 @@ function testBtn() {
   }
 }
 
-// ── SUPABASE ──
+// -- SUPABASE --
 var SBU = "https://lmculupmpfapqonaxfqi.supabase.co/rest/v1";
 var SBK = "sb_publishable_eqMmlla8SixrcApdjBbOhQ_Jr-s6f4G";
 var SBH = {"Content-Type":"application/json","apikey":SBK,"Authorization":"Bearer "+SBK,"Prefer":"return=representation"};
@@ -227,7 +227,7 @@ function dbupd(t, f, d) { return dbq("PATCH", t, f, d); }
 function dbupsert(t, d) { return dbq("POST", t, "", d, {"Prefer":"return=representation,resolution=merge-duplicates"}); }
 function dbdel(t, f) { return dbq("DELETE", t, f); }
 
-// ── HASH ──
+// -- HASH --
 function hashPw(pw) {
   return crypto.subtle.digest("SHA-256", new TextEncoder().encode(pw + "pt_salt_2025"))
     .then(function(buf) {
@@ -235,11 +235,11 @@ function hashPw(pw) {
     });
 }
 
-// ── STORAGE ──
+// -- STORAGE --
 function lsGet(k, d) { try { var v = JSON.parse(localStorage.getItem(k)); return v !== null ? v : d; } catch(e) { return d; } }
 function lsSet(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch(e) {} }
 
-// ── STATE ──
+// -- STATE --
 var S = {
   lang: lsGet("pt_lang", ""),
   uid: lsGet("pt_uid", ""),
@@ -260,7 +260,7 @@ var S = {
 var EF = {isLuxury:false,name:"",addr:"",price:"",rooms:"",size:"",plot:"",year:"",floor:"",park:"",balc:"",cond:"",orient:"",heat:"",energy:"",walls:"",view:"",lift:"",hood:"",extra:""};
 var F = Object.assign({}, EF);
 
-// ── COUNTRIES ──
+// -- COUNTRIES --
 var CC = {
   SE:{flag:"🇸🇪",name:"Sverige",lang:"sv",ph:"t.ex. 4 500 000 kr",market:"Swedish market. Nordic lifestyle, sustainability. Tone: warm, honest."},
   NO:{flag:"🇳🇴",name:"Norge",lang:"no",ph:"f.eks. 4 800 000 kr",market:"Norwegian market. Nature, outdoor lifestyle. Tone: honest, direct."},
@@ -282,7 +282,7 @@ var LW = {
   ro:"Write ENTIRE response in Romanian."
 };
 
-// ── TRANSLATIONS ──
+// -- TRANSLATIONS --
 var UI = {
   hu:{title:"Bejelentkezés",regTitle:"Regisztráció",el:"Email cím",pw:"Jelszó",lb:"Bejelentkezés",rb:"Regisztráció",na:"Nincs még fiókod?",ha:"Már van fiókod?",li:"Bejelentkezés...",ri:"Regisztráció...",lo:"Kilépés",tabs:["Hirdetés","Brossúra","Lead Mágnes","Email","Hirdetések","Profil","CRM"],akl:"Claude API Kulcs",aks:"Mentés",aka:"✓ Aktív",ft:"Ingatlan Adatok",fn:"Projekt neve",fa:"Cím",fp:"Ár",fr:"Szobák",fs:"Alapterület m²",fpl:"Telek m²",fy:"Építési év",ff:"Emelet",fpk:"Parkolás",fb:"Erkély m²",fc:"Állapot",fo:"Tájolás",fh:"Fűtés",fe:"Energetika",fw:"Szerkezet",fv:"Kilátás",fli:"Lift",fho:"Környék",fx:"Extra jellemzők",std:"Standard",lux:"Luxury",sb:"Projekt Mentése",gb:"AI Szöveg Generálása",gi:"Generálás...",nk:"⚠ Add meg a Claude API kulcsodat fent.",np:"Nincs mentett projekt.",sp:"Válasszon projektet...",gc:"Generálás",re:"AI Eredmény",cp:"Másolás",cd:"✓ Másolva!",pdf:"PDF",cl:"Törlés",bt:"Brossúra",lt:"Lead Mágnes",et:"Email",at:"Hirdetések",agt:"Saját Profil",agn:"Név",agp:"Telefon",age:"Email",aga:"Irodanév",agl:"Logó URL",ags:"Profil Mentése",agsd:"✓ Mentve!",tt:"Sablonok",ct:"Ügyfél CRM",cn:"Ügyfél neve",cph:"Telefon",cem:"Email",cpr:"Ingatlan",cst:"Státusz",cno:"Megjegyzés",ca:"Ügyfél Hozzáadása",cd2:"Törlés",cn2:"Nincs még ügyfél.",sts:["Érdeklődő","Megnézte","Ajánlat","Tárgyalás","Szerződés","Lezárt"],ds:"Méretek",ts:"Műszaki",es:"Egyéb",pr:"Projektek",tl:"Sablonok",ts2:"⏱ Spórolj 45 percet minden hirdetésnél",sy:"✓ Mentve",sv2:"Mentés...",nt:"Nincs sablon.",dt:"Törlés",ut:"Betöltés",pc:"Válasszon országot",ef:"Kérjük töltsd ki mindkét mezőt.",ep:"A jelszó legalább 6 karakter.",ee:"Ez az email már regisztrált.",er:"Regisztrációs hiba.",eli:"Hibás email vagy jelszó.",eg:"Hiba: ",phn:"pl. Budai panorámás penthouse",pha:"Budapest, XII. kerület"},
   en:{title:"Sign In",regTitle:"Create Account",el:"Email",pw:"Password",lb:"Sign In",rb:"Create Account",na:"Don't have an account?",ha:"Already have an account?",li:"Signing in...",ri:"Creating account...",lo:"Sign out",tabs:["Listing","Brochure","Lead Magnet","Email","Ads","Profile","CRM"],akl:"Claude API Key",aks:"Save",aka:"✓ Active",ft:"Property Details",fn:"Project name",fa:"Address",fp:"Price",fr:"Rooms",fs:"Floor area m²",fpl:"Plot m²",fy:"Year built",ff:"Floor",fpk:"Parking",fb:"Balcony m²",fc:"Condition",fo:"Orientation",fh:"Heating",fe:"Energy rating",fw:"Structure",fv:"View",fli:"Elevator",fho:"Neighbourhood",fx:"Extra features",std:"Standard",lux:"Luxury",sb:"Save project",gb:"Generate AI Copy",gi:"Generating...",nk:"⚠ Enter your Claude API key above.",np:"No saved projects.",sp:"Select project...",gc:"Generate",re:"AI Result",cp:"Copy",cd:"✓ Copied!",pdf:"PDF",cl:"Clear",bt:"Brochure",lt:"Lead Magnet",et:"Email",at:"Ads",agt:"My Profile",agn:"Name",agp:"Phone",age:"Email",aga:"Agency",agl:"Logo URL",ags:"Save Profile",agsd:"✓ Saved!",tt:"Templates",ct:"Client CRM",cn:"Client name",cph:"Phone",cem:"Email",cpr:"Property",cst:"Status",cno:"Note",ca:"Add Client",cd2:"Delete",cn2:"No clients yet.",sts:["Lead","Viewed","Offer","Negotiating","Contract","Closed"],ds:"Dimensions",ts:"Technical",es:"Other",pr:"Projects",tl:"Templates",ts2:"⏱ Save 45 min per listing",sy:"✓ Saved",sv2:"Saving...",nt:"No templates.",dt:"Delete",ut:"Load",pc:"Choose your country",ef:"Please fill in both fields.",ep:"Password must be at least 6 characters.",ee:"This email is already registered.",er:"Registration failed.",eli:"Incorrect email or password.",eg:"Error: ",phn:"e.g. London Penthouse",pha:"London, Chelsea"},
@@ -297,7 +297,7 @@ var UI = {
 function t() { return UI[S.lang] || UI.en; }
 function esc(s) { return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
 
-// ── NAV ──
+// -- NAV --
 function showPage(id) {
   var pages = document.querySelectorAll(".page");
   for (var i = 0; i < pages.length; i++) {
@@ -332,7 +332,7 @@ function showErr(msg) {
   document.getElementById("d-err").style.display = "flex";
 }
 
-// ── LANG ──
+// -- LANG --
 function pickLang(code) {
   S.lang = code;
   lsSet("pt_lang", code);
@@ -357,7 +357,7 @@ function pickLang(code) {
   }
 }
 
-// ── LOGIN ──
+// -- LOGIN --
 function initLogin() {
   var u = t();
   document.getElementById("l-title").textContent = S.isReg ? u.regTitle : u.title;
@@ -410,7 +410,7 @@ function doAuth() {
   });
 }
 
-// ── COUNTRY ──
+// -- COUNTRY --
 function initCountry() {
   var u = t();
   document.getElementById("c-email").textContent = S.email;
@@ -455,14 +455,14 @@ function pickCountry(code) {
   }
 }
 
-// ── LOGOUT ──
+// -- LOGOUT --
 function doLogout() {
   S.uid = ""; S.email = ""; S.country = ""; S.lang = "";
   lsSet("pt_uid",""); lsSet("pt_email",""); lsSet("pt_country",""); lsSet("pt_lang","");
   showPage("p-lang");
 }
 
-// ── API KEY ──
+// -- API KEY --
 function saveKey() {
   var k = document.getElementById("d-ak").value.trim();
   if (!k) return;
@@ -474,7 +474,7 @@ function saveKey() {
   setTimeout(function() { btn.textContent = t().aks; }, 2500);
 }
 
-// ── CLAUDE ──
+// -- CLAUDE --
 function callClaude(prompt) {
   if (!S.key) { showErr(t().nk); return Promise.reject(new Error("No key")); }
   return fetch("https://api.anthropic.com/v1/messages", {
@@ -489,7 +489,7 @@ function callClaude(prompt) {
   });
 }
 
-// ── PROMPT ──
+// -- PROMPT --
 function buildPrompt(type, d, cc, lang) {
   var c = CC[cc] || CC.GB;
   var li = LW[lang] || LW.en;
@@ -506,7 +506,7 @@ function buildPrompt(type, d, cc, lang) {
   return prompts[type] || prompts.listing;
 }
 
-// ── PDF ──
+// -- PDF --
 function exportPDF(text, name) {
   var w = window.open("","_blank"); if (!w) return;
   var ag = S.agent || {};
@@ -516,7 +516,7 @@ function exportPDF(text, name) {
 w.document.close();
 }
 
-// ── DASH ──
+// – DASH –
 function updateDashUI() {
 var u = t();
 var c = CC[S.country] || CC.GB;
@@ -581,7 +581,7 @@ else if (S.tab === 5) m.innerHTML = rProfile();
 else if (S.tab === 6) m.innerHTML = rCRM();
 }
 
-// ── LISTING ──
+// – LISTING –
 function rListing() {
 var u = t(); var c = CC[S.country]||CC.GB; var ps = S.projects;
 var projList = ps.length === 0 ? ‘<p style="font-size:12px;color:#39495e;text-align:center;padding:12px 0">—</p>’ :
@@ -699,7 +699,7 @@ el.innerHTML = ‘<div style="margin-top:16px">’+
 ‘</div>’;
 }
 
-// ── GEN TABS ──
+// – GEN TABS –
 function rGenTab(tid, title) {
 var u = t(); var ps = S.projects;
 var sp = null; for (var i=0;i<ps.length;i++){if(ps[i].id===S.pid){sp=ps[i];break;}}
@@ -734,7 +734,7 @@ renderTab();
 .then(function() { if (btn) { btn.disabled = false; btn.textContent = u.gc; } });
 }
 
-// ── PROFILE ──
+// – PROFILE –
 function rProfile() {
 var u = t(); var ag = S.agent||{};
 var tmplList = S.templates.length===0 ? ‘<div style="background:#0c0f1a;border:2px dashed #232d44;border-radius:10px;padding:32px;text-align:center"><p style="font-size:13px;color:#39495e">’+u.nt+’</p></div>’ :
@@ -775,7 +775,7 @@ renderTab();
 dbdel(“templates”,“id=eq.”+id).catch(function(){});
 }
 
-// ── CRM ──
+// – CRM –
 function rCRM() {
 var u = t(); var cl = S.clients||[];
 var cards = cl.length===0 ? ‘<div class="card" style="border:2px dashed #1a2238;padding:52px;text-align:center"><p style="font-size:14px;color:#39495e">’+u.cn2+’</p></div>’ :
@@ -838,7 +838,7 @@ renderTab();
 dbdel(“clients”,“id=eq.”+id).catch(function(){});
 }
 
-// ── BOOT ──
+// – BOOT –
 (function() {
 if (S.lang) {
 try {
