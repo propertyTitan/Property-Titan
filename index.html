@@ -1,6 +1,619 @@
 <!DOCTYPE html>
-<html>
+
+<html lang="hu">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Property Titan</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#07090f;--surf:#0c0f1a;--card:#101524;--bdr:#1a2238;--bdr2:#232d44;--bdr3:#2c3a54;--gold:#c9a84c;--gold2:#e0be70;--goldx:rgba(201,168,76,.09);--green:#10b981;--greenx:rgba(16,185,129,.09);--red:#ef4444;--redx:rgba(239,68,68,.08);--tx:#e5e8f2;--tx2:#7e8fa8;--tx3:#39495e}
+html,body{min-height:100%;background:var(--bg);color:var(--tx);font-family:'DM Sans',sans-serif;-webkit-font-smoothing:antialiased}
+.serif{font-family:'Cormorant Garamond',Georgia,serif}
+.gold{background:linear-gradient(135deg,#c9a84c,#e0be70);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.screen{display:none;min-height:100vh}
+.screen.on{display:flex;flex-direction:column}
+.grid-bg{background-image:linear-gradient(var(--bdr) 1px,transparent 1px),linear-gradient(90deg,var(--bdr) 1px,transparent 1px);background-size:54px 54px}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pulse{0%,100%{opacity:.5}50%{opacity:1}}
+@keyframes fi{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.fi{animation:fi .4s ease both}
+.sp{display:inline-block;width:14px;height:14px;border:2px solid rgba(201,168,76,.2);border-top-color:var(--gold);border-radius:50%;animation:spin .7s linear infinite}
+input,textarea,select{width:100%;padding:10px 13px;background:var(--surf);border:1.5px solid var(--bdr2);border-radius:8px;color:var(--tx);font-size:13px;font-family:inherit;outline:none;transition:border-color .18s}
+input:focus,textarea:focus,select:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,168,76,.08)}
+textarea{resize:vertical;min-height:80px;line-height:1.6}
+select option{background:var(--surf)}
+.lbl{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--tx3);margin-bottom:6px}
+.bg{padding:12px 20px;border:none;border-radius:9px;background:linear-gradient(135deg,#c9a84c,#e0be70);color:#07080c;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:.08em;display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:all .2s;box-shadow:0 4px 18px rgba(201,168,76,.2)}
+.bg:hover{transform:translateY(-1px);box-shadow:0 6px 24px rgba(201,168,76,.3)}
+.bg:disabled{background:var(--bdr3);color:var(--tx3);cursor:not-allowed;box-shadow:none;transform:none}
+.bgh{padding:8px 16px;border:1px solid var(--bdr2);border-radius:8px;background:transparent;color:var(--tx2);font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .18s}
+.bgh:hover{border-color:var(--bdr3);color:var(--tx)}
+.card{background:var(--card);border:1px solid var(--bdr);border-radius:14px;padding:20px}
+.tabs{display:flex;overflow-x:auto;border-bottom:1px solid var(--bdr)}
+.tb{padding:12px 14px;background:none;border:none;border-bottom:2px solid transparent;color:var(--tx3);font-size:10px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;cursor:pointer;font-family:inherit;white-space:nowrap;transition:color .18s}
+.tb.on{border-bottom-color:var(--gold);color:var(--gold2)}
+.rb{background:var(--card);border:1.5px solid var(--bdr3);border-radius:12px;padding:22px;white-space:pre-wrap;font-size:14px;line-height:1.85;color:var(--tx);margin-top:14px}
+.dv{display:flex;align-items:center;gap:12px;margin:18px 0 14px}
+.dv span{font-size:10px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--tx3);white-space:nowrap}
+.dv hr{flex:1;border:none;border-top:1px solid var(--bdr)}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+@media(max-width:700px){.g2,.g3{grid-template-columns:1fr}.dg{grid-template-columns:1fr!important}.cg{grid-template-columns:1fr!important}.pg{grid-template-columns:1fr!important}}
+.pd{display:flex;align-items:center;gap:8px}
+.pulse{width:6px;height:6px;border-radius:50%;background:var(--gold);display:inline-block;animation:pulse 2s ease infinite;box-shadow:0 0 6px var(--gold)}
+</style>
+</head>
 <body>
-<h1 style="color:gold">Property Titan Működik!</h1>
+
+<!-- LANG SCREEN -->
+
+<div id="s-lang" class="screen on" style="align-items:center;justify-content:center;padding:40px 16px;position:relative;overflow:hidden">
+<div class="grid-bg" style="position:absolute;inset:0;opacity:.22;pointer-events:none"></div>
+<div style="position:relative;z-index:1;text-align:center;width:100%;max-width:700px">
+  <div style="display:inline-flex;align-items:center;gap:7px;background:var(--goldx);border:1px solid rgba(201,168,76,.2);border-radius:99px;padding:5px 14px;margin-bottom:22px">
+    <span class="pulse"></span>
+    <span style="font-size:10px;font-weight:700;letter-spacing:.26em;text-transform:uppercase;color:var(--gold2)">Premium AI Platform · Europe</span>
+  </div>
+  <h1 class="serif" style="font-size:clamp(52px,8vw,96px);font-weight:600;line-height:.88;letter-spacing:-.03em;display:block">Property</h1>
+  <h1 class="serif gold" style="font-size:clamp(52px,8vw,96px);font-weight:700;line-height:.95;letter-spacing:-.03em;font-style:italic;display:block;margin-bottom:28px">Titan</h1>
+  <p style="font-size:14px;color:var(--tx2);margin-bottom:32px">Choose your language to continue</p>
+  <div id="lg" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px"></div>
+  <p style="margin-top:28px;font-size:11px;color:var(--tx3)">Claude Sonnet AI · 10 Countries · 9 Languages</p>
+</div>
+</div>
+
+<!-- LOGIN SCREEN -->
+
+<div id="s-login" class="screen" style="align-items:center;justify-content:center;padding:20px;position:relative;overflow:hidden">
+<div class="grid-bg" style="position:absolute;inset:0;opacity:.22;pointer-events:none"></div>
+<div class="fi" style="background:var(--card);border:1px solid var(--bdr2);border-radius:20px;padding:40px;width:100%;max-width:420px;position:relative;z-index:1">
+  <div style="text-align:center;margin-bottom:32px">
+    <h1 class="serif gold" style="font-size:44px;font-weight:700;font-style:italic;letter-spacing:-.03em;margin-bottom:4px">Titan</h1>
+    <h2 class="serif" id="lt" style="font-size:22px;font-weight:600;color:var(--tx);margin-bottom:8px"></h2>
+    <p id="ls" style="font-size:13px;color:var(--tx3)"></p>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:14px">
+    <div><div class="lbl" id="le"></div><input type="email" id="ie" placeholder="name@email.com"/></div>
+    <div><div class="lbl" id="lp"></div><input type="password" id="ip" placeholder="min. 6"/></div>
+  </div>
+  <div id="lerr" style="display:none;margin-top:14px;padding:10px 14px;border-radius:8px;background:var(--redx);border:1px solid rgba(239,68,68,.2);font-size:12px;color:#fca5a5"></div>
+  <button class="bg" id="lb" onclick="doAuth()" style="width:100%;margin-top:20px"></button>
+  <div style="text-align:center;margin-top:18px">
+    <span id="lsw1" style="font-size:12px;color:var(--tx3)"></span>
+    <button onclick="toggleAuth()" style="background:none;border:none;color:var(--gold2);font-size:12px;font-weight:700;cursor:pointer;font-family:inherit" id="lsw2"></button>
+  </div>
+  <button onclick="go('s-lang')" style="background:none;border:none;color:var(--tx3);font-size:11px;cursor:pointer;font-family:inherit;margin-top:12px;display:block;text-align:center;width:100%">← Back</button>
+</div>
+</div>
+
+<!-- COUNTRY SCREEN -->
+
+<div id="s-country" class="screen" style="align-items:center;justify-content:center;padding:40px 16px;position:relative;overflow:hidden">
+<div class="grid-bg" style="position:absolute;inset:0;opacity:.22;pointer-events:none"></div>
+<div style="position:fixed;top:16px;right:16px;display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--bdr);border-radius:10px;padding:8px 14px;z-index:100">
+  <span id="ce" style="font-size:11px;color:var(--tx3)"></span>
+  <button onclick="doLogout()" class="bgh" id="clo" style="font-size:10px;padding:4px 10px"></button>
+</div>
+<div style="position:relative;z-index:1;text-align:center;width:100%;max-width:860px">
+  <h1 class="serif" style="font-size:clamp(48px,7vw,90px);font-weight:600;line-height:.88;letter-spacing:-.03em;display:block">Property</h1>
+  <h1 class="serif gold" style="font-size:clamp(48px,7vw,90px);font-weight:700;line-height:.95;letter-spacing:-.03em;font-style:italic;display:block;margin-bottom:20px">Titan</h1>
+  <div style="background:var(--goldx);border:1px solid rgba(201,168,76,.18);border-radius:12px;padding:12px 20px;display:inline-block;margin-bottom:28px">
+    <div style="font-size:14px;font-weight:700;color:var(--gold2)" id="cts"></div>
+  </div>
+  <p style="font-size:11px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--tx3);margin-bottom:16px" id="cpc"></p>
+  <div id="cg" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:11px"></div>
+</div>
+</div>
+
+<!-- DASHBOARD -->
+
+<div id="s-dash" class="screen">
+  <div style="background:var(--surf);border-bottom:1px solid var(--bdr);padding:0 16px;display:flex;align-items:center;gap:12px;height:52px;flex-shrink:0;position:sticky;top:0;z-index:100">
+    <span class="serif" style="font-size:18px;font-weight:600;color:var(--tx);letter-spacing:-.02em">Property <span class="gold">Titan</span></span>
+    <div id="dcc" style="display:inline-flex;align-items:center;gap:6px;background:var(--goldx);border:1px solid rgba(201,168,76,.18);border-radius:99px;padding:3px 10px"></div>
+    <div id="dsm" style="display:none;background:var(--greenx);border:1px solid rgba(16,185,129,.2);border-radius:99px;padding:3px 10px;font-size:9px;font-weight:700;color:#6ee7b7"></div>
+    <div style="flex:1"></div>
+    <button onclick="go('s-country')" class="bgh" style="font-size:10px;padding:5px 10px">🌍</button>
+    <button onclick="doLogout()" class="bgh" id="dlo" style="font-size:10px;padding:5px 10px"></button>
+  </div>
+  <div style="background:#060c18;border-bottom:1px solid #091225;padding:8px 16px">
+    <div style="max-width:1120px;margin:0 auto;display:flex;align-items:center;gap:9px;flex-wrap:wrap">
+      <span style="font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#1a3358;white-space:nowrap" id="dakl"></span>
+      <input type="password" id="dak" style="flex:1;min-width:140px;padding:7px 11px;background:rgba(59,130,246,.05);border:1.5px solid #0b1e38;border-radius:7px;color:#93c5fd;font-family:monospace;font-size:12px" placeholder="sk-ant-api03-..."/>
+      <button onclick="saveKey()" style="padding:7px 14px;border-radius:7px;border:1.5px solid rgba(59,130,246,.2);background:rgba(59,130,246,.07);color:#93c5fd;font-size:10px;font-weight:700;cursor:pointer;font-family:inherit" id="daks"></button>
+      <span id="daka" style="display:none;font-size:9px;color:#1a4a28;font-weight:700"></span>
+      <span style="font-size:10px;color:#0d1f36;margin-left:auto">🔒</span>
+    </div>
+  </div>
+  <div style="background:linear-gradient(90deg,rgba(201,168,76,.05),rgba(59,130,246,.03));border-bottom:1px solid var(--bdr);padding:9px 16px">
+    <div style="max-width:1120px;margin:0 auto"><span style="font-size:12px;font-weight:700;color:var(--gold2)" id="dts"></span></div>
+  </div>
+  <div id="derr" style="display:none;background:var(--redx);border-bottom:1px solid rgba(239,68,68,.15);padding:9px 16px">
+    <div style="max-width:1120px;margin:0 auto;display:flex;align-items:center;justify-content:space-between">
+      <span style="font-size:12px;color:#fca5a5" id="derrm"></span>
+      <button onclick="document.getElementById('derr').style.display='none'" style="background:none;border:none;color:#f87171;cursor:pointer;font-size:18px">×</button>
+    </div>
+  </div>
+  <div class="tabs" style="background:var(--surf);padding:0 16px;position:sticky;top:52px;z-index:90">
+    <div style="max-width:1120px;margin:0 auto;display:flex" id="dtr"></div>
+  </div>
+  <div style="flex:1;padding:20px 16px;max-width:1120px;margin:0 auto;width:100%" id="dm"></div>
+  <div style="border-top:1px solid var(--bdr);padding:10px 16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
+    <span style="font-size:10px;color:var(--tx3)" id="dft"></span>
+    <span style="padding:3px 9px;border-radius:99px;font-size:9px;font-weight:700;background:var(--greenx);color:#6ee7b7;border:1px solid rgba(16,185,129,.2)">● Supabase Live</span>
+  </div>
+</div>
+
+<script>
+/* CONFIG */
+const SBU="https://lmculupmpfapqonaxfqi.supabase.co/rest/v1";
+const SBK="sb_publishable_eqMmlla8SixrcApdjBbOhQ_Jr-s6f4G";
+const SBH={"Content-Type":"application/json","apikey":SBK,"Authorization":"Bearer "+SBK,"Prefer":"return=representation"};
+
+/* DB */
+async function dbq(method,table,filter,body,extra){
+  const r=await fetch(SBU+"/"+table+(filter?"?"+filter:""),{method,headers:Object.assign({},SBH,extra||{}),body:body?JSON.stringify(body):null});
+  if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e.message||"DB "+r.status);}
+  if(method==="DELETE")return null;
+  return r.json();
+}
+const dbsel=(t,f)=>dbq("GET",t,f);
+const dbins=(t,d)=>dbq("POST",t,"",d);
+const dbupd=(t,f,d)=>dbq("PATCH",t,f,d);
+const dbupsert=(t,d)=>dbq("POST",t,"",d,{"Prefer":"return=representation,resolution=merge-duplicates"});
+const dbdel=(t,f)=>dbq("DELETE",t,f);
+
+/* HASH */
+async function hashPw(pw){
+  const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(pw+"pt_salt_2025"));
+  return Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,"0")).join("");
+}
+
+/* LS */
+const ls={get:(k,d=null)=>{try{return JSON.parse(localStorage.getItem(k)??"null")??d;}catch{return d;}},set:(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v));}catch{}}};
+
+/* STATE */
+const S={lang:ls.get("pt_lang",""),uid:ls.get("pt_uid",""),email:ls.get("pt_email",""),country:ls.get("pt_country",""),key:ls.get("pt_key",""),isReg:false,projects:[],clients:[],templates:[],agent:{},pid:"",tab:0,lr:"",or:{}};
+const EF={isLuxury:false,name:"",addr:"",price:"",rooms:"",size:"",plot:"",year:"",floor:"",park:"",balc:"",cond:"",orient:"",heat:"",energy:"",walls:"",view:"",lift:"",hood:"",extra:""};
+let F={...EF};
+
+/* COUNTRIES */
+const CC={SE:{flag:"🇸🇪",name:"Sverige",lang:"sv",ph:"t.ex. 4 500 000 kr",market:"Swedish market. Nordic lifestyle, sustainability. Tone: warm, honest."},NO:{flag:"🇳🇴",name:"Norge",lang:"no",ph:"f.eks. 4 800 000 kr",market:"Norwegian market. Nature, outdoor lifestyle. Tone: honest, direct."},DK:{flag:"🇩🇰",name:"Danmark",lang:"da",ph:"f.eks. 3 200 000 kr",market:"Danish market. Hygge, functional design. Tone: warm, lifestyle."},PL:{flag:"🇵🇱",name:"Polska",lang:"pl",ph:"np. 850 000 zł",market:"Polish market. ROI, fast-growing. Tone: direct, aspirational."},DE:{flag:"🇩🇪",name:"Deutschland",lang:"de",ph:"z.B. 650.000 €",market:"German market. Baujahr, Energieausweis. Tone: professional, factual."},FR:{flag:"🇫🇷",name:"France",lang:"fr",ph:"ex. 450 000 €",market:"French market. Character, lifestyle, prestige. Tone: elegant."},GB:{flag:"🇬🇧",name:"United Kingdom",lang:"en",ph:"e.g. £485,000",market:"UK market. Location, schools, EPC. Tone: confident, factual."},HU:{flag:"🇭🇺",name:"Magyarország",lang:"hu",ph:"pl. 89 900 000 Ft",market:"Hungarian market. Location growth, value. Tone: direct."},RO:{flag:"🇷🇴",name:"România",lang:"ro",ph:"ex. 120 000 €",market:"Romanian market. ROI, modern finishes. Tone: aspirational."},AT:{flag:"🇦🇹",name:"Österreich",lang:"de",ph:"z.B. 480.000 €",market:"Austrian market. Quality, prestige. Tone: professional."}};
+const LN={sv:"Svenska",no:"Norsk",da:"Dansk",pl:"Polski",de:"Deutsch",fr:"Français",en:"English",hu:"Magyar",ro:"Română"};
+const LW={sv:"Write ENTIRE response in Swedish.",no:"Write ENTIRE response in Norwegian.",da:"Write ENTIRE response in Danish.",pl:"Write ENTIRE response in Polish.",de:"Write ENTIRE response in German.",fr:"Write ENTIRE response in French.",en:"Write ENTIRE response in English.",hu:"Write ENTIRE response in Hungarian.",ro:"Write ENTIRE response in Romanian."};
+
+/* UI */
+const UI={
+hu:{lt:"Bejelentkezés",rt:"Regisztráció",ls:"Üdvözlünk a Property Titanban!",el:"Email cím",pl:"Jelszó",lb:"Bejelentkezés",rb:"Regisztráció",na:"Nincs még fiókod?",ha:"Már van fiókod?",li:"Bejelentkezés...",ri:"Regisztráció...",lo:"Kilépés",tabs:["Hirdetés","Brossúra","Lead Mágnes","Email","Hirdetések","Profil","CRM"],akl:"Claude API Kulcs",aks:"Mentés",aka:"✓ Aktív",ft:"Ingatlan Adatok",fn:"Projekt neve",fa:"Cím",fp:"Ár",fr:"Szobák",fs:"Alapterület m²",fpl:"Telek m²",fy:"Építési év",ff:"Emelet",fpk:"Parkolás",fb:"Erkély m²",fc:"Állapot",fo:"Tájolás",fh:"Fűtés",fe:"Energetika",fw:"Szerkezet",fv:"Kilátás",fli:"Lift",fho:"Környék",fx:"Extra jellemzők",std:"Standard",lux:"Luxury",sb:"Projekt Mentése",sd:"✓ Mentve!",gb:"AI Szöveg Generálása",gi:"Generálás...",nk:"⚠ Add meg a Claude API kulcsodat fent.",np:"Nincs mentett projekt.",sp:"Válasszon projektet...",gc:"Generálás",re:"AI Eredmény",cp:"Másolás",cd:"✓ Másolva!",ep:"PDF",cl:"Törlés",st:"Sablon mentés",ss:"✓ Mentve!",bt:"Brossúra",lt2:"Lead Mágnes",et:"Email",at:"Hirdetések",agt:"Saját Profil",agn:"Név",agp:"Telefon",age:"Email",aga:"Irodanév",agl:"Logó URL",ags:"Profil Mentése",agsd:"✓ Mentve!",tt:"Sablonok",ct:"Ügyfél CRM",cn:"Ügyfél neve",cph:"Telefon",cem:"Email",cpr:"Ingatlan",cst:"Státusz",cno:"Megjegyzés",ca:"Ügyfél Hozzáadása",cad:"✓ Hozzáadva!",cd2:"Törlés",cn2:"Nincs még ügyfél.",sts:["Érdeklődő","Megnézte","Ajánlat","Tárgyalás","Szerződés","Lezárt"],ds:"Méretek",ts:"Műszaki",es:"Egyéb",pr:"Projektek",tl:"Sablonok",ts2:"⏱ Spórolj 45 percet minden hirdetésnél",sy:"✓ Mentve",sv2:"Mentés...",lo2:"Betöltés...",nt:"Nincs sablon.",dt:"Törlés",ut:"Betöltés",tn:"Sablon neve",pc:"Válasszon országot",ef:"Kérjük töltsd ki mindkét mezőt.",ep2:"A jelszó legalább 6 karakter legyen.",ee:"Ez az email már regisztrált.",er:"Regisztrációs hiba.",eli:"Hibás email vagy jelszó.",eg:"Hiba: ",phn:"pl. Budai panorámás penthouse",pha:"Budapest, XII. kerület"},
+en:{lt:"Sign In",rt:"Create Account",ls:"Welcome to Property Titan!",el:"Email",pl:"Password",lb:"Sign In",rb:"Create Account",na:"Don't have an account?",ha:"Already have an account?",li:"Signing in...",ri:"Creating account...",lo:"Sign out",tabs:["Listing","Brochure","Lead Magnet","Email","Ads","Profile","CRM"],akl:"Claude API Key",aks:"Save",aka:"✓ Active",ft:"Property Details",fn:"Project name",fa:"Address",fp:"Price",fr:"Rooms",fs:"Floor area m²",fpl:"Plot m²",fy:"Year built",ff:"Floor",fpk:"Parking",fb:"Balcony m²",fc:"Condition",fo:"Orientation",fh:"Heating",fe:"Energy rating",fw:"Structure",fv:"View",fli:"Elevator",fho:"Neighbourhood",fx:"Extra features",std:"Standard",lux:"Luxury",sb:"Save project",sd:"✓ Saved!",gb:"Generate AI Copy",gi:"Generating...",nk:"⚠ Enter your Claude API key above.",np:"No saved projects.",sp:"Select project...",gc:"Generate",re:"AI Result",cp:"Copy",cd:"✓ Copied!",ep:"PDF",cl:"Clear",st:"Save template",ss:"✓ Saved!",bt:"Brochure",lt2:"Lead Magnet",et:"Email",at:"Ads",agt:"My Profile",agn:"Name",agp:"Phone",age:"Email",aga:"Agency",agl:"Logo URL",ags:"Save Profile",agsd:"✓ Saved!",tt:"Templates",ct:"Client CRM",cn:"Client name",cph:"Phone",cem:"Email",cpr:"Property",cst:"Status",cno:"Note",ca:"Add Client",cad:"✓ Added!",cd2:"Delete",cn2:"No clients yet.",sts:["Lead","Viewed","Offer","Negotiating","Contract","Closed"],ds:"Dimensions",ts:"Technical",es:"Other",pr:"Projects",tl:"Templates",ts2:"⏱ Save 45 min per listing",sy:"✓ Saved",sv2:"Saving...",lo2:"Loading...",nt:"No templates.",dt:"Delete",ut:"Load",tn:"Template name",pc:"Choose your country",ef:"Please fill in both fields.",ep2:"Password must be at least 6 characters.",ee:"This email is already registered.",er:"Registration failed.",eli:"Incorrect email or password.",eg:"Error: ",phn:"e.g. London Penthouse Chelsea",pha:"London, Chelsea"},
+sv:{lt:"Logga in",rt:"Skapa konto",ls:"Välkommen till Property Titan!",el:"E-postadress",pl:"Lösenord",lb:"Logga in",rb:"Skapa konto",na:"Har du inget konto?",ha:"Har du redan ett konto?",li:"Loggar in...",ri:"Skapar konto...",lo:"Logga ut",tabs:["Annons","Broschyr","Lead Magnet","E-post","Annonser","Profil","CRM"],akl:"Claude API-nyckel",aks:"Spara",aka:"✓ Aktiv",ft:"Fastighetsuppgifter",fn:"Projektnamn",fa:"Adress",fp:"Pris",fr:"Rum",fs:"Boyta m²",fpl:"Tomt m²",fy:"Byggår",ff:"Våning",fpk:"Parkering",fb:"Balkong m²",fc:"Skick",fo:"Orientering",fh:"Uppvärmning",fe:"Energiklass",fw:"Konstruktion",fv:"Utsikt",fli:"Hiss",fho:"Område",fx:"Extra egenskaper",std:"Standard",lux:"Lyx",sb:"Spara projekt",sd:"✓ Sparat!",gb:"Generera AI-text",gi:"Genererar...",nk:"⚠ Ange Claude API-nyckel.",np:"Inga sparade projekt.",sp:"Välj projekt...",gc:"Generera",re:"AI-resultat",cp:"Kopiera",cd:"✓ Kopierat!",ep:"PDF",cl:"Rensa",st:"Spara mall",ss:"✓ Sparat!",bt:"Broschyr",lt2:"Lead Magnet",et:"E-post",at:"Annonser",agt:"Min profil",agn:"Namn",agp:"Telefon",age:"E-post",aga:"Mäklarbyrå",agl:"Logo URL",ags:"Spara profil",agsd:"✓ Sparat!",tt:"Mallar",ct:"Kund-CRM",cn:"Kundnamn",cph:"Telefon",cem:"E-post",cpr:"Fastighet",cst:"Status",cno:"Anteckning",ca:"Lägg till kund",cad:"✓ Tillagd!",cd2:"Ta bort",cn2:"Inga kunder ännu.",sts:["Intressent","Visad","Erbjudande","Förhandling","Kontrakt","Avslutat"],ds:"Mått",ts:"Tekniskt",es:"Övrigt",pr:"Projekt",tl:"Mallar",ts2:"⏱ Spara 45 min per annons",sy:"✓ Sparat",sv2:"Sparar...",lo2:"Laddar...",nt:"Inga mallar.",dt:"Ta bort",ut:"Ladda",tn:"Mallnamn",pc:"Välj ditt land",ef:"Fyll i båda fälten.",ep2:"Lösenordet måste vara minst 6 tecken.",ee:"Denna e-post är redan registrerad.",er:"Registrering misslyckades.",eli:"Fel e-post eller lösenord.",eg:"Fel: ",phn:"t.ex. Stockholm Penthouse",pha:"Stockholm, Östermalm"},
+no:{lt:"Logg inn",rt:"Opprett konto",ls:"Velkommen til Property Titan!",el:"E-postadresse",pl:"Passord",lb:"Logg inn",rb:"Opprett konto",na:"Har du ikke konto?",ha:"Har du allerede konto?",li:"Logger inn...",ri:"Oppretter konto...",lo:"Logg ut",tabs:["Annonse","Brosjyre","Lead Magnet","E-post","Annonser","Profil","CRM"],akl:"Claude API-nøkkel",aks:"Lagre",aka:"✓ Aktiv",ft:"Eiendomsopplysninger",fn:"Prosjektnavn",fa:"Adresse",fp:"Pris",fr:"Rom",fs:"Boligstørrelse m²",fpl:"Tomt m²",fy:"Byggeår",ff:"Etasje",fpk:"Parkering",fb:"Balkong m²",fc:"Stand",fo:"Orientering",fh:"Oppvarming",fe:"Energiklasse",fw:"Konstruksjon",fv:"Utsikt",fli:"Heis",fho:"Nabolag",fx:"Ekstra egenskaper",std:"Standard",lux:"Luksus",sb:"Lagre prosjekt",sd:"✓ Lagret!",gb:"Generer AI-tekst",gi:"Genererer...",nk:"⚠ Skriv inn Claude API-nøkkel.",np:"Ingen lagrede prosjekter.",sp:"Velg prosjekt...",gc:"Generer",re:"AI-resultat",cp:"Kopier",cd:"✓ Kopiert!",ep:"PDF",cl:"Tøm",st:"Lagre mal",ss:"✓ Lagret!",bt:"Brosjyre",lt2:"Lead Magnet",et:"E-post",at:"Annonser",agt:"Min profil",agn:"Navn",agp:"Telefon",age:"E-post",aga:"Eiendomsmegler",agl:"Logo URL",ags:"Lagre profil",agsd:"✓ Lagret!",tt:"Maler",ct:"Kunde-CRM",cn:"Kundenavn",cph:"Telefon",cem:"E-post",cpr:"Eiendom",cst:"Status",cno:"Merknad",ca:"Legg til kunde",cad:"✓ Lagt til!",cd2:"Slett",cn2:"Ingen kunder ennå.",sts:["Interessert","Vist","Tilbud","Forhandling","Kontrakt","Avsluttet"],ds:"Mål",ts:"Teknisk",es:"Annet",pr:"Prosjekter",tl:"Maler",ts2:"⏱ Spar 45 min per annonse",sy:"✓ Lagret",sv2:"Lagrer...",lo2:"Laster...",nt:"Ingen maler.",dt:"Slett",ut:"Last",tn:"Malnavn",pc:"Velg ditt land",ef:"Fyll ut begge feltene.",ep2:"Passordet må være minst 6 tegn.",ee:"Denne e-posten er allerede registrert.",er:"Registrering mislyktes.",eli:"Feil e-post eller passord.",eg:"Feil: ",phn:"f.eks. Oslo Penthouse Frogner",pha:"Oslo, Frogner"},
+de:{lt:"Anmelden",rt:"Konto erstellen",ls:"Willkommen bei Property Titan!",el:"E-Mail-Adresse",pl:"Passwort",lb:"Anmelden",rb:"Konto erstellen",na:"Noch kein Konto?",ha:"Bereits ein Konto?",li:"Anmeldung...",ri:"Konto wird erstellt...",lo:"Abmelden",tabs:["Exposé","Broschüre","Lead-Magnet","E-Mail","Anzeigen","Profil","CRM"],akl:"Claude API-Schlüssel",aks:"Speichern",aka:"✓ Aktiv",ft:"Objektdaten",fn:"Projektname",fa:"Adresse",fp:"Preis",fr:"Zimmer",fs:"Wohnfläche m²",fpl:"Grundstück m²",fy:"Baujahr",ff:"Etage",fpk:"Parken",fb:"Balkon m²",fc:"Zustand",fo:"Ausrichtung",fh:"Heizung",fe:"Energieausweis",fw:"Bauweise",fv:"Aussicht",fli:"Aufzug",fho:"Lage",fx:"Besonderheiten",std:"Standard",lux:"Premium",sb:"Speichern",sd:"✓ Gespeichert!",gb:"KI-Text erstellen",gi:"Wird erstellt...",nk:"⚠ API-Schlüssel eingeben.",np:"Keine Projekte.",sp:"Projekt wählen...",gc:"Generieren",re:"KI-Ergebnis",cp:"Kopieren",cd:"✓ Kopiert!",ep:"PDF",cl:"Löschen",st:"Als Vorlage",ss:"✓ Gespeichert!",bt:"Broschüre",lt2:"Lead-Magnet",et:"E-Mail",at:"Anzeigen",agt:"Mein Profil",agn:"Name",agp:"Telefon",age:"E-Mail",aga:"Maklerbüro",agl:"Logo URL",ags:"Profil speichern",agsd:"✓ Gespeichert!",tt:"Vorlagen",ct:"Kunden-CRM",cn:"Kundenname",cph:"Telefon",cem:"E-Mail",cpr:"Objekt",cst:"Status",cno:"Notiz",ca:"Hinzufügen",cad:"✓ Hinzugefügt!",cd2:"Löschen",cn2:"Noch keine Kunden.",sts:["Interessent","Besichtigt","Angebot","Verhandlung","Vertrag","Abschluss"],ds:"Maße",ts:"Technisch",es:"Sonstiges",pr:"Projekte",tl:"Vorlagen",ts2:"⏱ 45 Min. pro Exposé sparen",sy:"✓ Gespeichert",sv2:"Speichert...",lo2:"Lädt...",nt:"Keine Vorlagen.",dt:"Löschen",ut:"Laden",tn:"Vorlagenname",pc:"Wählen Sie Ihr Land",ef:"Bitte füllen Sie beide Felder aus.",ep2:"Das Passwort muss mindestens 6 Zeichen haben.",ee:"Diese E-Mail ist bereits registriert.",er:"Registrierung fehlgeschlagen.",eli:"Falsche E-Mail oder Passwort.",eg:"Fehler: ",phn:"z.B. Berliner Penthouse Mitte",pha:"Berlin, Mitte"},
+fr:{lt:"Se connecter",rt:"Créer un compte",ls:"Bienvenue sur Property Titan!",el:"Adresse e-mail",pl:"Mot de passe",lb:"Se connecter",rb:"Créer un compte",na:"Pas encore de compte?",ha:"Déjà un compte?",li:"Connexion...",ri:"Création...",lo:"Se déconnecter",tabs:["Annonce","Brochure","Lead Magnet","E-mail","Publicités","Profil","CRM"],akl:"Clé API Claude",aks:"Enregistrer",aka:"✓ Actif",ft:"Données du bien",fn:"Nom du projet",fa:"Adresse",fp:"Prix",fr:"Pièces",fs:"Surface m²",fpl:"Terrain m²",fy:"Année",ff:"Étage",fpk:"Parking",fb:"Balcon m²",fc:"État",fo:"Orientation",fh:"Chauffage",fe:"DPE",fw:"Construction",fv:"Vue",fli:"Ascenseur",fho:"Quartier",fx:"Caractéristiques",std:"Standard",lux:"Luxe",sb:"Enregistrer",sd:"✓ Enregistré!",gb:"Générer texte IA",gi:"Génération...",nk:"⚠ Saisir la clé API Claude.",np:"Aucun projet.",sp:"Choisir un projet...",gc:"Générer",re:"Résultat IA",cp:"Copier",cd:"✓ Copié!",ep:"PDF",cl:"Effacer",st:"Enregistrer modèle",ss:"✓ Enregistré!",bt:"Brochure",lt2:"Lead Magnet",et:"E-mail",at:"Publicités",agt:"Mon profil",agn:"Nom",agp:"Téléphone",age:"E-mail",aga:"Agence",agl:"Logo URL",ags:"Enregistrer profil",agsd:"✓ Enregistré!",tt:"Modèles",ct:"CRM Clients",cn:"Nom du client",cph:"Téléphone",cem:"E-mail",cpr:"Bien",cst:"Statut",cno:"Note",ca:"Ajouter client",cad:"✓ Ajouté!",cd2:"Supprimer",cn2:"Aucun client.",sts:["Prospect","Visité","Offre","Négociation","Compromis","Signé"],ds:"Surfaces",ts:"Technique",es:"Autres",pr:"Projets",tl:"Modèles",ts2:"⏱ Gagnez 45 min par annonce",sy:"✓ Enregistré",sv2:"Enregistrement...",lo2:"Chargement...",nt:"Aucun modèle.",dt:"Supprimer",ut:"Charger",tn:"Nom du modèle",pc:"Choisissez votre pays",ef:"Veuillez remplir les deux champs.",ep2:"Le mot de passe doit avoir au moins 6 caractères.",ee:"Cet email est déjà enregistré.",er:"Échec de l'inscription.",eli:"Email ou mot de passe incorrect.",eg:"Erreur: ",phn:"ex. Penthouse Paris 8ème",pha:"Paris, 8ème"},
+pl:{lt:"Zaloguj się",rt:"Utwórz konto",ls:"Witamy w Property Titan!",el:"Adres email",pl:"Hasło",lb:"Zaloguj się",rb:"Utwórz konto",na:"Nie masz konta?",ha:"Masz już konto?",li:"Logowanie...",ri:"Tworzenie konta...",lo:"Wyloguj",tabs:["Ogłoszenie","Broszura","Lead Magnet","Email","Reklamy","Profil","CRM"],akl:"Klucz API Claude",aks:"Zapisz",aka:"✓ Aktywny",ft:"Dane nieruchomości",fn:"Nazwa projektu",fa:"Adres",fp:"Cena",fr:"Pokoje",fs:"Powierzchnia m²",fpl:"Działka m²",fy:"Rok budowy",ff:"Piętro",fpk:"Parking",fb:"Balkon m²",fc:"Stan",fo:"Orientacja",fh:"Ogrzewanie",fe:"Klasa energetyczna",fw:"Konstrukcja",fv:"Widok",fli:"Winda",fho:"Okolica",fx:"Dodatkowe cechy",std:"Standard",lux:"Luksus",sb:"Zapisz projekt",sd:"✓ Zapisano!",gb:"Generuj tekst AI",gi:"Generowanie...",nk:"⚠ Wprowadź klucz API Claude.",np:"Brak projektów.",sp:"Wybierz projekt...",gc:"Generuj",re:"Wynik AI",cp:"Kopiuj",cd:"✓ Skopiowano!",ep:"PDF",cl:"Wyczyść",st:"Zapisz szablon",ss:"✓ Zapisano!",bt:"Broszura",lt2:"Lead Magnet",et:"Email",at:"Reklamy",agt:"Mój profil",agn:"Imię i nazwisko",agp:"Telefon",age:"Email",aga:"Agencja",agl:"Logo URL",ags:"Zapisz profil",agsd:"✓ Zapisano!",tt:"Szablony",ct:"CRM Klientów",cn:"Imię klienta",cph:"Telefon",cem:"Email",cpr:"Nieruchomość",cst:"Status",cno:"Notatka",ca:"Dodaj klienta",cad:"✓ Dodano!",cd2:"Usuń",cn2:"Brak klientów.",sts:["Zainteresowany","Oglądał","Oferta","Negocjacje","Umowa","Zamknięty"],ds:"Wymiary",ts:"Techniczne",es:"Inne",pr:"Projekty",tl:"Szablony",ts2:"⏱ Oszczędź 45 min na ogłoszeniu",sy:"✓ Zapisano",sv2:"Zapisywanie...",lo2:"Ładowanie...",nt:"Brak szablonów.",dt:"Usuń",ut:"Wczytaj",tn:"Nazwa szablonu",pc:"Wybierz swój kraj",ef:"Wypełnij oba pola.",ep2:"Hasło musi mieć co najmniej 6 znaków.",ee:"Ten email jest już zarejestrowany.",er:"Rejestracja nie powiodła się.",eli:"Nieprawidłowy email lub hasło.",eg:"Błąd: ",phn:"np. Penthouse Warszawa",pha:"Warszawa, Śródmieście"},
+ro:{lt:"Autentificare",rt:"Creare cont",ls:"Bun venit la Property Titan!",el:"Adresă email",pl:"Parolă",lb:"Autentificare",rb:"Creare cont",na:"Nu ai cont?",ha:"Ai deja cont?",li:"Autentificare...",ri:"Creare cont...",lo:"Deconectare",tabs:["Anunț","Broșură","Lead Magnet","Email","Reclame","Profil","CRM"],akl:"Cheie API Claude",aks:"Salvează",aka:"✓ Activ",ft:"Date proprietate",fn:"Numele proiectului",fa:"Adresă",fp:"Preț",fr:"Camere",fs:"Suprafață m²",fpl:"Teren m²",fy:"An construcție",ff:"Etaj",fpk:"Parcare",fb:"Balcon m²",fc:"Stare",fo:"Orientare",fh:"Încălzire",fe:"Certificat energetic",fw:"Structură",fv:"Vedere",fli:"Lift",fho:"Zonă",fx:"Caracteristici extra",std:"Standard",lux:"Lux",sb:"Salvează proiect",sd:"✓ Salvat!",gb:"Generează text AI",gi:"Se generează...",nk:"⚠ Introduceți cheia API Claude.",np:"Niciun proiect.",sp:"Selectați proiectul...",gc:"Generează",re:"Rezultat AI",cp:"Copiați",cd:"✓ Copiat!",ep:"PDF",cl:"Ștergeți",st:"Salvează șablon",ss:"✓ Salvat!",bt:"Broșură",lt2:"Lead Magnet",et:"Email",at:"Reclame",agt:"Profilul meu",agn:"Nume",agp:"Telefon",age:"Email",aga:"Agenție",agl:"Logo URL",ags:"Salvează profil",agsd:"✓ Salvat!",tt:"Șabloane",ct:"CRM Clienți",cn:"Numele clientului",cph:"Telefon",cem:"Email",cpr:"Proprietate",cst:"Status",cno:"Notă",ca:"Adaugă client",cad:"✓ Adăugat!",cd2:"Șterge",cn2:"Niciun client.",sts:["Interesat","Vizitat","Ofertă","Negociere","Contract","Finalizat"],ds:"Dimensiuni",ts:"Tehnic",es:"Altele",pr:"Proiecte",tl:"Șabloane",ts2:"⏱ Economisiți 45 min per anunț",sy:"✓ Salvat",sv2:"Se salvează...",lo2:"Se încarcă...",nt:"Niciun șablon.",dt:"Șterge",ut:"Încarcă",tn:"Numele șablonului",pc:"Alegeți țara",ef:"Completați ambele câmpuri.",ep2:"Parola trebuie să aibă cel puțin 6 caractere.",ee:"Acest email este deja înregistrat.",er:"Înregistrarea a eșuat.",eli:"Email sau parolă incorectă.",eg:"Eroare: ",phn:"ex. Penthouse București",pha:"București, Floreasca"}
+};
+const t=()=>UI[S.lang]||UI.en;
+function e(s){return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
+
+/* NAV */
+function go(id){document.querySelectorAll(".screen").forEach(s=>s.classList.remove("on"));document.getElementById(id).classList.add("on")}
+function sync(msg){const el=document.getElementById("dsm");el.textContent=msg;el.style.display="block";setTimeout(()=>el.style.display="none",2500)}
+function err(msg){document.getElementById("derrm").textContent=msg;document.getElementById("derr").style.display="flex"}
+
+/* LANG SCREEN */
+function initLang(){
+  document.getElementById("lg").innerHTML=[{c:"sv",f:"🇸🇪",n:"Svenska"},{c:"no",f:"🇳🇴",n:"Norsk"},{c:"da",f:"🇩🇰",n:"Dansk"},{c:"pl",f:"🇵🇱",n:"Polski"},{c:"de",f:"🇩🇪",n:"Deutsch"},{c:"fr",f:"🇫🇷",n:"Français"},{c:"en",f:"🇬🇧",n:"English"},{c:"hu",f:"🇭🇺",n:"Magyar"},{c:"ro",f:"🇷🇴",n:"Română"}].map(l=>`
+    <button onclick="pickLang('${l.c}')" style="background:var(--card);border:1px solid var(--bdr2);border-radius:14px;padding:20px 14px;text-align:center;cursor:pointer;transition:all .25s;color:inherit;font-family:inherit"
+      onmouseover="this.style.transform='translateY(-4px)';this.style.borderColor='var(--gold)'"
+      onmouseout="this.style.transform='';this.style.borderColor='var(--bdr2)'">
+      <div style="font-size:32px;margin-bottom:10px">${l.f}</div>
+      <div style="font-size:13px;font-weight:700;color:var(--tx2)">${l.n}</div>
+    </button>`).join("");
+}
+function pickLang(code){S.lang=code;ls.set("pt_lang",code);if(S.uid){if(S.country)initDash();else initCountry();}else{initLogin();go("s-login");}}
+
+/* LOGIN */
+function initLogin(){
+  const u=t();
+  document.getElementById("lt").textContent=S.isReg?u.rt:u.lt;
+  document.getElementById("ls").textContent=u.ls;
+  document.getElementById("le").textContent=u.el;
+  document.getElementById("lp").textContent=u.pl;
+  document.getElementById("lb").textContent=S.isReg?u.rb:u.lb;
+  document.getElementById("lsw1").textContent=S.isReg?u.ha:u.na;
+  document.getElementById("lsw2").textContent=S.isReg?u.lb:u.rb;
+}
+function toggleAuth(){S.isReg=!S.isReg;document.getElementById("lerr").style.display="none";initLogin();}
+
+async function doAuth(){
+  const u=t();
+  const email=document.getElementById("ie").value.trim();
+  const pass=document.getElementById("ip").value.trim();
+  const el=document.getElementById("lerr");el.style.display="none";
+  if(!email||!pass){el.textContent=u.ef;el.style.display="block";return;}
+  if(pass.length<6){el.textContent=u.ep2;el.style.display="block";return;}
+  const btn=document.getElementById("lb");btn.disabled=true;
+  btn.innerHTML=`<span class="sp"></span> ${S.isReg?u.ri:u.li}`;
+  try{
+    const hash=await hashPw(pass);
+    if(S.isReg){
+      const ex=await dbsel("users","email=eq."+encodeURIComponent(email)+"&select=id");
+      if(Array.isArray(ex)&&ex.length>0){el.textContent=u.ee;el.style.display="block";return;}
+      const res=await dbins("users",{email,password_hash:hash});
+      if(!Array.isArray(res)||!res[0]){el.textContent=u.er;el.style.display="block";return;}
+      S.uid=res[0].id;S.email=res[0].email;
+    }else{
+      const res=await dbsel("users","email=eq."+encodeURIComponent(email)+"&password_hash=eq."+hash+"&select=id,email");
+      if(!Array.isArray(res)||res.length===0){el.textContent=u.eli;el.style.display="block";return;}
+      S.uid=res[0].id;S.email=res[0].email;
+    }
+    ls.set("pt_uid",S.uid);ls.set("pt_email",S.email);
+    if(S.country)initDash();else initCountry();
+  }catch(ex){el.textContent=u.eg+ex.message;el.style.display="block";}
+  finally{btn.disabled=false;initLogin();}
+}
+
+/* COUNTRY */
+function initCountry(){
+  const u=t();
+  document.getElementById("ce").textContent=S.email;
+  document.getElementById("clo").textContent=u.lo;
+  document.getElementById("cts").textContent=u.ts2;
+  document.getElementById("cpc").textContent=u.pc;
+  document.getElementById("cg").innerHTML=Object.entries(CC).map(([code,c])=>`
+    <button onclick="pickCountry('${code}')" style="background:var(--card);border:1px solid var(--bdr2);border-radius:14px;padding:18px 14px;text-align:center;cursor:pointer;transition:all .25s;color:inherit;font-family:inherit"
+      onmouseover="this.style.transform='translateY(-4px)';this.style.borderColor='var(--gold)';this.style.boxShadow='0 12px 28px rgba(0,0,0,.28)'"
+      onmouseout="this.style.transform='';this.style.borderColor='var(--bdr2)';this.style.boxShadow=''">
+      <div style="font-size:30px;margin-bottom:9px">${c.flag}</div>
+      <div style="font-size:12px;font-weight:700;color:var(--tx2);margin-bottom:2px">${c.name}</div>
+      <div style="font-size:10px;color:var(--tx3);font-weight:600">${LN[c.lang]||c.lang}</div>
+    </button>`).join("");
+  go("s-country");
+}
+function pickCountry(code){S.country=code;ls.set("pt_country",code);initDash();}
+
+/* LOGOUT */
+function doLogout(){S.uid="";S.email="";S.country="";S.lang="";ls.set("pt_uid","");ls.set("pt_email","");ls.set("pt_country","");ls.set("pt_lang","");initLang();go("s-lang");}
+
+/* API KEY */
+function saveKey(){
+  const k=document.getElementById("dak").value.trim();if(!k)return;
+  S.key=k;ls.set("pt_key",k);document.getElementById("dak").value="";
+  document.getElementById("daka").style.display="inline";
+  document.getElementById("daks").textContent=t().aka;
+  setTimeout(()=>document.getElementById("daks").textContent=t().aks,2500);
+}
+
+/* CLAUDE */
+async function claude(prompt){
+  if(!S.key){err(t().nk);return null;}
+  const r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"content-type":"application/json","x-api-key":S.key,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1024,messages:[{role:"user",content:prompt}]})});
+  if(!r.ok){const er=await r.json().catch(()=>({}));throw new Error(er?.error?.message||"API "+r.status);}
+  const d=await r.json();
+  return(d.content||[]).filter(b=>b.type==="text").map(b=>b.text).join("")||"";
+}
+
+/* PROMPT */
+function buildPrompt(type,d,cc,lang){
+  const c=CC[cc]||CC.GB;const li=LW[lang]||LW.en;
+  const props=[["Project",d.name],["Address",d.addr],["Price",d.price],["Rooms",d.rooms],["Floor area",d.size?d.size+" m²":""],["Plot",d.plot?d.plot+" m²":""],["Year",d.year],["Floor",d.floor],["Balcony",d.balc?d.balc+" m²":""],["Parking",d.park],["Condition",d.cond],["Orientation",d.orient],["Heating",d.heat],["Energy",d.energy],["Structure",d.walls],["View",d.view],["Elevator",d.lift],["Area",d.hood],["Extras",d.extra],["Type",d.isLuxury?"Luxury":"Standard"]].filter(([,v])=>v&&String(v).trim()).map(([k,v])=>k+": "+v).join("\n");
+  const h="Market: "+c.market+"\n"+li+"\n\nProperty:\n"+(props||"(minimal data)")+"\n\nOnly use provided data.\n\n";
+  const p={listing:h+"Write a compelling listing.\n1.HEADLINE\n2.OPENING(2-3 sentences)\n3.HIGHLIGHTS(5-7 bullets)\n4.NEIGHBOURHOOD\n5.CTA\nMax 380 words.",brochure:h+"Write a premium brochure.\n1.HEADLINE\n2.STORY\n3.HIGHLIGHTS\n4.LOCATION\n5.TECHNICAL\n6.CLOSING\nMax 500 words.",lead:h+"Create a lead magnet.\n1.TITLE\n2.INTRO\n3.5 TIPS\n4.PROPERTY\n5.CTA\nMax 400 words.",email:h+"Write a prospecting email.\nSUBJECT:[subject]\n---\nOpening, highlights, CTA.\nMax 280 words.",ads:h+"Create 3 ads:\nFACEBOOK: Hook+Body+CTA+hashtags\nGOOGLE: 3 Headlines(30c)+2 Descriptions(90c)\nLINKEDIN: Professional+CTA"};
+  return p[type]||p.listing;
+}
+
+/* PDF */
+function exportPDF(text,name){
+  const w=window.open("","_blank");if(!w)return;
+  const ag=S.agent;
+  const ab=ag&&ag.name?`<div style="display:flex;align-items:center;gap:16px;margin-top:48px;padding-top:24px;border-top:1px solid #ddd">${ag.logo?`<img src="${e(ag.logo)}" style="width:56px;height:56px;object-fit:contain;border-radius:8px"/>`:""}
+    <div><div style="font-size:16px;font-weight:700">${e(ag.name)}</div>${ag.agency?`<div style="font-size:13px;color:#555">${e(ag.agency)}</div>`:""}${ag.phone?`<div style="font-size:12px;color:#666">📞 ${e(ag.phone)}</div>`:""}${ag.email?`<div style="font-size:12px;color:#666">✉ ${e(ag.email)}</div>`:""}</div></div>`:"";
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>${e(name)}</title><style>body{font-family:Georgia,serif;max-width:700px;margin:0 auto;padding:48px 40px;color:#111;line-height:1.8;font-size:15px}pre{white-space:pre-wrap;font-family:Georgia,serif}</style></head><body><h1>${e(name)}</h1><p style="color:#888;font-size:11px;margin-bottom:32px">Property Titan AI · ${new Date().toLocaleDateString()}</p><pre>${e(text)}</pre>${ab}<script>window.onload=()=>window.print()<\/script></body></html>`);
+
+w.document.close();
+}
+
+/* INIT DASH */
+async function initDash(){
+const u=t();const c=CC[S.country]||CC.GB;
+document.getElementById(“dcc”).innerHTML=`<span style="font-size:16px">${c.flag}</span><span style="font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gold2)">${c.name}</span>`;
+document.getElementById(“dlo”).textContent=u.lo;
+document.getElementById(“dakl”).textContent=u.akl;
+document.getElementById(“daks”).textContent=u.aks;
+document.getElementById(“dts”).textContent=u.ts2;
+document.getElementById(“dft”).textContent=c.flag+” Property Titan · Claude Sonnet · “+S.email;
+if(S.key)document.getElementById(“daka”).style.display=“inline”;
+renderTabs();go(“s-dash”);
+try{
+const [projs,cls,tmpls,agts]=await Promise.all([dbsel(“projects”,“user_id=eq.”+S.uid+”&order=created_at.desc”),dbsel(“clients”,“user_id=eq.”+S.uid+”&order=created_at.desc”),dbsel(“templates”,“user_id=eq.”+S.uid+”&order=created_at.desc”),dbsel(“agents”,“user_id=eq.”+S.uid)]);
+if(Array.isArray(projs))S.projects=projs;
+if(Array.isArray(cls))S.clients=cls;
+if(Array.isArray(tmpls))S.templates=tmpls;
+if(Array.isArray(agts)&&agts.length>0)S.agent=agts[0];
+}catch(ex){console.error(ex);}
+renderTab();
+}
+
+function renderTabs(){
+const u=t();
+document.getElementById(“dtr”).innerHTML=u.tabs.map((tab,i)=>`<button class="tb${i===S.tab?" on":""}" onclick="switchTab(${i})">${tab}</button>`).join(””);
+}
+function switchTab(i){S.tab=i;document.querySelectorAll(”.tb”).forEach((b,j)=>b.classList.toggle(“on”,i===j));renderTab();}
+const TIDS=[“listing”,“brochure”,“lead”,“email”,“ads”,“profile”,“crm”];
+
+function renderTab(){
+const m=document.getElementById(“dm”);
+if(S.tab===0)m.innerHTML=rListing();
+else if(S.tab>=1&&S.tab<=4)m.innerHTML=rGenTab(TIDS[S.tab],t().tabs[S.tab]);
+else if(S.tab===5)m.innerHTML=rProfile();
+else if(S.tab===6)m.innerHTML=rCRM();
+}
+
+/* LISTING TAB */
+function rListing(){
+const u=t();const c=CC[S.country]||CC.GB;const ps=S.projects;
+return`<div style="display:grid;grid-template-columns:1fr 295px;gap:18px;align-items:start" class="dg">
+
+  <div class="card fi">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px">
+      <h2 class="serif" style="font-size:20px;font-weight:600;color:var(--tx);letter-spacing:-.02em">${u.ft}</h2>
+      <div style="display:flex;gap:3px;background:var(--surf);border-radius:8px;padding:3px;border:1px solid var(--bdr)">
+        <button onclick="setLux(false)" style="border:none;border-radius:6px;padding:5px 12px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;background:${!F.isLuxury?"rgba(59,130,246,.1)":"transparent"};color:${!F.isLuxury?"#93c5fd":"var(--tx3)"}">${u.std}</button>
+        <button onclick="setLux(true)" style="border:none;border-radius:6px;padding:5px 12px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;background:${F.isLuxury?"var(--goldx)":"transparent"};color:${F.isLuxury?"var(--gold2)":"var(--tx3)"}">${u.lux}</button>
+      </div>
+    </div>
+    <div class="g2">
+      <div style="grid-column:1/-1"><div class="lbl">${u.fn}</div><input value="${e(F.name)}" oninput="F.name=this.value" placeholder="${u.phn}"/></div>
+      <div style="grid-column:1/-1"><div class="lbl">${u.fa}</div><input value="${e(F.addr)}" oninput="F.addr=this.value" placeholder="${u.pha}"/></div>
+      <div><div class="lbl">${u.fp}</div><input value="${e(F.price)}" oninput="F.price=this.value" placeholder="${c.ph}"/></div>
+      <div><div class="lbl">${u.fc}</div><input value="${e(F.cond)}" oninput="F.cond=this.value"/></div>
+    </div>
+    <div class="dv"><span>${u.ds}</span><hr/></div>
+    <div class="g3">${[["rooms",u.fr],["size",u.fs],["plot",u.fpl],["floor",u.ff],["balc",u.fb],["orient",u.fo]].map(([k,l])=>`<div><div class="lbl">${l}</div><input value="${e(F[k])}" oninput="F.${k}=this.value"/></div>`).join("")}</div>
+    <div class="dv"><span>${u.ts}</span><hr/></div>
+    <div class="g3">${[["year",u.fy],["energy",u.fe],["heat",u.fh],["walls",u.fw],["park",u.fpk],["lift",u.fli]].map(([k,l])=>`<div><div class="lbl">${l}</div><input value="${e(F[k])}" oninput="F.${k}=this.value"/></div>`).join("")}</div>
+    <div class="dv"><span>${u.es}</span><hr/></div>
+    <div class="g2" style="margin-bottom:10px">
+      <div><div class="lbl">${u.fv}</div><input value="${e(F.view)}" oninput="F.view=this.value"/></div>
+      <div><div class="lbl">${u.fho}</div><input value="${e(F.hood)}" oninput="F.hood=this.value"/></div>
+    </div>
+    <div><div class="lbl">${u.fx}</div><textarea oninput="F.extra=this.value">${e(F.extra)}</textarea></div>
+    <div style="display:flex;gap:9px;margin-top:16px">
+      <button onclick="saveProj()" class="bgh" style="flex-shrink:0" id="bsv">${u.sb}</button>
+      <button onclick="genList()" class="bg" style="flex:1" id="bgen">${u.gb}</button>
+    </div>
+    <div id="lr"></div>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:14px">
+    <div class="card fi">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+        <span style="font-size:22px">${c.flag}</span>
+        <div><div style="font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--tx3)">Active market</div>
+        <div class="serif" style="font-size:15px;font-weight:600;color:var(--tx)">${c.name}</div></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px">
+        ${[["AI","Sonnet"],[u.pr,ps.length],["CRM",S.clients.length],[u.tl,S.templates.length]].map(([k,v])=>`<div style="background:var(--surf);border-radius:7px;padding:8px 10px"><div style="font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--tx3);margin-bottom:3px">${k}</div><div style="font-size:12px;font-weight:600;color:var(--tx2)">${v}</div></div>`).join("")}
+      </div>
+    </div>
+    <div class="card">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+        <span style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--tx3)">${u.pr}</span>
+        <span style="padding:2px 8px;border-radius:99px;font-size:9px;font-weight:700;background:rgba(59,130,246,.1);color:#93c5fd;border:1px solid rgba(59,130,246,.2)">${ps.length}</span>
+      </div>
+      ${ps.length===0?`<p style="font-size:12px;color:var(--tx3);text-align:center;padding:12px 0">—</p>`:`<div style="display:flex;flex-direction:column;gap:5px;max-height:220px;overflow-y:auto">${ps.map(p=>`
+        <div style="display:flex;align-items:center;gap:5px">
+          <button onclick="loadProj('${p.id}')" style="flex:1;text-align:left;padding:8px 10px;border-radius:7px;border:1px solid ${S.pid===p.id?"var(--gold)":"var(--bdr)"};background:${S.pid===p.id?"var(--goldx)":"var(--surf)"};cursor:pointer;transition:all .18s">
+            <div style="font-size:12px;font-weight:600;color:${S.pid===p.id?"var(--gold2)":"var(--tx2)"}">${e(p.name)}</div>
+            <div style="font-size:9px;color:var(--tx3)">${CC[p.country]?.flag||""} ${CC[p.country]?.name||p.country}</div>
+          </button>
+          <button onclick="delProj('${p.id}')" style="background:none;border:none;color:var(--tx3);cursor:pointer;font-size:15px;padding:3px 5px">×</button>
+        </div>`).join("")}</div>`}
+    </div>
+  </div>
+</div>`;
+}
+
+function setLux(v){F.isLuxury=v;renderTab();}
+function loadProj(id){
+const p=S.projects.find(x=>x.id===id);if(!p)return;
+S.pid=id;F={…EF,…p.data};S.lr=p.results?.listing||””;
+renderTab();if(S.lr)showLR(S.lr);
+}
+async function saveProj(){
+const u=t();const btn=document.getElementById(“bsv”);
+if(btn){btn.disabled=true;btn.textContent=u.sv2;}
+try{
+const res=await dbins(“projects”,{user_id:S.uid,name:F.name||F.addr||“Project”,country:S.country,data:{…F},results:{},perf:{}});
+if(Array.isArray(res)&&res[0]){S.projects.unshift(res[0]);S.pid=res[0].id;sync(u.sy);renderTab();}
+}catch(ex){err(ex.message);}
+if(btn){btn.disabled=false;btn.textContent=u.sb;}
+}
+async function delProj(id){
+S.projects=S.projects.filter(p=>p.id!==id);
+if(S.pid===id){S.pid=””;S.lr=””;}
+renderTab();try{await dbdel(“projects”,“id=eq.”+id);}catch{}
+}
+async function genList(){
+const u=t();if(!S.key){err(u.nk);return;}
+const btn=document.getElementById(“bgen”);if(btn){btn.disabled=true;btn.innerHTML=`<span class="sp"></span> ${u.gi}`;}
+const lrel=document.getElementById(“lr”);
+if(lrel)lrel.innerHTML=`<div style="background:var(--card);border:1.5px solid var(--bdr3);border-radius:12px;padding:40px;display:flex;align-items:center;justify-content:center;gap:14px;margin-top:14px"><span class="sp"></span><span style="font-size:13px;color:var(--tx2)">${u.gi}</span></div>`;
+try{
+const r=await claude(buildPrompt(“listing”,F,S.country,S.lang));
+if(r){S.lr=r;showLR(r);if(S.pid){const p=S.projects.find(x=>x.id===S.pid);if(p){p.results={…p.results,listing:r};try{await dbupd(“projects”,“id=eq.”+S.pid,{results:p.results});sync(t().sy);}catch{}}}}
+}catch(ex){err(ex.message);if(lrel)lrel.innerHTML=””;}
+if(btn){btn.disabled=false;btn.textContent=u.gb;}
+}
+function showLR(text){
+const u=t();const el=document.getElementById(“lr”);if(!el)return;
+el.innerHTML=`<div style="margin-top:16px">
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px">
+<div style="display:flex;align-items:center;gap:8px"><span class="pulse"></span><span style="font-size:10px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--gold)">${u.re}</span></div>
+<div style="display:flex;gap:6px;flex-wrap:wrap">
+<button onclick="navigator.clipboard.writeText(document.getElementById('rtx').textContent);this.textContent='${u.cd}';setTimeout(()=>this.textContent='${u.cp}',2200)" class="bgh" style="font-size:11px">${u.cp}</button>
+<button onclick="exportPDF(document.getElementById('rtx').textContent,'${e(F.name||F.addr)}')" class="bgh" style="font-size:11px">${u.ep}</button>
+<button onclick="document.getElementById('lr').innerHTML=''" class="bgh" style="font-size:11px">${u.cl}</button>
+</div>
+</div>
+<div class="rb" id="rtx">${e(text)}</div>
+
+  </div>`;
+}
+
+/* GEN TABS */
+function rGenTab(tid,title){
+const u=t();const ps=S.projects;const sp=ps.find(p=>p.id===S.pid);
+const res=(S.or[tid]||sp?.results?.[tid])||””;
+return`<div style="max-width:760px;margin:0 auto" class="fi">
+
+  <div class="card">
+    <h2 class="serif" style="font-size:22px;font-weight:600;color:var(--tx);letter-spacing:-.02em;margin-bottom:16px">${title}</h2>
+    ${ps.length===0?`<div style="background:var(--surf);border:2px dashed var(--bdr2);border-radius:11px;padding:36px;text-align:center"><p style="font-size:13px;color:var(--tx3)">${u.np}</p></div>`:`
+    <div style="margin-bottom:14px"><div class="lbl">${u.sp}</div>
+      <select onchange="S.pid=this.value;S.or={};renderTab()">
+        <option value="">${u.sp}</option>
+        ${ps.map(p=>`<option value="${p.id}"${S.pid===p.id?" selected":""}>${CC[p.country]?.flag||""} ${e(p.name)}</option>`).join("")}
+      </select>
+    </div>
+    <button onclick="genOther('${tid}')" class="bg" style="width:100%" id="bgo">${u.gc}</button>
+    ${res?`<div style="margin-top:14px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px">
+        <div style="display:flex;align-items:center;gap:8px"><span class="pulse"></span><span style="font-size:10px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--gold)">${u.re}</span></div>
+        <div style="display:flex;gap:6px">
+          <button onclick="navigator.clipboard.writeText(this.closest('div').nextElementSibling.textContent);this.textContent='${u.cd}';setTimeout(()=>this.textContent='${u.cp}',2200)" class="bgh" style="font-size:11px">${u.cp}</button>
+          <button onclick="exportPDF(this.closest('div').nextElementSibling.textContent,'${e(sp?.name||"")}')" class="bgh" style="font-size:11px">${u.ep}</button>
+        </div>
+      </div>
+      <div class="rb">${e(res)}</div>
+    </div>`:""}
+    `}
+  </div>
+</div>`;
+}
+async function genOther(tid){
+  const u=t();const proj=S.projects.find(p=>p.id===S.pid);
+  if(!proj||!S.key){if(!S.key)err(u.nk);return;}
+  const btn=document.getElementById("bgo");if(btn){btn.disabled=true;btn.innerHTML=`<span class="sp"></span> ${u.gi}`;}
+  try{
+    const r=await claude(buildPrompt(tid,proj.data||{},proj.country||S.country,S.lang));
+    if(r){S.or[tid]=r;proj.results={...proj.results,[tid]:r};try{await dbupd("projects","id=eq."+proj.id,{results:proj.results});sync(u.sy);}catch{}renderTab();}
+  }catch(ex){err(ex.message);}
+  if(btn){btn.disabled=false;btn.textContent=u.gc;}
+}
+
+/* PROFILE TAB */
+function rProfile(){
+const u=t();const ag=S.agent||{};
+return`<div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;max-width:900px;margin:0 auto" class="pg fi">
+
+  <div class="card">
+    <h2 class="serif" style="font-size:20px;font-weight:600;color:var(--tx);letter-spacing:-.02em;margin-bottom:18px">${u.agt}</h2>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      ${[["agn","name"],["agp","phone"],["age","email"],["aga","agency"],["agl","logo"]].map(([l,k])=>`<div><div class="lbl">${u[l]}</div><input value="${e(ag[k]||"")}" oninput="S.agent.${k}=this.value" ${k==="email"?"type='email'":""}/></div>`).join("")}
+    </div>
+    ${ag.logo?`<div style="margin-top:12px;padding:12px;background:var(--surf);border-radius:8px;text-align:center"><img src="${e(ag.logo)}" style="max-width:120px;max-height:60px;object-fit:contain;border-radius:6px" onerror="this.style.display='none'"/></div>`:""}
+    <button onclick="saveAgent()" class="bg" style="width:100%;margin-top:14px" id="bags">${u.ags}</button>
+  </div>
+  <div class="card">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
+      <h2 class="serif" style="font-size:20px;font-weight:600;color:var(--tx);letter-spacing:-.02em">${u.tt}</h2>
+      <span style="padding:2px 8px;border-radius:99px;font-size:9px;font-weight:700;background:rgba(139,92,246,.1);color:#c4b5fd;border:1px solid rgba(139,92,246,.2)">${S.templates.length}</span>
+    </div>
+    ${S.templates.length===0?`<div style="background:var(--surf);border:2px dashed var(--bdr2);border-radius:10px;padding:32px;text-align:center"><p style="font-size:13px;color:var(--tx3)">${u.nt}</p></div>`
+    :`<div style="display:flex;flex-direction:column;gap:8px;max-height:380px;overflow-y:auto">${S.templates.map(tmpl=>`
+      <div style="background:var(--surf);border:1px solid var(--bdr);border-radius:10px;padding:13px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px">
+        <div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:600;color:var(--tx2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${e(tmpl.name)}</div>
+          <div style="font-size:10px;color:var(--tx3)">${CC[tmpl.country]?.flag||""} ${CC[tmpl.country]?.name||""}</div></div>
+        <div style="display:flex;gap:6px">
+          <button onclick="loadTmpl('${tmpl.id}')" class="bgh" style="font-size:10px;padding:5px 11px">${u.ut}</button>
+          <button onclick="delTmpl('${tmpl.id}')" class="bgh" style="font-size:10px;padding:5px 10px">${u.dt}</button>
+        </div>
+      </div>`).join("")}</div>`}
+  </div>
+</div>`;
+}
+async function saveAgent(){
+  const u=t();const btn=document.getElementById("bags");if(btn){btn.disabled=true;btn.textContent=u.sv2;}
+  try{
+    const res=await dbupsert("agents",{user_id:S.uid,...S.agent,updated_at:new Date().toISOString()});
+    if(Array.isArray(res)&&res[0])S.agent=res[0];
+    sync(u.sy);if(btn)btn.textContent=u.agsd;setTimeout(()=>btn&&(btn.textContent=u.ags),2200);
+  }catch(ex){err(ex.message);}
+  if(btn)btn.disabled=false;
+}
+function loadTmpl(id){const t=S.templates.find(x=>x.id===id);if(!t)return;F={...EF,...t.form_data};S.tab=0;document.querySelectorAll(".tb").forEach((b,j)=>b.classList.toggle("on",j===0));renderTab();}
+async function delTmpl(id){S.templates=S.templates.filter(x=>x.id!==id);renderTab();try{await dbdel("templates","id=eq."+id);}catch{}}
+
+/* CRM TAB */
+function rCRM(){
+const u=t();const cl=S.clients||[];
+return`<div style="display:grid;grid-template-columns:320px 1fr;gap:18px;align-items:start" class="cg fi">
+
+  <div class="card">
+    <h2 class="serif" style="font-size:20px;font-weight:600;color:var(--tx);letter-spacing:-.02em;margin-bottom:18px">${u.ct}</h2>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div><div class="lbl">${u.cn}</div><input id="cn" placeholder="${u.cn}"/></div>
+      <div><div class="lbl">${u.cph}</div><input id="cph" placeholder="+..."/></div>
+      <div><div class="lbl">${u.cem}</div><input id="cem" type="email"/></div>
+      <div><div class="lbl">${u.cpr}</div><input id="cpr"/></div>
+      <div><div class="lbl">${u.cst}</div><select id="cst"><option value="">—</option>${u.sts.map(s=>`<option>${s}</option>`).join("")}</select></div>
+      <div><div class="lbl">${u.cno}</div><textarea id="cno"></textarea></div>
+    </div>
+    <button onclick="addClient()" class="bg" style="width:100%;margin-top:14px" id="bca">${u.ca}</button>
+    <div style="height:1px;background:var(--bdr);margin:14px 0"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px">
+      <div style="background:var(--surf);border-radius:7px;padding:10px 12px"><div style="font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--tx3);margin-bottom:4px">Total</div><div class="serif" style="font-size:26px;font-weight:600;color:var(--tx)">${cl.length}</div></div>
+      <div style="background:var(--surf);border-radius:7px;padding:10px 12px"><div style="font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--tx3);margin-bottom:4px">Active</div><div class="serif" style="font-size:26px;font-weight:600;color:var(--tx)">${cl.filter(c=>c.status!==u.sts[u.sts.length-1]).length}</div></div>
+    </div>
+  </div>
+  <div>
+    ${cl.length===0?`<div class="card" style="border:2px dashed var(--bdr);padding:52px;text-align:center"><p style="font-size:14px;color:var(--tx3)">${u.cn2}</p></div>`
+    :`<div style="display:flex;flex-direction:column;gap:9px">${cl.map(c=>{
+      const si=u.sts.indexOf(c.status);
+      const sc=si<1?"rgba(59,130,246,.12)":si<4?"rgba(201,168,76,.12)":"rgba(16,185,129,.12)";
+      const st=si<1?"#93c5fd":si<4?"#e0be70":"#6ee7b7";
+      const sb=si<1?"rgba(59,130,246,.25)":si<4?"rgba(201,168,76,.25)":"rgba(16,185,129,.25)";
+      return`<div class="card" onmouseover="this.style.borderColor='var(--bdr2)'" onmouseout="this.style.borderColor='var(--bdr)'">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:9px">
+          <div><h4 style="font-size:14px;font-weight:700;color:var(--tx);margin-bottom:6px">${e(c.name)}</h4>
+            ${c.status?`<span style="padding:3px 9px;border-radius:99px;font-size:10px;font-weight:700;text-transform:uppercase;background:${sc};color:${st};border:1px solid ${sb}">${e(c.status)}</span>`:""}
+          </div>
+          <div style="display:flex;gap:6px;align-items:center">
+            ${c.phone?`<a href="https://wa.me/${c.phone.replace(/\D/g,"")}" target="_blank" style="padding:5px 10px;border-radius:7px;border:1px solid rgba(16,185,129,.25);background:rgba(16,185,129,.08);color:#6ee7b7;font-size:10px;font-weight:700;text-decoration:none">💬</a>`:""}
+            ${c.email?`<a href="mailto:${e(c.email)}" style="padding:5px 10px;border-radius:7px;border:1px solid rgba(59,130,246,.25);background:rgba(59,130,246,.08);color:#93c5fd;font-size:10px;font-weight:700;text-decoration:none">✉</a>`:""}
+            <button onclick="delClient('${c.id}')" class="bgh" style="font-size:11px;padding:3px 8px">${u.cd2}</button>
+          </div>
+        </div>
+        ${[[c.phone,"📞"],[c.email,"✉"],[c.prop,"🏠"]].filter(([v])=>v).map(([v,icon])=>`<span style="font-size:12px;color:var(--tx3);margin-right:14px">${icon} ${e(v)}</span>`).join("")}
+        ${c.note?`<p style="font-size:12px;color:var(--tx3);font-style:italic;margin-top:9px;padding-top:9px;border-top:1px solid var(--bdr)">"${e(c.note)}"</p>`:""}
+      </div>`;}).join("")}</div>`}
+  </div>
+</div>`;
+}
+async function addClient(){
+  const u=t();
+  const name=document.getElementById("cn")?.value.trim();if(!name)return;
+  const data={name,phone:document.getElementById("cph")?.value.trim()||"",email:document.getElementById("cem")?.value.trim()||"",prop:document.getElementById("cpr")?.value.trim()||"",status:document.getElementById("cst")?.value||"",note:document.getElementById("cno")?.value.trim()||""};
+  const btn=document.getElementById("bca");if(btn){btn.disabled=true;btn.textContent=u.sv2;}
+  try{
+    const res=await dbins("clients",{user_id:S.uid,...data});
+    if(Array.isArray(res)&&res[0]){S.clients.unshift(res[0]);sync(u.sy);renderTab();}
+  }catch(ex){err(ex.message);}
+  if(btn){btn.disabled=false;btn.textContent=u.ca;}
+}
+async function delClient(id){S.clients=S.clients.filter(c=>c.id!==id);renderTab();try{await dbdel("clients","id=eq."+id);}catch{}}
+
+/* BOOT */
+initLang();
+if(S.lang){
+if(S.uid&&S.country)initDash();
+else if(S.uid)initCountry();
+else{initLogin();go(“s-login”);}
+}
+</script>
+
 </body>
 </html>
