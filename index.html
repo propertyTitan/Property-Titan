@@ -281,10 +281,16 @@ function esc(s) { return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;"
 // ── NAV ──
 function showPage(id) {
   var pages = document.querySelectorAll(".page");
-  for (var i = 0; i < pages.length; i++) pages[i].classList.remove("active");
+  for (var i = 0; i < pages.length; i++) {
+    pages[i].style.display = "none";
+    pages[i].classList.remove("active");
+  }
   document.getElementById("dash").style.display = "none";
   var el = document.getElementById(id);
-  if (el) el.classList.add("active");
+  if (el) {
+    el.style.display = "flex";
+    el.classList.add("active");
+  }
 }
 
 function showDash() {
@@ -308,12 +314,16 @@ function showErr(msg) {
 function pickLang(code) {
   S.lang = code;
   lsSet("pt_lang", code);
-  if (S.uid) {
-    if (S.country) { initDash(); }
-    else { initCountry(); }
-  } else {
-    initLogin();
-    showPage("p-login");
+  try {
+    if (S.uid) {
+      if (S.country) { initDash(); }
+      else { initCountry(); }
+    } else {
+      initLogin();
+      showPage("p-login");
+    }
+  } catch(ex) {
+    alert("Error: " + ex.message);
   }
 }
 
