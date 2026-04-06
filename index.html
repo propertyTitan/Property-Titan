@@ -220,15 +220,26 @@ function showErr(msg) {
 
 // -- LANG --
 function pickLang(code) {
-  lsSet("pt_lang", code);
   S.lang = code;
-  if (S.uid && S.country) {
-    location.reload();
-  } else if (S.uid) {
-    initCountry();
-  } else {
-    initLogin();
-    showPage("p-login");
+  lsSet("pt_lang", code);
+  var allPages = ["p-lang","p-login","p-country"];
+  for (var i=0; i<allPages.length; i++) {
+    var el = document.getElementById(allPages[i]);
+    if (el) el.style.display = "none";
+  }
+  try {
+    if (S.uid && S.country) {
+      document.getElementById("dash").style.display = "flex";
+      updateDashUI();
+      renderTab();
+    } else if (S.uid) {
+      initCountry();
+    } else {
+      initLogin();
+      document.getElementById("p-login").style.display = "flex";
+    }
+  } catch(ex) {
+    alert("Hiba: " + ex.message);
   }
 }
 
