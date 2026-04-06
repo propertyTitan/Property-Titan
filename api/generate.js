@@ -5,6 +5,13 @@ export const config = {
 export default async function handler(req) {
   const { prompt, images } = await req.json();
 
+  if (!process.env.ANTHROPIC_API_KEY) {
+    return new Response(JSON.stringify({ error: "ANTHROPIC_API_KEY not configured" }), {
+      status: 500,
+      headers: { "content-type": "application/json" }
+    });
+  }
+
   var content;
   if (images && images.length > 0) {
     content = [];
@@ -46,9 +53,9 @@ export default async function handler(req) {
     });
   }
 
-  const text = data.content[0].text;
+  var text = (data.content && data.content[0] && data.content[0].text) || "";
 
-  return new Response(JSON.stringify({ text }), {
+  return new Response(JSON.stringify({ text: text }), {
     headers: { "content-type": "application/json" }
   });
 }
