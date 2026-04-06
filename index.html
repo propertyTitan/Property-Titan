@@ -372,7 +372,10 @@ function showPage(id) {
 
 function showDash() {
   var pages = document.querySelectorAll(".page");
-  for (var i = 0; i < pages.length; i++) pages[i].classList.remove("active");
+  for (var i = 0; i < pages.length; i++) {
+    pages[i].style.display = "none";
+    pages[i].classList.remove("active");
+  }
   document.getElementById("dash").style.display = "flex";
   window.scrollTo(0, 0);
 }
