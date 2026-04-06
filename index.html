@@ -448,7 +448,8 @@ function saveKey() {
 
 // ── CLAUDE ──
 function callClaude(prompt, images) {
-  var payload = {prompt: prompt};
+  if (!S.key) return Promise.reject(new Error(t().nk));
+  var payload = {prompt: prompt, apiKey: S.key};
   if (images && images.length > 0) {
     payload.images = images.map(function(img) {
       return {data: img.base64, media_type: img.type || "image/jpeg"};

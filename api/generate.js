@@ -3,6 +3,12 @@ var https = require(“https”);
 module.exports = function(req, res) {
 var prompt = req.body.prompt || “”;
 var images = req.body.images || [];
+var apiKey = req.body.apiKey || process.env.ANTHROPIC_API_KEY || “”;
+
+if (!apiKey) {
+  res.status(400).json({ error: “Missing API key” });
+  return;
+}
 
 var content;
 if (images.length > 0) {
@@ -36,7 +42,7 @@ method: “POST”,
 headers: {
 “Content-Type”: “application/json”,
 “Content-Length”: Buffer.byteLength(body),
-“x-api-key”: process.env.ANTHROPIC_API_KEY,
+“x-api-key”: apiKey,
 “anthropic-version”: “2023-06-01”
 }
 };
