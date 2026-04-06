@@ -1,61 +1,68 @@
-export const config = {
-  runtime: 'edge',
+var https = require("https");
+
+module.exports = function(req, res) {
+var prompt = req.body.prompt || "";
+var images = req.body.images || [];
+
+var content;
+if (images.length > 0) {
+content = [];
+for (var i = 0; i < images.length; i++) {
+var img = images[i];
+content.push({
+type: "image",
+source: {
+type: "base64",
+media_type: img.media_type || "image/jpeg",
+data: img.data
+}
+});
+}
+content.push({ type: "text", text: prompt });
+} else {
+content = prompt;
+}
+
+var body = JSON.stringify({
+model: "claude-sonnet-4-20250514",
+max_tokens: 2048,
+messages: [{ role: "user", content: content }]
+});
+
+var options = {
+hostname: "api.anthropic.com",
+path: "/v1/messages",
+method: "POST",
+headers: {
+"Content-Type": "application/json",
+"Content-Length": Buffer.byteLength(body),
+"x-api-key": process.env.ANTHROPIC_API_KEY,
+"anthropic-version": "2023-06-01"
+}
 };
 
-export default async function handler(req) {
-  const { prompt, images } = await req.json();
-
-  if (!process.env.ANTHROPIC_API_KEY) {
-    return new Response(JSON.stringify({ error: "ANTHROPIC_API_KEY not configured" }), {
-      status: 500,
-      headers: { "content-type": "application/json" }
-    });
-  }
-
-  var content;
-  if (images && images.length > 0) {
-    content = [];
-    for (var i = 0; i < images.length; i++) {
-      content.push({
-        type: "image",
-        source: {
-          type: "base64",
-          media_type: images[i].media_type || "image/jpeg",
-          data: images[i].data
-        }
-      });
-    }
-    content.push({ type: "text", text: prompt });
-  } else {
-    content = prompt;
-  }
-
-  const response = await fetch("https://api.anthropic.com/v1/messages", {
-    method: "POST",
-    headers: {
-      "content-type": "application/json",
-      "x-api-key": process.env.ANTHROPIC_API_KEY,
-      "anthropic-version": "2023-06-01"
-    },
-    body: JSON.stringify({
-      model: "claude-sonnet-4-20250514",
-      max_tokens: 2048,
-      messages: [{ role: "user", content: content }]
-    })
-  });
-
-  const data = await response.json();
-
-  if (data.error) {
-    return new Response(JSON.stringify({ error: data.error.message || "API error" }), {
-      status: 400,
-      headers: { "content-type": "application/json" }
-    });
-  }
-
-  var text = (data.content && data.content[0] && data.content[0].text) || "";
-
-  return new Response(JSON.stringify({ text: text }), {
-    headers: { "content-type": "application/json" }
-  });
+var r = https.request(options, function(response) {
+var data = "";
+response.on("data", function(chunk) { data += chunk; });
+response.on("end", function() {
+try {
+var parsed = JSON.parse(data);
+if (parsed.error) {
+res.status(400).json({ error: parsed.error.message || "API error" });
+return;
 }
+var text = parsed.content[0].text;
+res.status(200).json({ text: text });
+} catch(e) {
+res.status(500).json({ error: e.message });
+}
+});
+});
+
+r.on("error", function(e) {
+res.status(500).json({ error: e.message });
+});
+
+r.write(body);
+r.end();
+};
