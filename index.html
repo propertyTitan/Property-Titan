@@ -672,17 +672,41 @@ function saveKey() {
 }
 
 // ── CLAUDE ──
+function resizeForAI(dataUrl, maxW) {
+  return new Promise(function(resolve) {
+    var img = new Image();
+    img.onload = function() {
+      var w = img.width, h = img.height;
+      if (w > maxW) { h = Math.round(h * maxW / w); w = maxW; }
+      var c = document.createElement("canvas");
+      c.width = w; c.height = h;
+      c.getContext("2d").drawImage(img, 0, 0, w, h);
+      resolve(c.toDataURL("image/jpeg", 0.7).split(",")[1]);
+    };
+    img.src = dataUrl;
+  });
+}
+
 function callClaude(prompt, images) {
-  var payload = {prompt: prompt};
+  var prep;
   if (images && images.length > 0) {
-    payload.images = images.map(function(img) {
-      return {data: img.base64, media_type: img.type || "image/jpeg"};
-    });
+    prep = Promise.all(images.map(function(img) {
+      var src = img.dataUrl || ("data:" + (img.type || "image/jpeg") + ";base64," + img.base64);
+      return resizeForAI(src, 800).then(function(b64) {
+        return {data: b64, media_type: "image/jpeg"};
+      });
+    }));
+  } else {
+    prep = Promise.resolve(null);
   }
-  return fetch("/api/generate", {
-    method: "POST",
-    headers: {"content-type":"application/json"},
-    body: JSON.stringify(payload)
+  return prep.then(function(resizedImages) {
+    var payload = {prompt: prompt};
+    if (resizedImages) payload.images = resizedImages;
+    return fetch("/api/generate", {
+      method: "POST",
+      headers: {"content-type":"application/json"},
+      body: JSON.stringify(payload)
+    });
   }).then(function(r) {
     if (!r.ok) return r.json().then(function(e) { throw new Error(e.error || "API " + r.status); });
     return r.json();
@@ -1130,7 +1154,7 @@ var imagesToSend = null;
 if (S.images.length > 0) {
 prompt += "\n\nI have attached " + S.images.length + " photos of the property. Use visual details from these photos to enrich your listing description. Mention specific visual features you can see (e.g., natural light, modern kitchen, garden view, etc.).";
 imagesToSend = S.images.map(function(img) {
-return {base64: img.base64, type: img.type};
+return {base64: img.base64, type: img.type, dataUrl: img.dataUrl};
 });
 }
 
