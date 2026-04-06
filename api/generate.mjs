@@ -1,14 +1,14 @@
-// api/generate.js
-export default async function handler(req, res) {
-  // CORS és Method check (opcionális, de ajánlott)
+export const config = {
+  runtime: 'edge',
+};
+
+export default async function handler(req) {
   if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
+    return new Response(JSON.stringify({ error: 'Method not allowed' }), { status: 405 });
   }
 
   try {
-    // Vercel serverless függvényeknél a req.body néha string, néha objektum
-    const body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
-    const { prompt } = body;
+    const { prompt } = await req.json();
 
     const response = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
@@ -18,7 +18,7 @@ export default async function handler(req, res) {
         "anthropic-version": "2023-06-01",
       },
       body: JSON.stringify({
-        model: "claude-3-5-sonnet-20240620", // Figyelj a pontos modell névre!
+        model: "claude-3-5-sonnet-20240620",
         max_tokens: 1024,
         messages: [{ role: "user", content: prompt }],
       }),
@@ -27,12 +27,14 @@ export default async function handler(req, res) {
     const data = await response.json();
 
     if (!response.ok) {
-      return res.status(response.status).json(data);
+      return new Response(JSON.stringify(data), { status: response.status });
     }
 
-    // Az Anthropic válasz szerkezete: data.content[0].text
-    return res.status(200).json({ text: data.content[0].text });
+    return new Response(JSON.stringify({ text: data.content[0].text }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' }
+    });
   } catch (error) {
-    return res.status(500).json({ error: error.message });
+    return new Response(JSON.stringify({ error: error.message }), { status: 500 });
   }
 }
