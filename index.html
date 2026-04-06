@@ -24,6 +24,8 @@ h1.gold{font-size:clamp(48px,8vw,88px);font-weight:600;line-height:.95;letter-sp
 .lang-btn:hover{border-color:#c9a84c;transform:translateY(-3px);box-shadow:0 10px 24px rgba(0,0,0,.3)}
 .flag{font-size:28px;margin-bottom:8px}
 .lname{font-size:12px;font-weight:700;color:#7e8fa8}
+
+/* LOGIN */
 .login-box{background:#101524;border:1px solid #232d44;border-radius:20px;padding:40px;width:100%;max-width:420px}
 .inp-wrap{margin-bottom:14px}
 .inp-wrap label{display:block;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#39495e;margin-bottom:6px}
@@ -33,9 +35,13 @@ h1.gold{font-size:clamp(48px,8vw,88px);font-weight:600;line-height:.95;letter-sp
 .btn-gold:disabled{background:#2c3a54;color:#39495e;cursor:not-allowed;box-shadow:none}
 .err{margin-top:12px;padding:10px 14px;border-radius:8px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);font-size:12px;color:#fca5a5;display:none}
 .sp{display:inline-block;width:14px;height:14px;border:2px solid rgba(0,0,0,.2);border-top-color:#07080c;border-radius:50%;animation:spin .7s linear infinite}
+
+/* COUNTRY */
 .country-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:11px;margin-top:20px;width:100%}
 .country-btn{background:#101524;border:1px solid #232d44;border-radius:14px;padding:18px 14px;cursor:pointer;color:#e5e8f2;font-family:inherit;transition:all .25s;text-align:center}
 .country-btn:hover{border-color:#c9a84c;transform:translateY(-4px);box-shadow:0 12px 28px rgba(0,0,0,.3)}
+
+/* DASH */
 #dash{display:none;flex-direction:column;min-height:100vh}
 #dash.active{display:flex}
 .topbar{background:#0c0f1a;border-bottom:1px solid #1a2238;padding:0 16px;height:52px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:100;flex-shrink:0}
@@ -72,7 +78,6 @@ footer span{font-size:10px;color:#39495e}
 <body>
 
 <!-- LANG -->
-
 <div id="p-lang" class="page active">
   <div class="grid"></div>
   <div class="wrap">
@@ -96,7 +101,6 @@ footer span{font-size:10px;color:#39495e}
 </div>
 
 <!-- LOGIN -->
-
 <div id="p-login" class="page">
   <div class="grid"></div>
   <div class="login-box" style="position:relative;z-index:1">
@@ -118,7 +122,6 @@ footer span{font-size:10px;color:#39495e}
 </div>
 
 <!-- COUNTRY -->
-
 <div id="p-country" class="page">
   <div class="grid"></div>
   <div style="position:fixed;top:16px;right:16px;display:flex;align-items:center;gap:10px;background:#101524;border:1px solid #1a2238;border-radius:10px;padding:8px 14px;z-index:100">
@@ -148,7 +151,6 @@ footer span{font-size:10px;color:#39495e}
 </div>
 
 <!-- DASHBOARD -->
-
 <div id="dash">
   <div class="topbar">
     <span class="serif" style="font-size:18px;font-weight:600;color:#e5e8f2">Property <span style="background:linear-gradient(135deg,#c9a84c,#e0be70);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">Titan</span></span>
@@ -158,7 +160,7 @@ footer span{font-size:10px;color:#39495e}
     <button onclick="showPage('p-country')" class="bgh" style="font-size:10px;padding:5px 10px">🌍</button>
     <button onclick="doLogout()" class="bgh" id="d-lo" style="font-size:10px;padding:5px 10px"></button>
   </div>
-  <div class="apibar" style="display:none">
+  <div class="apibar">
     <div class="apibar-inner">
       <span style="font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#1a3358;white-space:nowrap" id="d-akl"></span>
       <input type="password" id="d-ak" class="api-inp" placeholder="sk-ant-api03-..."/>
@@ -179,6 +181,7 @@ footer span{font-size:10px;color:#39495e}
 <script>
 "use strict";
 
+// ── SUPABASE ──
 var SBU = "https://lmculupmpfapqonaxfqi.supabase.co/rest/v1";
 var SBK = "sb_publishable_eqMmlla8SixrcApdjBbOhQ_Jr-s6f4G";
 var SBH = {"Content-Type":"application/json","apikey":SBK,"Authorization":"Bearer "+SBK,"Prefer":"return=representation"};
@@ -199,6 +202,7 @@ function dbupd(t, f, d) { return dbq("PATCH", t, f, d); }
 function dbupsert(t, d) { return dbq("POST", t, "", d, {"Prefer":"return=representation,resolution=merge-duplicates"}); }
 function dbdel(t, f) { return dbq("DELETE", t, f); }
 
+// ── HASH ──
 function hashPw(pw) {
   return crypto.subtle.digest("SHA-256", new TextEncoder().encode(pw + "pt_salt_2025"))
     .then(function(buf) {
@@ -206,9 +210,11 @@ function hashPw(pw) {
     });
 }
 
+// ── STORAGE ──
 function lsGet(k, d) { try { var v = JSON.parse(localStorage.getItem(k)); return v !== null ? v : d; } catch(e) { return d; } }
 function lsSet(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch(e) {} }
 
+// ── STATE ──
 var S = {
   lang: lsGet("pt_lang", ""),
   uid: lsGet("pt_uid", ""),
@@ -229,6 +235,7 @@ var S = {
 var EF = {isLuxury:false,name:"",addr:"",price:"",rooms:"",size:"",plot:"",year:"",floor:"",park:"",balc:"",cond:"",orient:"",heat:"",energy:"",walls:"",view:"",lift:"",hood:"",extra:""};
 var F = Object.assign({}, EF);
 
+// ── COUNTRIES ──
 var CC = {
   SE:{flag:"🇸🇪",name:"Sverige",lang:"sv",ph:"t.ex. 4 500 000 kr",market:"Swedish market. Nordic lifestyle, sustainability. Tone: warm, honest."},
   NO:{flag:"🇳🇴",name:"Norge",lang:"no",ph:"f.eks. 4 800 000 kr",market:"Norwegian market. Nature, outdoor lifestyle. Tone: honest, direct."},
@@ -250,20 +257,22 @@ var LW = {
   ro:"Write ENTIRE response in Romanian."
 };
 
+// ── TRANSLATIONS ──
 var UI = {
-  hu:{title:"Bejelentkezés",regTitle:"Regisztráció",el:"Email cím",pl:"Jelszó",lb:"Bejelentkezés",rb:"Regisztráció",na:"Nincs még fiókod?",ha:"Már van fiókod?",li:"Bejelentkezés...",ri:"Regisztráció...",lo:"Kilépés",tabs:["Hirdetés","Brossúra","Lead Mágnes","Email","Hirdetések","Profil","CRM"],akl:"Claude API Kulcs",aks:"Mentés",aka:"✓ Aktív",ft:"Ingatlan Adatok",fn:"Projekt neve",fa:"Cím",fp:"Ár",fr:"Szobák",fs:"Alapterület m²",fpl:"Telek m²",fy:"Építési év",ff:"Emelet",fpk:"Parkolás",fb:"Erkély m²",fc:"Állapot",fo:"Tájolás",fh:"Fűtés",fe:"Energetika",fw:"Szerkezet",fv:"Kilátás",fli:"Lift",fho:"Környék",fx:"Extra jellemzők",std:"Standard",lux:"Luxury",sb:"Projekt Mentése",gb:"AI Szöveg Generálása",gi:"Generálás...",nk:"⚠ Hiba történt.",np:"Nincs mentett projekt.",sp:"Válasszon projektet...",gc:"Generálás",re:"AI Eredmény",cp:"Másolás",cd:"✓ Másolva!",pdf:"PDF",cl:"Törlés",bt:"Brossúra",lt:"Lead Mágnes",et:"Email",at:"Hirdetések",agt:"Saját Profil",agn:"Név",agp:"Telefon",age:"Email",aga:"Irodanév",agl:"Logó URL",ags:"Profil Mentése",agsd:"✓ Mentve!",tt:"Sablonok",ct:"Ügyfél CRM",cn:"Ügyfél neve",cph:"Telefon",cem:"Email",cpr:"Ingatlan",cst:"Státusz",cno:"Megjegyzés",ca:"Ügyfél Hozzáadása",cd2:"Törlés",cn2:"Nincs még ügyfél.",sts:["Érdeklődő","Megnézte","Ajánlat","Tárgyalás","Szerződés","Lezárt"],ds:"Méretek",ts:"Műszaki",es:"Egyéb",pr:"Projektek",tl:"Sablonok",ts2:"⏱ Spórolj 45 percet minden hirdetésnél",sy:"✓ Mentve",sv2:"Mentés...",nt:"Nincs sablon.",dt:"Törlés",ut:"Betöltés",pc:"Válasszon országot",ef:"Kérjük töltsd ki mindkét mezőt.",ep:"A jelszó legalább 6 karakter.",ee:"Ez az email már regisztrált.",er:"Regisztrációs hiba.",eli:"Hibás email vagy jelszó.",eg:"Hiba: ",phn:"pl. Budai panorámás penthouse",pha:"Budapest, XII. kerület"},
-  en:{title:"Sign In",regTitle:"Create Account",el:"Email",pl:"Password",lb:"Sign In",rb:"Create Account",na:"Don't have an account?",ha:"Already have an account?",li:"Signing in...",ri:"Creating account...",lo:"Sign out",tabs:["Listing","Brochure","Lead Magnet","Email","Ads","Profile","CRM"],akl:"Claude API Key",aks:"Save",aka:"✓ Active",ft:"Property Details",fn:"Project name",fa:"Address",fp:"Price",fr:"Rooms",fs:"Floor area m²",fpl:"Plot m²",fy:"Year built",ff:"Floor",fpk:"Parking",fb:"Balcony m²",fc:"Condition",fo:"Orientation",fh:"Heating",fe:"Energy rating",fw:"Structure",fv:"View",fli:"Elevator",fho:"Neighbourhood",fx:"Extra features",std:"Standard",lux:"Luxury",sb:"Save project",gb:"Generate AI Copy",gi:"Generating...",nk:"⚠ Generation error.",np:"No saved projects.",sp:"Select project...",gc:"Generate",re:"AI Result",cp:"Copy",cd:"✓ Copied!",pdf:"PDF",cl:"Clear",bt:"Brochure",lt:"Lead Magnet",et:"Email",at:"Ads",agt:"My Profile",agn:"Name",agp:"Phone",age:"Email",aga:"Agency",agl:"Logo URL",ags:"Save Profile",agsd:"✓ Saved!",tt:"Templates",ct:"Client CRM",cn:"Client name",cph:"Phone",cem:"Email",cpr:"Property",cst:"Status",cno:"Note",ca:"Add Client",cd2:"Delete",cn2:"No clients yet.",sts:["Lead","Viewed","Offer","Negotiating","Contract","Closed"],ds:"Dimensions",ts:"Technical",es:"Other",pr:"Projects",tl:"Templates",ts2:"⏱ Save 45 min per listing",sy:"✓ Saved",sv2:"Saving...",nt:"No templates.",dt:"Delete",ut:"Load",pc:"Choose your country",ef:"Please fill in both fields.",ep:"Password must be at least 6 characters.",ee:"This email is already registered.",er:"Registration failed.",eli:"Incorrect email or password.",eg:"Error: ",phn:"e.g. London Penthouse",pha:"London, Chelsea"},
-  sv:{title:"Logga in",regTitle:"Skapa konto",el:"E-postadress",pl:"Lösenord",lb:"Logga in",rb:"Skapa konto",na:"Har du inget konto?",ha:"Har du redan ett konto?",li:"Loggar in...",ri:"Skapar konto...",lo:"Logga ut",tabs:["Annons","Broschyr","Lead Magnet","E-post","Annonser","Profil","CRM"],akl:"Claude API-nyckel",aks:"Spara",aka:"✓ Aktiv",ft:"Fastighetsuppgifter",fn:"Projektnamn",fa:"Adress",fp:"Pris",fr:"Rum",fs:"Boyta m²",fpl:"Tomt m²",fy:"Byggår",ff:"Våning",fpk:"Parkering",fb:"Balkong m²",fc:"Skick",fo:"Orientering",fh:"Uppvärmning",fe:"Energiklass",fw:"Konstruktion",fv:"Utsikt",fli:"Hiss",fho:"Område",fx:"Extra egenskaper",std:"Standard",lux:"Lyx",sb:"Spara projekt",gb:"Generera AI-text",gi:"Genererar...",nk:"⚠ Genereringsfel.",np:"Inga sparade projekt.",sp:"Välj projekt...",gc:"Generera",re:"AI-resultat",cp:"Kopiera",cd:"✓ Kopierat!",pdf:"PDF",cl:"Rensa",bt:"Broschyr",lt:"Lead Magnet",et:"E-post",at:"Annonser",agt:"Min profil",agn:"Namn",agp:"Telefon",age:"E-post",aga:"Mäklarbyrå",agl:"Logo URL",ags:"Spara profil",agsd:"✓ Sparat!",tt:"Mallar",ct:"Kund-CRM",cn:"Kundnamn",cph:"Telefon",cem:"E-post",cpr:"Fastighet",cst:"Status",cno:"Anteckning",ca:"Lägg till kund",cd2:"Ta bort",cn2:"Inga kunder ännu.",sts:["Intressent","Visad","Erbjudande","Förhandling","Kontrakt","Avslutat"],ds:"Mått",ts:"Tekniskt",es:"Övrigt",pr:"Projekt",tl:"Mallar",ts2:"⏱ Spara 45 min per annons",sy:"✓ Sparat",sv2:"Sparar...",nt:"Inga mallar.",dt:"Ta bort",ut:"Ladda",pc:"Välj ditt land",ef:"Fyll i båda fälten.",ep:"Lösenordet måste vara minst 6 tecken.",ee:"Denna e-post är redan registrerad.",er:"Registrering misslyckades.",eli:"Fel e-post eller lösenord.",eg:"Fel: ",phn:"t.ex. Stockholm Penthouse",pha:"Stockholm, Östermalm"},
-  no:{title:"Logg inn",regTitle:"Opprett konto",el:"E-postadresse",pl:"Passord",lb:"Logg inn",rb:"Opprett konto",na:"Har du ikke konto?",ha:"Har du allerede konto?",li:"Logger inn...",ri:"Oppretter konto...",lo:"Logg ut",tabs:["Annonse","Brosjyre","Lead Magnet","E-post","Annonser","Profil","CRM"],akl:"Claude API-nøkkel",aks:"Lagre",aka:"✓ Aktiv",ft:"Eiendomsopplysninger",fn:"Prosjektnavn",fa:"Adresse",fp:"Pris",fr:"Rom",fs:"Boligstørrelse m²",fpl:"Tomt m²",fy:"Byggeår",ff:"Etasje",fpk:"Parkering",fb:"Balkong m²",fc:"Stand",fo:"Orientering",fh:"Oppvarming",fe:"Energiklasse",fw:"Konstruksjon",fv:"Utsikt",fli:"Heis",fho:"Nabolag",fx:"Ekstra egenskaper",std:"Standard",lux:"Luksus",sb:"Lagre prosjekt",gb:"Generer AI-tekst",gi:"Genererer...",nk:"⚠ Genereringsfeil.",np:"Ingen lagrede prosjekter.",sp:"Velg prosjekt...",gc:"Generer",re:"AI-resultat",cp:"Kopier",cd:"✓ Kopiert!",pdf:"PDF",cl:"Tøm",bt:"Brosjyre",lt:"Lead Magnet",et:"E-post",at:"Annonser",agt:"Min profil",agn:"Navn",agp:"Telefon",age:"E-post",aga:"Eiendomsmegler",agl:"Logo URL",ags:"Lagre profil",agsd:"✓ Lagret!",tt:"Maler",ct:"Kunde-CRM",cn:"Kundenavn",cph:"Telefon",cem:"E-post",cpr:"Eiendom",cst:"Status",cno:"Merknad",ca:"Legg til kunde",cd2:"Slett",cn2:"Ingen kunder ennå.",sts:["Interessert","Vist","Tilbud","Forhandling","Kontrakt","Avsluttet"],ds:"Mål",ts:"Teknisk",es:"Annet",pr:"Prosjekter",tl:"Maler",ts2:"⏱ Spar 45 min per annonse",sy:"✓ Lagret",sv2:"Lagrer...",nt:"Ingen maler.",dt:"Slett",ut:"Last",pc:"Velg ditt land",ef:"Fyll ut begge feltene.",ep:"Passordet må være minst 6 tegn.",ee:"Denne e-posten er allerede registrert.",er:"Registrering mislyktes.",eli:"Feil e-post eller passord.",eg:"Feil: ",phn:"f.eks. Oslo Penthouse",pha:"Oslo, Frogner"},
-  de:{title:"Anmelden",regTitle:"Konto erstellen",el:"E-Mail-Adresse",pl:"Passwort",lb:"Anmelden",rb:"Konto erstellen",na:"Noch kein Konto?",ha:"Bereits ein Konto?",li:"Anmeldung...",ri:"Konto wird erstellt...",lo:"Abmelden",tabs:["Exposé","Broschüre","Lead-Magnet","E-Mail","Anzeigen","Profil","CRM"],akl:"Claude API-Schlüssel",aks:"Speichern",aka:"✓ Aktiv",ft:"Objektdaten",fn:"Projektname",fa:"Adresse",fp:"Preis",fr:"Zimmer",fs:"Wohnfläche m²",fpl:"Grundstück m²",fy:"Baujahr",ff:"Etage",fpk:"Parken",fb:"Balkon m²",fc:"Zustand",fo:"Ausrichtung",fh:"Heizung",fe:"Energieausweis",fw:"Bauweise",fv:"Aussicht",fli:"Aufzug",fho:"Lage",fx:"Besonderheiten",std:"Standard",lux:"Premium",sb:"Speichern",gb:"KI-Text erstellen",gi:"Wird erstellt...",nk:"⚠ Generierungsfehler.",np:"Keine Projekte.",sp:"Projekt wählen...",gc:"Generieren",re:"KI-Ergebnis",cp:"Kopieren",cd:"✓ Kopiert!",pdf:"PDF",cl:"Löschen",bt:"Broschüre",lt:"Lead-Magnet",et:"E-Mail",at:"Anzeigen",agt:"Mein Profil",agn:"Name",agp:"Telefon",age:"E-Mail",aga:"Maklerbüro",agl:"Logo URL",ags:"Profil speichern",agsd:"✓ Gespeichert!",tt:"Vorlagen",ct:"Kunden-CRM",cn:"Kundenname",cph:"Telefon",cem:"E-Mail",cpr:"Objekt",cst:"Status",cno:"Notiz",ca:"Hinzufügen",cd2:"Löschen",cn2:"Noch keine Kunden.",sts:["Interessent","Besichtigt","Angebot","Verhandlung","Vertrag","Abschluss"],ds:"Maße",ts:"Technisch",es:"Sonstiges",pr:"Projekte",tl:"Vorlagen",ts2:"⏱ 45 Min. pro Exposé sparen",sy:"✓ Gespeichert",sv2:"Speichert...",nt:"Keine Vorlagen.",dt:"Löschen",ut:"Laden",pc:"Wählen Sie Ihr Land",ef:"Bitte füllen Sie beide Felder aus.",ep:"Das Passwort muss mindestens 6 Zeichen haben.",ee:"Diese E-Mail ist bereits registriert.",er:"Registrierung fehlgeschlagen.",eli:"Falsche E-Mail oder Passwort.",eg:"Fehler: ",phn:"z.B. Berliner Penthouse",pha:"Berlin, Mitte"},
-  fr:{title:"Se connecter",regTitle:"Créer un compte",el:"Adresse e-mail",pl:"Mot de passe",lb:"Se connecter",rb:"Créer un compte",na:"Pas encore de compte?",ha:"Déjà un compte?",li:"Connexion...",ri:"Création...",lo:"Se déconnecter",tabs:["Annonce","Brochure","Lead Magnet","E-mail","Publicités","Profil","CRM"],akl:"Clé API Claude",aks:"Enregistrer",aka:"✓ Actif",ft:"Données du bien",fn:"Nom du projet",fa:"Adresse",fp:"Prix",fr:"Pièces",fs:"Surface m²",fpl:"Terrain m²",fy:"Année",ff:"Étage",fpk:"Parking",fb:"Balcon m²",fc:"État",fo:"Orientation",fh:"Chauffage",fe:"DPE",fw:"Construction",fv:"Vue",fli:"Ascenseur",fho:"Quartier",fx:"Caractéristiques",std:"Standard",lux:"Luxe",sb:"Enregistrer",gb:"Générer texte IA",gi:"Génération...",nk:"⚠ Erreur de génération.",np:"Aucun projet.",sp:"Choisir un projet...",gc:"Générer",re:"Résultat IA",cp:"Copier",cd:"✓ Copié!",pdf:"PDF",cl:"Effacer",bt:"Brochure",lt:"Lead Magnet",et:"E-mail",at:"Publicités",agt:"Mon profil",agn:"Nom",agp:"Téléphone",age:"E-mail",aga:"Agence",agl:"Logo URL",ags:"Enregistrer profil",agsd:"✓ Enregistré!",tt:"Modèles",ct:"CRM Clients",cn:"Nom du client",cph:"Téléphone",cem:"E-mail",cpr:"Bien",cst:"Statut",cno:"Note",ca:"Ajouter client",cd2:"Supprimer",cn2:"Aucun client.",sts:["Prospect","Visité","Offre","Négociation","Compromis","Signé"],ds:"Surfaces",ts:"Technique",es:"Autres",pr:"Projets",tl:"Modèles",ts2:"⏱ Gagnez 45 min par annonce",sy:"✓ Enregistré",sv2:"Enregistrement...",nt:"Aucun modèle.",dt:"Supprimer",ut:"Charger",pc:"Choisissez votre pays",ef:"Veuillez remplir les deux champs.",ep:"Le mot de passe doit avoir au moins 6 caractères.",ee:"Cet email est déjà enregistré.",er:"Échec de l'inscription.",eli:"Email ou mot de passe incorrect.",eg:"Erreur: ",phn:"ex. Penthouse Paris 8ème",pha:"Paris, 8ème"},
-  pl:{title:"Zaloguj się",regTitle:"Utwórz konto",el:"Adres email",pl:"Hasło",lb:"Zaloguj się",rb:"Utwórz konto",na:"Nie masz konta?",ha:"Masz już konto?",li:"Logowanie...",ri:"Tworzenie konta...",lo:"Wyloguj",tabs:["Ogłoszenie","Broszura","Lead Magnet","Email","Reklamy","Profil","CRM"],akl:"Klucz API Claude",aks:"Zapisz",aka:"✓ Aktywny",ft:"Dane nieruchomości",fn:"Nazwa projektu",fa:"Adres",fp:"Cena",fr:"Pokoje",fs:"Powierzchnia m²",fpl:"Działka m²",fy:"Rok budowy",ff:"Piętro",fpk:"Parking",fb:"Balkon m²",fc:"Stan",fo:"Orientacja",fh:"Ogrzewanie",fe:"Klasa energetyczna",fw:"Konstrukcja",fv:"Widok",fli:"Winda",fho:"Okolica",fx:"Dodatkowe cechy",std:"Standard",lux:"Luksus",sb:"Zapisz projekt",gb:"Generuj tekst AI",gi:"Generowanie...",nk:"⚠ Błąd generowania.",np:"Brak projektów.",sp:"Wybierz projekt...",gc:"Generuj",re:"Wynik AI",cp:"Kopiuj",cd:"✓ Skopiowano!",pdf:"PDF",cl:"Wyczyść",bt:"Broszura",lt:"Lead Magnet",et:"Email",at:"Reklamy",agt:"Mój profil",agn:"Imię i nazwisko",agp:"Telefon",age:"Email",aga:"Agencja",agl:"Logo URL",ags:"Zapisz profil",agsd:"✓ Zapisano!",tt:"Szablony",ct:"CRM Klientów",cn:"Imię klienta",cph:"Telefon",cem:"Email",cpr:"Nieruchomość",cst:"Status",cno:"Notatka",ca:"Dodaj klienta",cd2:"Usuń",cn2:"Brak klientów.",sts:["Zainteresowany","Oglądał","Oferta","Negocjacje","Umowa","Zamknięty"],ds:"Wymiary",ts:"Techniczne",es:"Inne",pr:"Projekty",tl:"Szablony",ts2:"⏱ Oszczędź 45 min na ogłoszeniu",sy:"✓ Zapisano",sv2:"Zapisywanie...",nt:"Brak szablonów.",dt:"Usuń",ut:"Wczytaj",pc:"Wybierz swój kraj",ef:"Wypełnij oba pola.",ep:"Hasło musi mieć co najmniej 6 znaków.",ee:"Ten email jest już zarejestrowany.",er:"Rejestracja nie powiodła się.",eli:"Nieprawidłowy email lub hasło.",eg:"Błąd: ",phn:"np. Penthouse Warszawa",pha:"Warszawa, Śródmieście"},
-  ro:{title:"Autentificare",regTitle:"Creare cont",el:"Adresă email",pl:"Parolă",lb:"Autentificare",rb:"Creare cont",na:"Nu ai cont?",ha:"Ai deja cont?",li:"Autentificare...",ri:"Creare cont...",lo:"Deconectare",tabs:["Anunț","Broșură","Lead Magnet","Email","Reclame","Profil","CRM"],akl:"Cheie API Claude",aks:"Salvează",aka:"✓ Activ",ft:"Date proprietate",fn:"Numele proiectului",fa:"Adresă",fp:"Preț",fr:"Camere",fs:"Suprafață m²",fpl:"Teren m²",fy:"An construcție",ff:"Etaj",fpk:"Parcare",fb:"Balcon m²",fc:"Stare",fo:"Orientare",fh:"Încălzire",fe:"Certificat energetic",fw:"Structură",fv:"Vedere",fli:"Lift",fho:"Zonă",fx:"Caracteristici extra",std:"Standard",lux:"Lux",sb:"Salvează proiect",gb:"Generează text AI",gi:"Se generează...",nk:"⚠ Eroare de generare.",np:"Niciun proiect.",sp:"Selectați proiectul...",gc:"Generează",re:"Rezultat AI",cp:"Copiați",cd:"✓ Copiat!",pdf:"PDF",cl:"Ștergeți",bt:"Broșură",lt:"Lead Magnet",et:"Email",at:"Reclame",agt:"Profilul meu",agn:"Nume",agp:"Telefon",age:"Email",aga:"Agenție",agl:"Logo URL",ags:"Salvează profil",agsd:"✓ Salvat!",tt:"Șabloane",ct:"CRM Clienți",cn:"Numele clientului",cph:"Telefon",cem:"Email",cpr:"Proprietate",cst:"Status",cno:"Notă",ca:"Adaugă client",cd2:"Șterge",cn2:"Niciun client.",sts:["Interesat","Vizitat","Ofertă","Negociere","Contract","Finalizat"],ds:"Dimensiuni",ts:"Tehnic",es:"Altele",pr:"Proiecte",tl:"Șabloane",ts2:"⏱ Economisiți 45 min per anunț",sy:"✓ Salvat",sv2:"Se salvează...",nt:"Niciun șablon.",dt:"Șterge",ut:"Încarcă",pc:"Alegeți țara",ef:"Completați ambele câmpuri.",ep:"Parola trebuie să aibă cel puțin 6 caractere.",ee:"Acest email este deja înregistrat.",er:"Înregistrarea a eșuat.",eli:"Email sau parolă incorectă.",eg:"Eroare: ",phn:"ex. Penthouse București",pha:"București, Floreasca"}
+  hu:{title:"Bejelentkezés",regTitle:"Regisztráció",el:"Email cím",pl:"Jelszó",lb:"Bejelentkezés",rb:"Regisztráció",na:"Nincs még fiókod?",ha:"Már van fiókod?",li:"Bejelentkezés...",ri:"Regisztráció...",lo:"Kilépés",tabs:["Hirdetés","Brossúra","Lead Mágnes","Email","Hirdetések","Profil","CRM"],akl:"Claude API Kulcs",aks:"Mentés",aka:"✓ Aktív",ft:"Ingatlan Adatok",fn:"Projekt neve",fa:"Cím",fp:"Ár",fr:"Szobák",fs:"Alapterület m²",fpl:"Telek m²",fy:"Építési év",ff:"Emelet",fpk:"Parkolás",fb:"Erkély m²",fc:"Állapot",fo:"Tájolás",fh:"Fűtés",fe:"Energetika",fw:"Szerkezet",fv:"Kilátás",fli:"Lift",fho:"Környék",fx:"Extra jellemzők",std:"Standard",lux:"Luxury",sb:"Projekt Mentése",gb:"AI Szöveg Generálása",gi:"Generálás...",nk:"⚠ Add meg a Claude API kulcsodat fent.",np:"Nincs mentett projekt.",sp:"Válasszon projektet...",gc:"Generálás",re:"AI Eredmény",cp:"Másolás",cd:"✓ Másolva!",pdf:"PDF",cl:"Törlés",bt:"Brossúra",lt:"Lead Mágnes",et:"Email",at:"Hirdetések",agt:"Saját Profil",agn:"Név",agp:"Telefon",age:"Email",aga:"Irodanév",agl:"Logó URL",ags:"Profil Mentése",agsd:"✓ Mentve!",tt:"Sablonok",ct:"Ügyfél CRM",cn:"Ügyfél neve",cph:"Telefon",cem:"Email",cpr:"Ingatlan",cst:"Státusz",cno:"Megjegyzés",ca:"Ügyfél Hozzáadása",cd2:"Törlés",cn2:"Nincs még ügyfél.",sts:["Érdeklődő","Megnézte","Ajánlat","Tárgyalás","Szerződés","Lezárt"],ds:"Méretek",ts:"Műszaki",es:"Egyéb",pr:"Projektek",tl:"Sablonok",ts2:"⏱ Spórolj 45 percet minden hirdetésnél",sy:"✓ Mentve",sv2:"Mentés...",nt:"Nincs sablon.",dt:"Törlés",ut:"Betöltés",pc:"Válasszon országot",ef:"Kérjük töltsd ki mindkét mezőt.",ep:"A jelszó legalább 6 karakter.",ee:"Ez az email már regisztrált.",er:"Regisztrációs hiba.",eli:"Hibás email vagy jelszó.",eg:"Hiba: ",phn:"pl. Budai panorámás penthouse",pha:"Budapest, XII. kerület"},
+  en:{title:"Sign In",regTitle:"Create Account",el:"Email",pl:"Password",lb:"Sign In",rb:"Create Account",na:"Don't have an account?",ha:"Already have an account?",li:"Signing in...",ri:"Creating account...",lo:"Sign out",tabs:["Listing","Brochure","Lead Magnet","Email","Ads","Profile","CRM"],akl:"Claude API Key",aks:"Save",aka:"✓ Active",ft:"Property Details",fn:"Project name",fa:"Address",fp:"Price",fr:"Rooms",fs:"Floor area m²",fpl:"Plot m²",fy:"Year built",ff:"Floor",fpk:"Parking",fb:"Balcony m²",fc:"Condition",fo:"Orientation",fh:"Heating",fe:"Energy rating",fw:"Structure",fv:"View",fli:"Elevator",fho:"Neighbourhood",fx:"Extra features",std:"Standard",lux:"Luxury",sb:"Save project",gb:"Generate AI Copy",gi:"Generating...",nk:"⚠ Enter your Claude API key above.",np:"No saved projects.",sp:"Select project...",gc:"Generate",re:"AI Result",cp:"Copy",cd:"✓ Copied!",pdf:"PDF",cl:"Clear",bt:"Brochure",lt:"Lead Magnet",et:"Email",at:"Ads",agt:"My Profile",agn:"Name",agp:"Phone",age:"Email",aga:"Agency",agl:"Logo URL",ags:"Save Profile",agsd:"✓ Saved!",tt:"Templates",ct:"Client CRM",cn:"Client name",cph:"Phone",cem:"Email",cpr:"Property",cst:"Status",cno:"Note",ca:"Add Client",cd2:"Delete",cn2:"No clients yet.",sts:["Lead","Viewed","Offer","Negotiating","Contract","Closed"],ds:"Dimensions",ts:"Technical",es:"Other",pr:"Projects",tl:"Templates",ts2:"⏱ Save 45 min per listing",sy:"✓ Saved",sv2:"Saving...",nt:"No templates.",dt:"Delete",ut:"Load",pc:"Choose your country",ef:"Please fill in both fields.",ep:"Password must be at least 6 characters.",ee:"This email is already registered.",er:"Registration failed.",eli:"Incorrect email or password.",eg:"Error: ",phn:"e.g. London Penthouse",pha:"London, Chelsea"},
+  sv:{title:"Logga in",regTitle:"Skapa konto",el:"E-postadress",pl:"Lösenord",lb:"Logga in",rb:"Skapa konto",na:"Har du inget konto?",ha:"Har du redan ett konto?",li:"Loggar in...",ri:"Skapar konto...",lo:"Logga ut",tabs:["Annons","Broschyr","Lead Magnet","E-post","Annonser","Profil","CRM"],akl:"Claude API-nyckel",aks:"Spara",aka:"✓ Aktiv",ft:"Fastighetsuppgifter",fn:"Projektnamn",fa:"Adress",fp:"Pris",fr:"Rum",fs:"Boyta m²",fpl:"Tomt m²",fy:"Byggår",ff:"Våning",fpk:"Parkering",fb:"Balkong m²",fc:"Skick",fo:"Orientering",fh:"Uppvärmning",fe:"Energiklass",fw:"Konstruktion",fv:"Utsikt",fli:"Hiss",fho:"Område",fx:"Extra egenskaper",std:"Standard",lux:"Lyx",sb:"Spara projekt",gb:"Generera AI-text",gi:"Genererar...",nk:"⚠ Ange Claude API-nyckel.",np:"Inga sparade projekt.",sp:"Välj projekt...",gc:"Generera",re:"AI-resultat",cp:"Kopiera",cd:"✓ Kopierat!",pdf:"PDF",cl:"Rensa",bt:"Broschyr",lt:"Lead Magnet",et:"E-post",at:"Annonser",agt:"Min profil",agn:"Namn",agp:"Telefon",age:"E-post",aga:"Mäklarbyrå",agl:"Logo URL",ags:"Spara profil",agsd:"✓ Sparat!",tt:"Mallar",ct:"Kund-CRM",cn:"Kundnamn",cph:"Telefon",cem:"E-post",cpr:"Fastighet",cst:"Status",cno:"Anteckning",ca:"Lägg till kund",cd2:"Ta bort",cn2:"Inga kunder ännu.",sts:["Intressent","Visad","Erbjudande","Förhandling","Kontrakt","Avslutat"],ds:"Mått",ts:"Tekniskt",es:"Övrigt",pr:"Projekt",tl:"Mallar",ts2:"⏱ Spara 45 min per annons",sy:"✓ Sparat",sv2:"Sparar...",nt:"Inga mallar.",dt:"Ta bort",ut:"Ladda",pc:"Välj ditt land",ef:"Fyll i båda fälten.",ep:"Lösenordet måste vara minst 6 tecken.",ee:"Denna e-post är redan registrerad.",er:"Registrering misslyckades.",eli:"Fel e-post eller lösenord.",eg:"Fel: ",phn:"t.ex. Stockholm Penthouse",pha:"Stockholm, Östermalm"},
+  no:{title:"Logg inn",regTitle:"Opprett konto",el:"E-postadresse",pl:"Passord",lb:"Logg inn",rb:"Opprett konto",na:"Har du ikke konto?",ha:"Har du allerede konto?",li:"Logger inn...",ri:"Oppretter konto...",lo:"Logg ut",tabs:["Annonse","Brosjyre","Lead Magnet","E-post","Annonser","Profil","CRM"],akl:"Claude API-nøkkel",aks:"Lagre",aka:"✓ Aktiv",ft:"Eiendomsopplysninger",fn:"Prosjektnavn",fa:"Adresse",fp:"Pris",fr:"Rom",fs:"Boligstørrelse m²",fpl:"Tomt m²",fy:"Byggeår",ff:"Etasje",fpk:"Parkering",fb:"Balkong m²",fc:"Stand",fo:"Orientering",fh:"Oppvarming",fe:"Energiklasse",fw:"Konstruksjon",fv:"Utsikt",fli:"Heis",fho:"Nabolag",fx:"Ekstra egenskaper",std:"Standard",lux:"Luksus",sb:"Lagre prosjekt",gb:"Generer AI-tekst",gi:"Genererer...",nk:"⚠ Skriv inn Claude API-nøkkel.",np:"Ingen lagrede prosjekter.",sp:"Velg prosjekt...",gc:"Generer",re:"AI-resultat",cp:"Kopier",cd:"✓ Kopiert!",pdf:"PDF",cl:"Tøm",bt:"Brosjyre",lt:"Lead Magnet",et:"E-post",at:"Annonser",agt:"Min profil",agn:"Navn",agp:"Telefon",age:"E-post",aga:"Eiendomsmegler",agl:"Logo URL",ags:"Lagre profil",agsd:"✓ Lagret!",tt:"Maler",ct:"Kunde-CRM",cn:"Kundenavn",cph:"Telefon",cem:"E-post",cpr:"Eiendom",cst:"Status",cno:"Merknad",ca:"Legg til kunde",cd2:"Slett",cn2:"Ingen kunder ennå.",sts:["Interessert","Vist","Tilbud","Forhandling","Kontrakt","Avsluttet"],ds:"Mål",ts:"Teknisk",es:"Annet",pr:"Prosjekter",tl:"Maler",ts2:"⏱ Spar 45 min per annonse",sy:"✓ Lagret",sv2:"Lagrer...",nt:"Ingen maler.",dt:"Slett",ut:"Last",pc:"Velg ditt land",ef:"Fyll ut begge feltene.",ep:"Passordet må være minst 6 tegn.",ee:"Denne e-posten er allerede registrert.",er:"Registrering mislyktes.",eli:"Feil e-post eller passord.",eg:"Feil: ",phn:"f.eks. Oslo Penthouse",pha:"Oslo, Frogner"},
+  de:{title:"Anmelden",regTitle:"Konto erstellen",el:"E-Mail-Adresse",pl:"Passwort",lb:"Anmelden",rb:"Konto erstellen",na:"Noch kein Konto?",ha:"Bereits ein Konto?",li:"Anmeldung...",ri:"Konto wird erstellt...",lo:"Abmelden",tabs:["Exposé","Broschüre","Lead-Magnet","E-Mail","Anzeigen","Profil","CRM"],akl:"Claude API-Schlüssel",aks:"Speichern",aka:"✓ Aktiv",ft:"Objektdaten",fn:"Projektname",fa:"Adresse",fp:"Preis",fr:"Zimmer",fs:"Wohnfläche m²",fpl:"Grundstück m²",fy:"Baujahr",ff:"Etage",fpk:"Parken",fb:"Balkon m²",fc:"Zustand",fo:"Ausrichtung",fh:"Heizung",fe:"Energieausweis",fw:"Bauweise",fv:"Aussicht",fli:"Aufzug",fho:"Lage",fx:"Besonderheiten",std:"Standard",lux:"Premium",sb:"Speichern",gb:"KI-Text erstellen",gi:"Wird erstellt...",nk:"⚠ API-Schlüssel eingeben.",np:"Keine Projekte.",sp:"Projekt wählen...",gc:"Generieren",re:"KI-Ergebnis",cp:"Kopieren",cd:"✓ Kopiert!",pdf:"PDF",cl:"Löschen",bt:"Broschüre",lt:"Lead-Magnet",et:"E-Mail",at:"Anzeigen",agt:"Mein Profil",agn:"Name",agp:"Telefon",age:"E-Mail",aga:"Maklerbüro",agl:"Logo URL",ags:"Profil speichern",agsd:"✓ Gespeichert!",tt:"Vorlagen",ct:"Kunden-CRM",cn:"Kundenname",cph:"Telefon",cem:"E-Mail",cpr:"Objekt",cst:"Status",cno:"Notiz",ca:"Hinzufügen",cd2:"Löschen",cn2:"Noch keine Kunden.",sts:["Interessent","Besichtigt","Angebot","Verhandlung","Vertrag","Abschluss"],ds:"Maße",ts:"Technisch",es:"Sonstiges",pr:"Projekte",tl:"Vorlagen",ts2:"⏱ 45 Min. pro Exposé sparen",sy:"✓ Gespeichert",sv2:"Speichert...",nt:"Keine Vorlagen.",dt:"Löschen",ut:"Laden",pc:"Wählen Sie Ihr Land",ef:"Bitte füllen Sie beide Felder aus.",ep:"Das Passwort muss mindestens 6 Zeichen haben.",ee:"Diese E-Mail ist bereits registriert.",er:"Registrierung fehlgeschlagen.",eli:"Falsche E-Mail oder Passwort.",eg:"Fehler: ",phn:"z.B. Berliner Penthouse",pha:"Berlin, Mitte"},
+  fr:{title:"Se connecter",regTitle:"Créer un compte",el:"Adresse e-mail",pl:"Mot de passe",lb:"Se connecter",rb:"Créer un compte",na:"Pas encore de compte?",ha:"Déjà un compte?",li:"Connexion...",ri:"Création...",lo:"Se déconnecter",tabs:["Annonce","Brochure","Lead Magnet","E-mail","Publicités","Profil","CRM"],akl:"Clé API Claude",aks:"Enregistrer",aka:"✓ Actif",ft:"Données du bien",fn:"Nom du projet",fa:"Adresse",fp:"Prix",fr:"Pièces",fs:"Surface m²",fpl:"Terrain m²",fy:"Année",ff:"Étage",fpk:"Parking",fb:"Balcon m²",fc:"État",fo:"Orientation",fh:"Chauffage",fe:"DPE",fw:"Construction",fv:"Vue",fli:"Ascenseur",fho:"Quartier",fx:"Caractéristiques",std:"Standard",lux:"Luxe",sb:"Enregistrer",gb:"Générer texte IA",gi:"Génération...",nk:"⚠ Saisir la clé API Claude.",np:"Aucun projet.",sp:"Choisir un projet...",gc:"Générer",re:"Résultat IA",cp:"Copier",cd:"✓ Copié!",pdf:"PDF",cl:"Effacer",bt:"Brochure",lt:"Lead Magnet",et:"E-mail",at:"Publicités",agt:"Mon profil",agn:"Nom",agp:"Téléphone",age:"E-mail",aga:"Agence",agl:"Logo URL",ags:"Enregistrer profil",agsd:"✓ Enregistré!",tt:"Modèles",ct:"CRM Clients",cn:"Nom du client",cph:"Téléphone",cem:"E-mail",cpr:"Bien",cst:"Statut",cno:"Note",ca:"Ajouter client",cd2:"Supprimer",cn2:"Aucun client.",sts:["Prospect","Visité","Offre","Négociation","Compromis","Signé"],ds:"Surfaces",ts:"Technique",es:"Autres",pr:"Projets",tl:"Modèles",ts2:"⏱ Gagnez 45 min par annonce",sy:"✓ Enregistré",sv2:"Enregistrement...",nt:"Aucun modèle.",dt:"Supprimer",ut:"Charger",pc:"Choisissez votre pays",ef:"Veuillez remplir les deux champs.",ep:"Le mot de passe doit avoir au moins 6 caractères.",ee:"Cet email est déjà enregistré.",er:"Échec de l'inscription.",eli:"Email ou mot de passe incorrect.",eg:"Erreur: ",phn:"ex. Penthouse Paris 8ème",pha:"Paris, 8ème"},
+  pl:{title:"Zaloguj się",regTitle:"Utwórz konto",el:"Adres email",pl:"Hasło",lb:"Zaloguj się",rb:"Utwórz konto",na:"Nie masz konta?",ha:"Masz już konto?",li:"Logowanie...",ri:"Tworzenie konta...",lo:"Wyloguj",tabs:["Ogłoszenie","Broszura","Lead Magnet","Email","Reklamy","Profil","CRM"],akl:"Klucz API Claude",aks:"Zapisz",aka:"✓ Aktywny",ft:"Dane nieruchomości",fn:"Nazwa projektu",fa:"Adres",fp:"Cena",fr:"Pokoje",fs:"Powierzchnia m²",fpl:"Działka m²",fy:"Rok budowy",ff:"Piętro",fpk:"Parking",fb:"Balkon m²",fc:"Stan",fo:"Orientacja",fh:"Ogrzewanie",fe:"Klasa energetyczna",fw:"Konstrukcja",fv:"Widok",fli:"Winda",fho:"Okolica",fx:"Dodatkowe cechy",std:"Standard",lux:"Luksus",sb:"Zapisz projekt",gb:"Generuj tekst AI",gi:"Generowanie...",nk:"⚠ Wprowadź klucz API Claude.",np:"Brak projektów.",sp:"Wybierz projekt...",gc:"Generuj",re:"Wynik AI",cp:"Kopiuj",cd:"✓ Skopiowano!",pdf:"PDF",cl:"Wyczyść",bt:"Broszura",lt:"Lead Magnet",et:"Email",at:"Reklamy",agt:"Mój profil",agn:"Imię i nazwisko",agp:"Telefon",age:"Email",aga:"Agencja",agl:"Logo URL",ags:"Zapisz profil",agsd:"✓ Zapisano!",tt:"Szablony",ct:"CRM Klientów",cn:"Imię klienta",cph:"Telefon",cem:"Email",cpr:"Nieruchomość",cst:"Status",cno:"Notatka",ca:"Dodaj klienta",cd2:"Usuń",cn2:"Brak klientów.",sts:["Zainteresowany","Oglądał","Oferta","Negocjacje","Umowa","Zamknięty"],ds:"Wymiary",ts:"Techniczne",es:"Inne",pr:"Projekty",tl:"Szablony",ts2:"⏱ Oszczędź 45 min na ogłoszeniu",sy:"✓ Zapisano",sv2:"Zapisywanie...",nt:"Brak szablonów.",dt:"Usuń",ut:"Wczytaj",pc:"Wybierz swój kraj",ef:"Wypełnij oba pola.",ep:"Hasło musi mieć co najmniej 6 znaków.",ee:"Ten email jest już zarejestrowany.",er:"Rejestracja nie powiodła się.",eli:"Nieprawidłowy email lub hasło.",eg:"Błąd: ",phn:"np. Penthouse Warszawa",pha:"Warszawa, Śródmieście"},
+  ro:{title:"Autentificare",regTitle:"Creare cont",el:"Adresă email",pl:"Parolă",lb:"Autentificare",rb:"Creare cont",na:"Nu ai cont?",ha:"Ai deja cont?",li:"Autentificare...",ri:"Creare cont...",lo:"Deconectare",tabs:["Anunț","Broșură","Lead Magnet","Email","Reclame","Profil","CRM"],akl:"Cheie API Claude",aks:"Salvează",aka:"✓ Activ",ft:"Date proprietate",fn:"Numele proiectului",fa:"Adresă",fp:"Preț",fr:"Camere",fs:"Suprafață m²",fpl:"Teren m²",fy:"An construcție",ff:"Etaj",fpk:"Parcare",fb:"Balcon m²",fc:"Stare",fo:"Orientare",fh:"Încălzire",fe:"Certificat energetic",fw:"Structură",fv:"Vedere",fli:"Lift",fho:"Zonă",fx:"Caracteristici extra",std:"Standard",lux:"Lux",sb:"Salvează proiect",gb:"Generează text AI",gi:"Se generează...",nk:"⚠ Introduceți cheia API Claude.",np:"Niciun proiect.",sp:"Selectați proiectul...",gc:"Generează",re:"Rezultat AI",cp:"Copiați",cd:"✓ Copiat!",pdf:"PDF",cl:"Ștergeți",bt:"Broșură",lt:"Lead Magnet",et:"Email",at:"Reclame",agt:"Profilul meu",agn:"Nume",agp:"Telefon",age:"Email",aga:"Agenție",agl:"Logo URL",ags:"Salvează profil",agsd:"✓ Salvat!",tt:"Șabloane",ct:"CRM Clienți",cn:"Numele clientului",cph:"Telefon",cem:"Email",cpr:"Proprietate",cst:"Status",cno:"Notă",ca:"Adaugă client",cd2:"Șterge",cn2:"Niciun client.",sts:["Interesat","Vizitat","Ofertă","Negociere","Contract","Finalizat"],ds:"Dimensiuni",ts:"Tehnic",es:"Altele",pr:"Proiecte",tl:"Șabloane",ts2:"⏱ Economisiți 45 min per anunț",sy:"✓ Salvat",sv2:"Se salvează...",nt:"Niciun șablon.",dt:"Șterge",ut:"Încarcă",pc:"Alegeți țara",ef:"Completați ambele câmpuri.",ep:"Parola trebuie să aibă cel puțin 6 caractere.",ee:"Acest email este deja înregistrat.",er:"Înregistrarea a eșuat.",eli:"Email sau parolă incorectă.",eg:"Eroare: ",phn:"ex. Penthouse București",pha:"București, Floreasca"}
 };
 
 function t() { return UI[S.lang] || UI.en; }
 function esc(s) { return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
 
+// ── NAV ──
 function showPage(id) {
   var pages = document.querySelectorAll(".page");
   for (var i = 0; i < pages.length; i++) {
@@ -272,7 +281,10 @@ function showPage(id) {
   }
   document.getElementById("dash").style.display = "none";
   var el = document.getElementById(id);
-  if (el) { el.style.display = "flex"; el.classList.add("active"); }
+  if (el) {
+    el.style.display = "flex";
+    el.classList.add("active");
+  }
 }
 
 function showDash() {
@@ -292,6 +304,7 @@ function showErr(msg) {
   document.getElementById("d-err").style.display = "flex";
 }
 
+// ── LANG ──
 function pickLang(code) {
   S.lang = code;
   lsSet("pt_lang", code);
@@ -308,6 +321,7 @@ function pickLang(code) {
   }
 }
 
+// ── LOGIN ──
 function initLogin() {
   var u = t();
   document.getElementById("l-title").textContent = S.isReg ? u.regTitle : u.title;
@@ -360,6 +374,7 @@ function doAuth() {
   });
 }
 
+// ── COUNTRY ──
 function initCountry() {
   var u = t();
   document.getElementById("c-email").textContent = S.email;
@@ -375,12 +390,14 @@ function pickCountry(code) {
   initDash();
 }
 
+// ── LOGOUT ──
 function doLogout() {
   S.uid = ""; S.email = ""; S.country = ""; S.lang = "";
   lsSet("pt_uid",""); lsSet("pt_email",""); lsSet("pt_country",""); lsSet("pt_lang","");
   showPage("p-lang");
 }
 
+// ── API KEY ──
 function saveKey() {
   var k = document.getElementById("d-ak").value.trim();
   if (!k) return;
@@ -392,20 +409,22 @@ function saveKey() {
   setTimeout(function() { btn.textContent = t().aks; }, 2500);
 }
 
-// CHANGE 2: callClaude now uses backend /api/generate
+// ── CLAUDE ──
 function callClaude(prompt) {
-  return fetch("/api/generate", {
+  if (!S.key) { showErr(t().nk); return Promise.reject(new Error("No key")); }
+  return fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
-    headers: {"content-type":"application/json"},
-    body: JSON.stringify({prompt: prompt})
+    headers: {"content-type":"application/json","x-api-key":S.key,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},
+    body: JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1024,messages:[{role:"user",content:prompt}]})
   }).then(function(r) {
-    if (!r.ok) return r.json().then(function(e) { throw new Error(e.error || "API " + r.status); });
+    if (!r.ok) return r.json().then(function(e) { throw new Error(e.error ? e.error.message : "API " + r.status); });
     return r.json();
   }).then(function(d) {
-    return d.text || "";
+    return (d.content || []).filter(function(b) { return b.type === "text"; }).map(function(b) { return b.text; }).join("") || "";
   });
 }
 
+// ── PROMPT ──
 function buildPrompt(type, d, cc, lang) {
   var c = CC[cc] || CC.GB;
   var li = LW[lang] || LW.en;
@@ -422,326 +441,333 @@ function buildPrompt(type, d, cc, lang) {
   return prompts[type] || prompts.listing;
 }
 
+// ── PDF ──
 function exportPDF(text, name) {
   var w = window.open("","_blank"); if (!w) return;
   var ag = S.agent || {};
   var ab = ag.name ? '<div style="display:flex;align-items:center;gap:16px;margin-top:48px;padding-top:24px;border-top:1px solid #ddd">'+(ag.logo?'<img src="'+esc(ag.logo)+'" style="width:56px;height:56px;object-fit:contain;border-radius:8px"/>':"")+'<div><div style="font-size:16px;font-weight:700">'+esc(ag.name)+'</div>'+(ag.agency?'<div style="font-size:13px;color:#555">'+esc(ag.agency)+'</div>':'')+(ag.phone?'<div style="font-size:12px;color:#666">📞 '+esc(ag.phone)+'</div>':'')+(ag.email?'<div style="font-size:12px;color:#666">✉ '+esc(ag.email)+'</div>':'')+'</div></div>' : "";
   w.document.write('<!DOCTYPE html><html><head><meta charset="utf-8"><title>'+esc(name)+'</title><style>body{font-family:Georgia,serif;max-width:700px;margin:0 auto;padding:48px 40px;color:#111;line-height:1.8;font-size:15px}pre{white-space:pre-wrap;font-family:Georgia,serif}</style></head><body><h1>'+esc(name)+'</h1><p style="color:#888;font-size:11px;margin-bottom:32px">Property Titan AI · '+new Date().toLocaleDateString()+'</p><pre>'+esc(text)+'</pre>'+ab+'<script>window.onload=function(){window.print();}<\/script></body></html>');
-
-w.document.close();
+  w.document.close();
 }
 
+// ── DASH ──
 function initDash() {
-var u = t();
-var c = CC[S.country] || CC.GB;
-document.getElementById(“d-cc”).innerHTML = ‘<span style="font-size:16px">’+c.flag+’</span><span style="font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#e0be70">’+c.name+’</span>’;
-document.getElementById(“d-lo”).textContent = u.lo;
-document.getElementById(“d-akl”).textContent = u.akl;
-document.getElementById(“d-aks”).textContent = u.aks;
-document.getElementById(“d-ts”).textContent = u.ts2;
-document.getElementById(“d-ft”).textContent = c.flag+” Property Titan · “+S.email;
-renderTabs();
-showDash();
-Promise.all([
-dbsel(“projects”,“user_id=eq.”+S.uid+”&order=created_at.desc”),
-dbsel(“clients”,“user_id=eq.”+S.uid+”&order=created_at.desc”),
-dbsel(“templates”,“user_id=eq.”+S.uid+”&order=created_at.desc”),
-dbsel(“agents”,“user_id=eq.”+S.uid)
-]).then(function(results) {
-if (Array.isArray(results[0])) S.projects = results[0];
-if (Array.isArray(results[1])) S.clients = results[1];
-if (Array.isArray(results[2])) S.templates = results[2];
-if (Array.isArray(results[3]) && results[3].length > 0) S.agent = results[3][0];
-renderTab();
-}).catch(function(e) { console.error(e); renderTab(); });
+  var u = t();
+  var c = CC[S.country] || CC.GB;
+  document.getElementById("d-cc").innerHTML = '<span style="font-size:16px">'+c.flag+'</span><span style="font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#e0be70">'+c.name+'</span>';
+  document.getElementById("d-lo").textContent = u.lo;
+  document.getElementById("d-akl").textContent = u.akl;
+  document.getElementById("d-aks").textContent = u.aks;
+  document.getElementById("d-ts").textContent = u.ts2;
+  document.getElementById("d-ft").textContent = c.flag+" Property Titan · "+S.email;
+  if (S.key) document.getElementById("d-aka").style.display = "inline";
+  renderTabs();
+  showDash();
+  Promise.all([
+    dbsel("projects","user_id=eq."+S.uid+"&order=created_at.desc"),
+    dbsel("clients","user_id=eq."+S.uid+"&order=created_at.desc"),
+    dbsel("templates","user_id=eq."+S.uid+"&order=created_at.desc"),
+    dbsel("agents","user_id=eq."+S.uid)
+  ]).then(function(results) {
+    if (Array.isArray(results[0])) S.projects = results[0];
+    if (Array.isArray(results[1])) S.clients = results[1];
+    if (Array.isArray(results[2])) S.templates = results[2];
+    if (Array.isArray(results[3]) && results[3].length > 0) S.agent = results[3][0];
+    renderTab();
+  }).catch(function(e) { console.error(e); renderTab(); });
 }
 
 function renderTabs() {
-var u = t();
-var html = “”;
-for (var i = 0; i < u.tabs.length; i++) {
-html += ‘<button class=“tab’+(i===S.tab?” on”:””)+’” onclick=“switchTab(’+i+’)”>’+u.tabs[i]+’</button>’;
-}
-document.getElementById(“d-tabs”).innerHTML = html;
+  var u = t();
+  var html = "";
+  for (var i = 0; i < u.tabs.length; i++) {
+    html += '<button class="tab'+(i===S.tab?" on":"")+'" onclick="switchTab('+i+')">'+u.tabs[i]+'</button>';
+  }
+  document.getElementById("d-tabs").innerHTML = html;
 }
 
 function switchTab(i) {
-S.tab = i;
-var tabs = document.querySelectorAll(”.tab”);
-for (var j = 0; j < tabs.length; j++) tabs[j].classList.toggle(“on”, j===i);
-renderTab();
+  S.tab = i;
+  var tabs = document.querySelectorAll(".tab");
+  for (var j = 0; j < tabs.length; j++) tabs[j].classList.toggle("on", j===i);
+  renderTab();
 }
 
-var TIDS = [“listing”,“brochure”,“lead”,“email”,“ads”,“profile”,“crm”];
+var TIDS = ["listing","brochure","lead","email","ads","profile","crm"];
 
 function renderTab() {
-var m = document.getElementById(“d-main”);
-if (S.tab === 0) m.innerHTML = rListing();
-else if (S.tab >= 1 && S.tab <= 4) m.innerHTML = rGenTab(TIDS[S.tab], t().tabs[S.tab]);
-else if (S.tab === 5) m.innerHTML = rProfile();
-else if (S.tab === 6) m.innerHTML = rCRM();
+  var m = document.getElementById("d-main");
+  if (S.tab === 0) m.innerHTML = rListing();
+  else if (S.tab >= 1 && S.tab <= 4) m.innerHTML = rGenTab(TIDS[S.tab], t().tabs[S.tab]);
+  else if (S.tab === 5) m.innerHTML = rProfile();
+  else if (S.tab === 6) m.innerHTML = rCRM();
 }
 
+// ── LISTING ──
 function rListing() {
-var u = t(); var c = CC[S.country]||CC.GB; var ps = S.projects;
-var projList = ps.length === 0 ? ‘<p style="font-size:12px;color:#39495e;text-align:center;padding:12px 0">—</p>’ :
-ps.map(function(p) { return ‘<div style="display:flex;align-items:center;gap:5px"><button onclick=“loadProj('’+p.id+’')” style=“flex:1;text-align:left;padding:8px 10px;border-radius:7px;border:1px solid ‘+(S.pid===p.id?”#c9a84c”:”#1a2238”)+’;background:’+(S.pid===p.id?“rgba(201,168,76,.09)”:”#0c0f1a”)+’;cursor:pointer;color:inherit;font-family:inherit”><div style=“font-size:12px;font-weight:600;color:’+(S.pid===p.id?”#e0be70”:”#7e8fa8”)+’”>’+esc(p.name)+’</div><div style="font-size:9px;color:#39495e">’+(CC[p.country]?CC[p.country].flag:””)+” “+(CC[p.country]?CC[p.country].name:p.country)+’</div></button><button onclick="delProj(\''+p.id+'\')" style="background:none;border:none;color:#39495e;cursor:pointer;font-size:15px;padding:3px 5px">×</button></div>’; }).join(””);
+  var u = t(); var c = CC[S.country]||CC.GB; var ps = S.projects;
+  var projList = ps.length === 0 ? '<p style="font-size:12px;color:#39495e;text-align:center;padding:12px 0">—</p>' :
+    ps.map(function(p) { return '<div style="display:flex;align-items:center;gap:5px"><button onclick="loadProj(\''+p.id+'\')" style="flex:1;text-align:left;padding:8px 10px;border-radius:7px;border:1px solid '+(S.pid===p.id?"#c9a84c":"#1a2238")+';background:'+(S.pid===p.id?"rgba(201,168,76,.09)":"#0c0f1a")+';cursor:pointer;color:inherit;font-family:inherit"><div style="font-size:12px;font-weight:600;color:'+(S.pid===p.id?"#e0be70":"#7e8fa8")+'">'+esc(p.name)+'</div><div style="font-size:9px;color:#39495e">'+(CC[p.country]?CC[p.country].flag:"")+" "+(CC[p.country]?CC[p.country].name:p.country)+'</div></button><button onclick="delProj(\''+p.id+'\')" style="background:none;border:none;color:#39495e;cursor:pointer;font-size:15px;padding:3px 5px">×</button></div>'; }).join("");
 
-return ‘<div style="display:grid;grid-template-columns:1fr 295px;gap:18px;align-items:start" class="dg">’+
-‘<div class="card">’+
-‘<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px">’+
-‘<h2 class="serif" style="font-size:20px;font-weight:600;color:#e5e8f2">’+u.ft+’</h2>’+
-‘<div style="display:flex;gap:3px;background:#0c0f1a;border-radius:8px;padding:3px;border:1px solid #1a2238">’+
-‘<button onclick=“setLux(false)” style=“border:none;border-radius:6px;padding:5px 12px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;background:’+(F.isLuxury?“transparent”:“rgba(59,130,246,.1)”)+’;color:’+(F.isLuxury?”#39495e”:”#93c5fd”)+’”>’+u.std+’</button>’+
-‘<button onclick=“setLux(true)” style=“border:none;border-radius:6px;padding:5px 12px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;background:’+(F.isLuxury?“rgba(201,168,76,.09)”:“transparent”)+’;color:’+(F.isLuxury?”#e0be70”:”#39495e”)+’”>’+u.lux+’</button>’+
-‘</div>’+
-‘</div>’+
-‘<div class="g2"><div style="grid-column:1/-1"><div class="flbl">’+u.fn+’</div><input class="finp" value="'+esc(F.name)+'" oninput="F.name=this.value" placeholder="'+u.phn+'"/></div>’+
-‘<div style="grid-column:1/-1"><div class="flbl">’+u.fa+’</div><input class="finp" value="'+esc(F.addr)+'" oninput="F.addr=this.value" placeholder="'+u.pha+'"/></div>’+
-‘<div><div class="flbl">’+u.fp+’</div><input class="finp" value="'+esc(F.price)+'" oninput="F.price=this.value" placeholder="'+c.ph+'"/></div>’+
-‘<div><div class="flbl">’+u.fc+’</div><input class="finp" value="'+esc(F.cond)+'" oninput="F.cond=this.value"/></div></div>’+
-‘<div class="dv"><span>’+u.ds+’</span><hr/></div>’+
-‘<div class="g3">’+[[“rooms”,u.fr],[“size”,u.fs],[“plot”,u.fpl],[“floor”,u.ff],[“balc”,u.fb],[“orient”,u.fo]].map(function(x){return’<div><div class="flbl">’+x[1]+’</div><input class="finp" value="'+esc(F[x[0]])+'" oninput="F.'+x[0]+'=this.value"/></div>’;}).join(””)+’</div>’+
-‘<div class="dv"><span>’+u.ts+’</span><hr/></div>’+
-‘<div class="g3">’+[[“year”,u.fy],[“energy”,u.fe],[“heat”,u.fh],[“walls”,u.fw],[“park”,u.fpk],[“lift”,u.fli]].map(function(x){return’<div><div class="flbl">’+x[1]+’</div><input class="finp" value="'+esc(F[x[0]])+'" oninput="F.'+x[0]+'=this.value"/></div>’;}).join(””)+’</div>’+
-‘<div class="dv"><span>’+u.es+’</span><hr/></div>’+
-‘<div class="g2" style="margin-bottom:0"><div><div class="flbl">’+u.fv+’</div><input class="finp" value="'+esc(F.view)+'" oninput="F.view=this.value"/></div><div><div class="flbl">’+u.fho+’</div><input class="finp" value="'+esc(F.hood)+'" oninput="F.hood=this.value"/></div></div>’+
-‘<div class="flbl" style="margin-top:0">’+u.fx+’</div><textarea class="finp" oninput="F.extra=this.value">’+esc(F.extra)+’</textarea>’+
-‘<div style="display:flex;gap:9px;margin-top:16px">’+
-‘<button onclick="saveProj()" class="bgh" id="bsv">’+u.sb+’</button>’+
-‘<button onclick="genList()" style="flex:1;padding:12px;border:none;border-radius:9px;background:linear-gradient(135deg,#c9a84c,#e0be70);color:#07080c;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px" id="bgen">’+u.gb+’</button>’+
-‘</div>’+
-‘<div id="lr"></div>’+
-‘</div>’+
-‘<div style="display:flex;flex-direction:column;gap:14px">’+
-‘<div class="card">’+
-‘<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px"><span style="font-size:22px">’+c.flag+’</span><div><div style="font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#39495e">Active market</div><div class="serif" style="font-size:15px;font-weight:600;color:#e5e8f2">’+c.name+’</div></div></div>’+
-‘<div style="display:grid;grid-template-columns:1fr 1fr;gap:7px">’+
-[[“AI”,“Sonnet”],[u.pr,S.projects.length],[“CRM”,S.clients.length],[u.tl,S.templates.length]].map(function(x){return’<div style="background:#0c0f1a;border-radius:7px;padding:8px 10px"><div style="font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#39495e;margin-bottom:3px">’+x[0]+’</div><div style="font-size:12px;font-weight:600;color:#7e8fa8">’+x[1]+’</div></div>’;}).join(””)+
-‘</div>’+
-‘</div>’+
-‘<div class="card">’+
-‘<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"><span style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#39495e">’+u.pr+’</span><span style="padding:2px 8px;border-radius:99px;font-size:9px;font-weight:700;background:rgba(59,130,246,.1);color:#93c5fd;border:1px solid rgba(59,130,246,.2)">’+ps.length+’</span></div>’+
-‘<div style="display:flex;flex-direction:column;gap:5px;max-height:220px;overflow-y:auto">’+projList+’</div>’+
-‘</div>’+
-‘</div>’+
-‘</div>’;
+  return '<div style="display:grid;grid-template-columns:1fr 295px;gap:18px;align-items:start" class="dg">'+
+  '<div class="card">'+
+    '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px">'+
+      '<h2 class="serif" style="font-size:20px;font-weight:600;color:#e5e8f2">'+u.ft+'</h2>'+
+      '<div style="display:flex;gap:3px;background:#0c0f1a;border-radius:8px;padding:3px;border:1px solid #1a2238">'+
+        '<button onclick="setLux(false)" style="border:none;border-radius:6px;padding:5px 12px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;background:'+(F.isLuxury?"transparent":"rgba(59,130,246,.1)")+';color:'+(F.isLuxury?"#39495e":"#93c5fd")+'">'+u.std+'</button>'+
+        '<button onclick="setLux(true)" style="border:none;border-radius:6px;padding:5px 12px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;background:'+(F.isLuxury?"rgba(201,168,76,.09)":"transparent")+';color:'+(F.isLuxury?"#e0be70":"#39495e")+'">'+u.lux+'</button>'+
+      '</div>'+
+    '</div>'+
+    '<div class="g2"><div style="grid-column:1/-1"><div class="flbl">'+u.fn+'</div><input class="finp" value="'+esc(F.name)+'" oninput="F.name=this.value" placeholder="'+u.phn+'"/></div>'+
+    '<div style="grid-column:1/-1"><div class="flbl">'+u.fa+'</div><input class="finp" value="'+esc(F.addr)+'" oninput="F.addr=this.value" placeholder="'+u.pha+'"/></div>'+
+    '<div><div class="flbl">'+u.fp+'</div><input class="finp" value="'+esc(F.price)+'" oninput="F.price=this.value" placeholder="'+c.ph+'"/></div>'+
+    '<div><div class="flbl">'+u.fc+'</div><input class="finp" value="'+esc(F.cond)+'" oninput="F.cond=this.value"/></div></div>'+
+    '<div class="dv"><span>'+u.ds+'</span><hr/></div>'+
+    '<div class="g3">'+[["rooms",u.fr],["size",u.fs],["plot",u.fpl],["floor",u.ff],["balc",u.fb],["orient",u.fo]].map(function(x){return'<div><div class="flbl">'+x[1]+'</div><input class="finp" value="'+esc(F[x[0]])+'" oninput="F.'+x[0]+'=this.value"/></div>';}).join("")+'</div>'+
+    '<div class="dv"><span>'+u.ts+'</span><hr/></div>'+
+    '<div class="g3">'+[["year",u.fy],["energy",u.fe],["heat",u.fh],["walls",u.fw],["park",u.fpk],["lift",u.fli]].map(function(x){return'<div><div class="flbl">'+x[1]+'</div><input class="finp" value="'+esc(F[x[0]])+'" oninput="F.'+x[0]+'=this.value"/></div>';}).join("")+'</div>'+
+    '<div class="dv"><span>'+u.es+'</span><hr/></div>'+
+    '<div class="g2" style="margin-bottom:0"><div><div class="flbl">'+u.fv+'</div><input class="finp" value="'+esc(F.view)+'" oninput="F.view=this.value"/></div><div><div class="flbl">'+u.fho+'</div><input class="finp" value="'+esc(F.hood)+'" oninput="F.hood=this.value"/></div></div>'+
+    '<div class="flbl" style="margin-top:0">'+u.fx+'</div><textarea class="finp" oninput="F.extra=this.value">'+esc(F.extra)+'</textarea>'+
+    '<div style="display:flex;gap:9px;margin-top:16px">'+
+      '<button onclick="saveProj()" class="bgh" id="bsv">'+u.sb+'</button>'+
+      '<button onclick="genList()" style="flex:1;padding:12px;border:none;border-radius:9px;background:linear-gradient(135deg,#c9a84c,#e0be70);color:#07080c;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px" id="bgen">'+u.gb+'</button>'+
+    '</div>'+
+    '<div id="lr"></div>'+
+  '</div>'+
+  '<div style="display:flex;flex-direction:column;gap:14px">'+
+    '<div class="card">'+
+      '<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px"><span style="font-size:22px">'+c.flag+'</span><div><div style="font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#39495e">Active market</div><div class="serif" style="font-size:15px;font-weight:600;color:#e5e8f2">'+c.name+'</div></div></div>'+
+      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:7px">'+
+        [["AI","Sonnet"],[u.pr,S.projects.length],["CRM",S.clients.length],[u.tl,S.templates.length]].map(function(x){return'<div style="background:#0c0f1a;border-radius:7px;padding:8px 10px"><div style="font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#39495e;margin-bottom:3px">'+x[0]+'</div><div style="font-size:12px;font-weight:600;color:#7e8fa8">'+x[1]+'</div></div>';}).join("")+
+      '</div>'+
+    '</div>'+
+    '<div class="card">'+
+      '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"><span style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#39495e">'+u.pr+'</span><span style="padding:2px 8px;border-radius:99px;font-size:9px;font-weight:700;background:rgba(59,130,246,.1);color:#93c5fd;border:1px solid rgba(59,130,246,.2)">'+ps.length+'</span></div>'+
+      '<div style="display:flex;flex-direction:column;gap:5px;max-height:220px;overflow-y:auto">'+projList+'</div>'+
+    '</div>'+
+  '</div>'+
+  '</div>';
 }
 
 function setLux(v) { F.isLuxury = v; renderTab(); }
 
 function loadProj(id) {
-var p = null;
-for (var i = 0; i < S.projects.length; i++) { if (S.projects[i].id === id) { p = S.projects[i]; break; } }
-if (!p) return;
-S.pid = id; F = Object.assign({}, EF, p.data||{});
-S.lr = (p.results && p.results.listing) || “”;
-renderTab();
-if (S.lr) showLR(S.lr);
+  var p = null;
+  for (var i = 0; i < S.projects.length; i++) { if (S.projects[i].id === id) { p = S.projects[i]; break; } }
+  if (!p) return;
+  S.pid = id; F = Object.assign({}, EF, p.data||{});
+  S.lr = (p.results && p.results.listing) || "";
+  renderTab();
+  if (S.lr) showLR(S.lr);
 }
 
 function saveProj() {
-var u = t(); var btn = document.getElementById(“bsv”);
-if (btn) { btn.disabled = true; btn.textContent = u.sv2; }
-dbins(“projects”, {user_id:S.uid, name:F.name||F.addr||“Project”, country:S.country, data:Object.assign({},F), results:{}, perf:{}})
-.then(function(res) {
-if (Array.isArray(res) && res[0]) { S.projects.unshift(res[0]); S.pid = res[0].id; showSync(u.sy); renderTab(); }
-})
-.catch(function(e) { showErr(e.message); })
-.then(function() { if (btn) { btn.disabled = false; btn.textContent = u.sb; } });
+  var u = t(); var btn = document.getElementById("bsv");
+  if (btn) { btn.disabled = true; btn.textContent = u.sv2; }
+  dbins("projects", {user_id:S.uid, name:F.name||F.addr||"Project", country:S.country, data:Object.assign({},F), results:{}, perf:{}})
+    .then(function(res) {
+      if (Array.isArray(res) && res[0]) { S.projects.unshift(res[0]); S.pid = res[0].id; showSync(u.sy); renderTab(); }
+    })
+    .catch(function(e) { showErr(e.message); })
+    .then(function() { if (btn) { btn.disabled = false; btn.textContent = u.sb; } });
 }
 
 function delProj(id) {
-S.projects = S.projects.filter(function(p) { return p.id !== id; });
-if (S.pid === id) { S.pid = “”; S.lr = “”; }
-renderTab();
-dbdel(“projects”,“id=eq.”+id).catch(function(){});
+  S.projects = S.projects.filter(function(p) { return p.id !== id; });
+  if (S.pid === id) { S.pid = ""; S.lr = ""; }
+  renderTab();
+  dbdel("projects","id=eq."+id).catch(function(){});
 }
 
 function genList() {
-var u = t();
-var btn = document.getElementById(“bgen”);
-if (btn) { btn.disabled = true; btn.innerHTML = ‘<span class="sp"></span> ‘+u.gi; }
-var lrel = document.getElementById(“lr”);
-if (lrel) lrel.innerHTML = ‘<div style="background:#101524;border:1.5px solid #2c3a54;border-radius:12px;padding:40px;display:flex;align-items:center;justify-content:center;gap:14px;margin-top:14px"><span class="sp"></span><span style="font-size:13px;color:#7e8fa8">’+u.gi+’</span></div>’;
-callClaude(buildPrompt(“listing”, F, S.country, S.lang))
-.then(function(r) {
-if (r) {
-S.lr = r; showLR(r);
-if (S.pid) {
-for (var i = 0; i < S.projects.length; i++) {
-if (S.projects[i].id === S.pid) {
-S.projects[i].results = Object.assign({}, S.projects[i].results||{}, {listing:r});
-dbupd(“projects”,“id=eq.”+S.pid,{results:S.projects[i].results}).then(function(){showSync(t().sy);}).catch(function(){});
-break;
-}
-}
-}
-}
-})
-.catch(function(e) { showErr(e.message); if (lrel) lrel.innerHTML = “”; })
-.then(function() { if (btn) { btn.disabled = false; btn.textContent = u.gb; } });
+  var u = t(); if (!S.key) { showErr(u.nk); return; }
+  var btn = document.getElementById("bgen");
+  if (btn) { btn.disabled = true; btn.innerHTML = '<span class="sp"></span> '+u.gi; }
+  var lrel = document.getElementById("lr");
+  if (lrel) lrel.innerHTML = '<div style="background:#101524;border:1.5px solid #2c3a54;border-radius:12px;padding:40px;display:flex;align-items:center;justify-content:center;gap:14px;margin-top:14px"><span class="sp"></span><span style="font-size:13px;color:#7e8fa8">'+u.gi+'</span></div>';
+  callClaude(buildPrompt("listing", F, S.country, S.lang))
+    .then(function(r) {
+      if (r) {
+        S.lr = r; showLR(r);
+        if (S.pid) {
+          for (var i = 0; i < S.projects.length; i++) {
+            if (S.projects[i].id === S.pid) {
+              S.projects[i].results = Object.assign({}, S.projects[i].results||{}, {listing:r});
+              dbupd("projects","id=eq."+S.pid,{results:S.projects[i].results}).then(function(){showSync(t().sy);}).catch(function(){});
+              break;
+            }
+          }
+        }
+      }
+    })
+    .catch(function(e) { showErr(e.message); if (lrel) lrel.innerHTML = ""; })
+    .then(function() { if (btn) { btn.disabled = false; btn.textContent = u.gb; } });
 }
 
 function showLR(text) {
-var u = t(); var el = document.getElementById(“lr”); if (!el) return;
-el.innerHTML = ‘<div style="margin-top:16px">’+
-‘<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px">’+
-‘<div style="display:flex;align-items:center;gap:8px"><span style="width:6px;height:6px;border-radius:50%;background:#c9a84c;display:inline-block;animation:pulse 2s ease infinite;box-shadow:0 0 6px #c9a84c"></span><span style="font-size:10px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:#c9a84c">’+u.re+’</span></div>’+
-‘<div style="display:flex;gap:6px;flex-wrap:wrap">’+
-‘<button class="bgh" style="font-size:11px" onclick="navigator.clipboard.writeText(document.getElementById(\'rtx\').textContent);this.textContent=\''+u.cd+'\';var self=this;setTimeout(function(){self.textContent=\''+u.cp+'\';},2200)">’+u.cp+’</button>’+
-‘<button class=“bgh” style=“font-size:11px” onclick=“exportPDF(document.getElementById('rtx').textContent,'’+esc(F.name||F.addr||“Property”)+’')”>’+u.pdf+’</button>’+
-‘<button class="bgh" style="font-size:11px" onclick="document.getElementById(\'lr\').innerHTML=\'\'">’+u.cl+’</button>’+
-‘</div>’+
-‘</div>’+
-‘<div class="result" id="rtx">’+esc(text)+’</div>’+
-‘</div>’;
+  var u = t(); var el = document.getElementById("lr"); if (!el) return;
+  el.innerHTML = '<div style="margin-top:16px">'+
+    '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px">'+
+      '<div style="display:flex;align-items:center;gap:8px"><span style="width:6px;height:6px;border-radius:50%;background:#c9a84c;display:inline-block;animation:pulse 2s ease infinite;box-shadow:0 0 6px #c9a84c"></span><span style="font-size:10px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:#c9a84c">'+u.re+'</span></div>'+
+      '<div style="display:flex;gap:6px;flex-wrap:wrap">'+
+        '<button class="bgh" style="font-size:11px" onclick="navigator.clipboard.writeText(document.getElementById(\'rtx\').textContent);this.textContent=\''+u.cd+'\';var self=this;setTimeout(function(){self.textContent=\''+u.cp+'\';},2200)">'+u.cp+'</button>'+
+        '<button class="bgh" style="font-size:11px" onclick="exportPDF(document.getElementById(\'rtx\').textContent,\''+esc(F.name||F.addr||"Property")+'\')">'+u.pdf+'</button>'+
+        '<button class="bgh" style="font-size:11px" onclick="document.getElementById(\'lr\').innerHTML=\'\'">'+u.cl+'</button>'+
+      '</div>'+
+    '</div>'+
+    '<div class="result" id="rtx">'+esc(text)+'</div>'+
+  '</div>';
 }
 
+// ── GEN TABS ──
 function rGenTab(tid, title) {
-var u = t(); var ps = S.projects;
-var sp = null; for (var i=0;i<ps.length;i++){if(ps[i].id===S.pid){sp=ps[i];break;}}
-var res = (S.or[tid]||(sp&&sp.results&&sp.results[tid]))||””;
-var opts = ‘<option value="">’+u.sp+’</option>’;
-for (var j=0;j<ps.length;j++){opts+=’<option value=”’+ps[j].id+’”’+(S.pid===ps[j].id?” selected”:””)+’>’+((CC[ps[j].country]?CC[ps[j].country].flag:””))+” “+esc(ps[j].name)+’</option>’;}
-return ‘<div style="max-width:760px;margin:0 auto"><div class="card">’+
-‘<h2 class="serif" style="font-size:22px;font-weight:600;color:#e5e8f2;margin-bottom:16px">’+title+’</h2>’+
-(ps.length===0?’<div style="background:#0c0f1a;border:2px dashed #232d44;border-radius:11px;padding:36px;text-align:center"><p style="font-size:13px;color:#39495e">’+u.np+’</p></div>’:
-‘<div style="margin-bottom:14px"><div class="flbl">’+u.sp+’</div><select class="finp" onchange="S.pid=this.value;S.or={};renderTab()">’+opts+’</select></div>’+
-‘<button onclick="genOther(\''+tid+'\')" style="width:100%;padding:12px;border:none;border-radius:9px;background:linear-gradient(135deg,#c9a84c,#e0be70);color:#07080c;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px" id="bgo">’+u.gc+’</button>’+
-(res?’<div style="margin-top:14px"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px"><div style="display:flex;align-items:center;gap:8px"><span style="width:6px;height:6px;border-radius:50%;background:#c9a84c;display:inline-block;animation:pulse 2s ease infinite"></span><span style="font-size:10px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:#c9a84c">’+u.re+’</span></div><div style="display:flex;gap:6px"><button class="bgh" style="font-size:11px" onclick="navigator.clipboard.writeText(document.getElementById(\'otx\').textContent);this.textContent=\''+u.cd+'\';var s=this;setTimeout(function(){s.textContent=\''+u.cp+'\';},2200)">’+u.cp+’</button><button class=“bgh” style=“font-size:11px” onclick=“exportPDF(document.getElementById('otx').textContent,'’+(sp?esc(sp.name):””)+’')”>’+u.pdf+’</button></div></div><div class="result" id="otx">’+esc(res)+’</div></div>’:’’)
-)+’</div></div>’;
+  var u = t(); var ps = S.projects;
+  var sp = null; for (var i=0;i<ps.length;i++){if(ps[i].id===S.pid){sp=ps[i];break;}}
+  var res = (S.or[tid]||(sp&&sp.results&&sp.results[tid]))||"";
+  var opts = '<option value="">'+u.sp+'</option>';
+  for (var j=0;j<ps.length;j++){opts+='<option value="'+ps[j].id+'"'+(S.pid===ps[j].id?" selected":"")+'>'+((CC[ps[j].country]?CC[ps[j].country].flag:""))+" "+esc(ps[j].name)+'</option>';}
+  return '<div style="max-width:760px;margin:0 auto"><div class="card">'+
+    '<h2 class="serif" style="font-size:22px;font-weight:600;color:#e5e8f2;margin-bottom:16px">'+title+'</h2>'+
+    (ps.length===0?'<div style="background:#0c0f1a;border:2px dashed #232d44;border-radius:11px;padding:36px;text-align:center"><p style="font-size:13px;color:#39495e">'+u.np+'</p></div>':
+    '<div style="margin-bottom:14px"><div class="flbl">'+u.sp+'</div><select class="finp" onchange="S.pid=this.value;S.or={};renderTab()">'+opts+'</select></div>'+
+    '<button onclick="genOther(\''+tid+'\')" style="width:100%;padding:12px;border:none;border-radius:9px;background:linear-gradient(135deg,#c9a84c,#e0be70);color:#07080c;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px" id="bgo">'+u.gc+'</button>'+
+    (res?'<div style="margin-top:14px"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px"><div style="display:flex;align-items:center;gap:8px"><span style="width:6px;height:6px;border-radius:50%;background:#c9a84c;display:inline-block;animation:pulse 2s ease infinite"></span><span style="font-size:10px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:#c9a84c">'+u.re+'</span></div><div style="display:flex;gap:6px"><button class="bgh" style="font-size:11px" onclick="navigator.clipboard.writeText(document.getElementById(\'otx\').textContent);this.textContent=\''+u.cd+'\';var s=this;setTimeout(function(){s.textContent=\''+u.cp+'\';},2200)">'+u.cp+'</button><button class="bgh" style="font-size:11px" onclick="exportPDF(document.getElementById(\'otx\').textContent,\''+(sp?esc(sp.name):"")+'\')">'+u.pdf+'</button></div></div><div class="result" id="otx">'+esc(res)+'</div></div>':'')
+    )+'</div></div>';
 }
 
 function genOther(tid) {
-var u = t(); var sp = null; for(var i=0;i<S.projects.length;i++){if(S.projects[i].id===S.pid){sp=S.projects[i];break;}}
-if (!sp) { showErr(u.np); return; }
-var btn = document.getElementById(“bgo”);
-if (btn) { btn.disabled = true; btn.innerHTML = ’<span class="sp"></span> ’+u.gi; }
-callClaude(buildPrompt(tid, sp.data||{}, sp.country||S.country, S.lang))
-.then(function(r) {
-if (r) {
-S.or[tid] = r;
-sp.results = Object.assign({}, sp.results||{});
-sp.results[tid] = r;
-dbupd(“projects”,“id=eq.”+sp.id,{results:sp.results}).then(function(){showSync(u.sy);}).catch(function(){});
-renderTab();
-}
-})
-.catch(function(e) { showErr(e.message); })
-.then(function() { if (btn) { btn.disabled = false; btn.textContent = u.gc; } });
+  var u = t(); var sp = null; for(var i=0;i<S.projects.length;i++){if(S.projects[i].id===S.pid){sp=S.projects[i];break;}}
+  if (!sp || !S.key) { if (!S.key) showErr(u.nk); return; }
+  var btn = document.getElementById("bgo");
+  if (btn) { btn.disabled = true; btn.innerHTML = '<span class="sp"></span> '+u.gi; }
+  callClaude(buildPrompt(tid, sp.data||{}, sp.country||S.country, S.lang))
+    .then(function(r) {
+      if (r) {
+        S.or[tid] = r;
+        sp.results = Object.assign({}, sp.results||{});
+        sp.results[tid] = r;
+        dbupd("projects","id=eq."+sp.id,{results:sp.results}).then(function(){showSync(u.sy);}).catch(function(){});
+        renderTab();
+      }
+    })
+    .catch(function(e) { showErr(e.message); })
+    .then(function() { if (btn) { btn.disabled = false; btn.textContent = u.gc; } });
 }
 
+// ── PROFILE ──
 function rProfile() {
-var u = t(); var ag = S.agent||{};
-var tmplList = S.templates.length===0 ? ‘<div style="background:#0c0f1a;border:2px dashed #232d44;border-radius:10px;padding:32px;text-align:center"><p style="font-size:13px;color:#39495e">’+u.nt+’</p></div>’ :
-‘<div style="display:flex;flex-direction:column;gap:8px;max-height:380px;overflow-y:auto">’+
-S.templates.map(function(tmpl){return’<div style="background:#0c0f1a;border:1px solid #1a2238;border-radius:10px;padding:13px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px"><div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:600;color:#7e8fa8;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">’+esc(tmpl.name)+’</div><div style="font-size:10px;color:#39495e">’+(CC[tmpl.country]?CC[tmpl.country].flag:””)+” “+(CC[tmpl.country]?CC[tmpl.country].name:””)+’</div></div><div style="display:flex;gap:6px"><button onclick="loadTmpl(\''+tmpl.id+'\')" class="bgh" style="font-size:10px;padding:5px 11px">’+u.ut+’</button><button onclick="delTmpl(\''+tmpl.id+'\')" class="bgh" style="font-size:10px;padding:5px 10px">’+u.dt+’</button></div></div>’;}).join(””)+
-‘</div>’;
-return ‘<div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;max-width:900px;margin:0 auto" class="dg">’+
-‘<div class="card"><h2 class="serif" style="font-size:20px;font-weight:600;color:#e5e8f2;margin-bottom:18px">’+u.agt+’</h2>’+
-[[“agn”,“name”],[“agp”,“phone”],[“age”,“email”],[“aga”,“agency”],[“agl”,“logo”]].map(function(x){return’<div class="flbl">’+u[x[0]]+’</div><input class=“finp” value=”’+esc(ag[x[1]]||””)+’” oninput=“S.agent.’+x[1]+’=this.value”’+(x[1]===“email”?’ type=“email”’:””)+’/>’;}).join(””)+
-(ag.logo?’<div style="margin-top:4px;padding:12px;background:#0c0f1a;border-radius:8px;text-align:center"><img src="'+esc(ag.logo)+'" style="max-width:120px;max-height:60px;object-fit:contain;border-radius:6px" onerror="this.style.display=\'none\'"/></div>’:””)+
-‘<button onclick="saveAgent()" style="width:100%;margin-top:14px;padding:12px;border:none;border-radius:9px;background:linear-gradient(135deg,#c9a84c,#e0be70);color:#07080c;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit" id="bags">’+u.ags+’</button></div>’+
-‘<div class="card"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px"><h2 class="serif" style="font-size:20px;font-weight:600;color:#e5e8f2">’+u.tt+’</h2><span style="padding:2px 8px;border-radius:99px;font-size:9px;font-weight:700;background:rgba(139,92,246,.1);color:#c4b5fd;border:1px solid rgba(139,92,246,.2)">’+S.templates.length+’</span></div>’+tmplList+’</div>’+
-‘</div>’;
+  var u = t(); var ag = S.agent||{};
+  var tmplList = S.templates.length===0 ? '<div style="background:#0c0f1a;border:2px dashed #232d44;border-radius:10px;padding:32px;text-align:center"><p style="font-size:13px;color:#39495e">'+u.nt+'</p></div>' :
+    '<div style="display:flex;flex-direction:column;gap:8px;max-height:380px;overflow-y:auto">'+
+    S.templates.map(function(tmpl){return'<div style="background:#0c0f1a;border:1px solid #1a2238;border-radius:10px;padding:13px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px"><div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:600;color:#7e8fa8;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+esc(tmpl.name)+'</div><div style="font-size:10px;color:#39495e">'+(CC[tmpl.country]?CC[tmpl.country].flag:"")+" "+(CC[tmpl.country]?CC[tmpl.country].name:"")+'</div></div><div style="display:flex;gap:6px"><button onclick="loadTmpl(\''+tmpl.id+'\')" class="bgh" style="font-size:10px;padding:5px 11px">'+u.ut+'</button><button onclick="delTmpl(\''+tmpl.id+'\')" class="bgh" style="font-size:10px;padding:5px 10px">'+u.dt+'</button></div></div>';}).join("")+
+    '</div>';
+  return '<div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;max-width:900px;margin:0 auto" class="dg">'+
+    '<div class="card"><h2 class="serif" style="font-size:20px;font-weight:600;color:#e5e8f2;margin-bottom:18px">'+u.agt+'</h2>'+
+    [["agn","name"],["agp","phone"],["age","email"],["aga","agency"],["agl","logo"]].map(function(x){return'<div class="flbl">'+u[x[0]]+'</div><input class="finp" value="'+esc(ag[x[1]]||"")+'" oninput="S.agent.'+x[1]+'=this.value"'+(x[1]==="email"?' type="email"':"")+'/>';}).join("")+
+    (ag.logo?'<div style="margin-top:4px;padding:12px;background:#0c0f1a;border-radius:8px;text-align:center"><img src="'+esc(ag.logo)+'" style="max-width:120px;max-height:60px;object-fit:contain;border-radius:6px" onerror="this.style.display=\'none\'"/></div>':"")+
+    '<button onclick="saveAgent()" style="width:100%;margin-top:14px;padding:12px;border:none;border-radius:9px;background:linear-gradient(135deg,#c9a84c,#e0be70);color:#07080c;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit" id="bags">'+u.ags+'</button></div>'+
+    '<div class="card"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px"><h2 class="serif" style="font-size:20px;font-weight:600;color:#e5e8f2">'+u.tt+'</h2><span style="padding:2px 8px;border-radius:99px;font-size:9px;font-weight:700;background:rgba(139,92,246,.1);color:#c4b5fd;border:1px solid rgba(139,92,246,.2)">'+S.templates.length+'</span></div>'+tmplList+'</div>'+
+    '</div>';
 }
 
 function saveAgent() {
-var u = t(); var btn = document.getElementById(“bags”);
-if (btn) { btn.disabled = true; btn.textContent = u.sv2; }
-dbupsert(“agents”, Object.assign({user_id:S.uid}, S.agent, {updated_at:new Date().toISOString()}))
-.then(function(res) { if (Array.isArray(res)&&res[0]) S.agent=res[0]; showSync(u.sy); if(btn){btn.textContent=u.agsd;setTimeout(function(){btn.textContent=u.ags;},2200);} })
-.catch(function(e) { showErr(e.message); })
-.then(function() { if(btn) btn.disabled=false; });
+  var u = t(); var btn = document.getElementById("bags");
+  if (btn) { btn.disabled = true; btn.textContent = u.sv2; }
+  dbupsert("agents", Object.assign({user_id:S.uid}, S.agent, {updated_at:new Date().toISOString()}))
+    .then(function(res) { if (Array.isArray(res)&&res[0]) S.agent=res[0]; showSync(u.sy); if(btn){btn.textContent=u.agsd;setTimeout(function(){btn.textContent=u.ags;},2200);} })
+    .catch(function(e) { showErr(e.message); })
+    .then(function() { if(btn) btn.disabled=false; });
 }
 
 function loadTmpl(id) {
-var tmpl = null; for(var i=0;i<S.templates.length;i++){if(S.templates[i].id===id){tmpl=S.templates[i];break;}}
-if (!tmpl) return;
-F = Object.assign({}, EF, tmpl.form_data||{});
-S.tab = 0;
-var tabs = document.querySelectorAll(”.tab”);
-for (var j=0;j<tabs.length;j++) tabs[j].classList.toggle(“on”,j===0);
-renderTab();
+  var tmpl = null; for(var i=0;i<S.templates.length;i++){if(S.templates[i].id===id){tmpl=S.templates[i];break;}}
+  if (!tmpl) return;
+  F = Object.assign({}, EF, tmpl.form_data||{});
+  S.tab = 0;
+  var tabs = document.querySelectorAll(".tab");
+  for (var j=0;j<tabs.length;j++) tabs[j].classList.toggle("on",j===0);
+  renderTab();
 }
 
 function delTmpl(id) {
-S.templates = S.templates.filter(function(x){return x.id!==id;});
-renderTab();
-dbdel(“templates”,“id=eq.”+id).catch(function(){});
+  S.templates = S.templates.filter(function(x){return x.id!==id;});
+  renderTab();
+  dbdel("templates","id=eq."+id).catch(function(){});
 }
 
+// ── CRM ──
 function rCRM() {
-var u = t(); var cl = S.clients||[];
-var cards = cl.length===0 ? ‘<div class="card" style="border:2px dashed #1a2238;padding:52px;text-align:center"><p style="font-size:14px;color:#39495e">’+u.cn2+’</p></div>’ :
-‘<div style="display:flex;flex-direction:column;gap:9px">’+
-cl.map(function(c){
-var si = u.sts.indexOf(c.status);
-var sc = si<1?“rgba(59,130,246,.12)”:si<4?“rgba(201,168,76,.12)”:“rgba(16,185,129,.12)”;
-var st = si<1?”#93c5fd”:si<4?”#e0be70”:”#6ee7b7”;
-var sb = si<1?“rgba(59,130,246,.25)”:si<4?“rgba(201,168,76,.25)”:“rgba(16,185,129,.25)”;
-return’<div class="card">’+
-‘<div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:9px">’+
-‘<div><h4 style="font-size:14px;font-weight:700;color:#e5e8f2;margin-bottom:6px">’+esc(c.name)+’</h4>’+(c.status?’<span style="padding:3px 9px;border-radius:99px;font-size:10px;font-weight:700;text-transform:uppercase;background:'+sc+';color:'+st+';border:1px solid '+sb+'">’+esc(c.status)+’</span>’:’’)+’</div>’+
-‘<div style="display:flex;gap:6px;align-items:center">’+
-(c.phone?’<a href=“https://wa.me/’+c.phone.replace(/\D/g,””)+’” target=”_blank” style=“padding:5px 10px;border-radius:7px;border:1px solid rgba(16,185,129,.25);background:rgba(16,185,129,.08);color:#6ee7b7;font-size:10px;font-weight:700;text-decoration:none”>💬</a>’:””)+
-(c.email?’<a href="mailto:'+esc(c.email)+'" style="padding:5px 10px;border-radius:7px;border:1px solid rgba(59,130,246,.25);background:rgba(59,130,246,.08);color:#93c5fd;font-size:10px;font-weight:700;text-decoration:none">✉</a>’:””)+
-‘<button onclick="delClient(\''+c.id+'\')" class="bgh" style="font-size:11px;padding:3px 8px">’+u.cd2+’</button>’+
-‘</div>’+
-‘</div>’+
-[[c.phone,“📞”],[c.email,“✉”],[c.prop,“🏠”]].filter(function(x){return x[0];}).map(function(x){return’<span style="font-size:12px;color:#39495e;margin-right:14px">’+x[1]+” “+esc(x[0])+’</span>’;}).join(””)+
-(c.note?’<p style="font-size:12px;color:#39495e;font-style:italic;margin-top:9px;padding-top:9px;border-top:1px solid #1a2238">”’+esc(c.note)+’”</p>’:””)+
-‘</div>’;
-}).join(””)+’</div>’;
+  var u = t(); var cl = S.clients||[];
+  var cards = cl.length===0 ? '<div class="card" style="border:2px dashed #1a2238;padding:52px;text-align:center"><p style="font-size:14px;color:#39495e">'+u.cn2+'</p></div>' :
+    '<div style="display:flex;flex-direction:column;gap:9px">'+
+    cl.map(function(c){
+      var si = u.sts.indexOf(c.status);
+      var sc = si<1?"rgba(59,130,246,.12)":si<4?"rgba(201,168,76,.12)":"rgba(16,185,129,.12)";
+      var st = si<1?"#93c5fd":si<4?"#e0be70":"#6ee7b7";
+      var sb = si<1?"rgba(59,130,246,.25)":si<4?"rgba(201,168,76,.25)":"rgba(16,185,129,.25)";
+      return'<div class="card">'+
+        '<div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:9px">'+
+          '<div><h4 style="font-size:14px;font-weight:700;color:#e5e8f2;margin-bottom:6px">'+esc(c.name)+'</h4>'+(c.status?'<span style="padding:3px 9px;border-radius:99px;font-size:10px;font-weight:700;text-transform:uppercase;background:'+sc+';color:'+st+';border:1px solid '+sb+'">'+esc(c.status)+'</span>':'')+'</div>'+
+          '<div style="display:flex;gap:6px;align-items:center">'+
+            (c.phone?'<a href="https://wa.me/'+c.phone.replace(/\D/g,"")+'" target="_blank" style="padding:5px 10px;border-radius:7px;border:1px solid rgba(16,185,129,.25);background:rgba(16,185,129,.08);color:#6ee7b7;font-size:10px;font-weight:700;text-decoration:none">💬</a>':"")+
+            (c.email?'<a href="mailto:'+esc(c.email)+'" style="padding:5px 10px;border-radius:7px;border:1px solid rgba(59,130,246,.25);background:rgba(59,130,246,.08);color:#93c5fd;font-size:10px;font-weight:700;text-decoration:none">✉</a>':"")+
+            '<button onclick="delClient(\''+c.id+'\')" class="bgh" style="font-size:11px;padding:3px 8px">'+u.cd2+'</button>'+
+          '</div>'+
+        '</div>'+
+        [[c.phone,"📞"],[c.email,"✉"],[c.prop,"🏠"]].filter(function(x){return x[0];}).map(function(x){return'<span style="font-size:12px;color:#39495e;margin-right:14px">'+x[1]+" "+esc(x[0])+'</span>';}).join("")+
+        (c.note?'<p style="font-size:12px;color:#39495e;font-style:italic;margin-top:9px;padding-top:9px;border-top:1px solid #1a2238">"'+esc(c.note)+'"</p>':"")+
+      '</div>';
+    }).join("")+'</div>';
 
-var opts = ‘<option value="">—</option>’+u.sts.map(function(s){return’<option>’+s+’</option>’;}).join(””);
-return ‘<div style="display:grid;grid-template-columns:320px 1fr;gap:18px;align-items:start" class="cg">’+
-‘<div class="card">’+
-‘<h2 class="serif" style="font-size:20px;font-weight:600;color:#e5e8f2;margin-bottom:18px">’+u.ct+’</h2>’+
-‘<div class="flbl">’+u.cn+’</div><input class="finp" id="c-n" placeholder="'+u.cn+'"/>’+
-‘<div class="flbl">’+u.cph+’</div><input class="finp" id="c-ph" placeholder="+..."/>’+
-‘<div class="flbl">’+u.cem+’</div><input class="finp" id="c-em" type="email"/>’+
-‘<div class="flbl">’+u.cpr+’</div><input class="finp" id="c-pr"/>’+
-‘<div class="flbl">’+u.cst+’</div><select class="finp" id="c-st">’+opts+’</select>’+
-‘<div class="flbl">’+u.cno+’</div><textarea class="finp" id="c-no"></textarea>’+
-‘<button onclick="addClient()" style="width:100%;padding:12px;border:none;border-radius:9px;background:linear-gradient(135deg,#c9a84c,#e0be70);color:#07080c;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit" id="bca">’+u.ca+’</button>’+
-‘<div style="height:1px;background:#1a2238;margin:14px 0"></div>’+
-‘<div style="display:grid;grid-template-columns:1fr 1fr;gap:7px">’+
-‘<div style="background:#0c0f1a;border-radius:7px;padding:10px 12px"><div style="font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#39495e;margin-bottom:4px">Total</div><div class="serif" style="font-size:26px;font-weight:600;color:#e5e8f2">’+cl.length+’</div></div>’+
-‘<div style="background:#0c0f1a;border-radius:7px;padding:10px 12px"><div style="font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#39495e;margin-bottom:4px">Active</div><div class="serif" style="font-size:26px;font-weight:600;color:#e5e8f2">’+cl.filter(function(c){return c.status!==u.sts[u.sts.length-1];}).length+’</div></div>’+
-‘</div>’+
-‘</div>’+
-‘<div>’+cards+’</div>’+
-‘</div>’;
+  var opts = '<option value="">—</option>'+u.sts.map(function(s){return'<option>'+s+'</option>';}).join("");
+  return '<div style="display:grid;grid-template-columns:320px 1fr;gap:18px;align-items:start" class="cg">'+
+    '<div class="card">'+
+      '<h2 class="serif" style="font-size:20px;font-weight:600;color:#e5e8f2;margin-bottom:18px">'+u.ct+'</h2>'+
+      '<div class="flbl">'+u.cn+'</div><input class="finp" id="c-n" placeholder="'+u.cn+'"/>'+
+      '<div class="flbl">'+u.cph+'</div><input class="finp" id="c-ph" placeholder="+..."/>'+
+      '<div class="flbl">'+u.cem+'</div><input class="finp" id="c-em" type="email"/>'+
+      '<div class="flbl">'+u.cpr+'</div><input class="finp" id="c-pr"/>'+
+      '<div class="flbl">'+u.cst+'</div><select class="finp" id="c-st">'+opts+'</select>'+
+      '<div class="flbl">'+u.cno+'</div><textarea class="finp" id="c-no"></textarea>'+
+      '<button onclick="addClient()" style="width:100%;padding:12px;border:none;border-radius:9px;background:linear-gradient(135deg,#c9a84c,#e0be70);color:#07080c;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit" id="bca">'+u.ca+'</button>'+
+      '<div style="height:1px;background:#1a2238;margin:14px 0"></div>'+
+      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:7px">'+
+        '<div style="background:#0c0f1a;border-radius:7px;padding:10px 12px"><div style="font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#39495e;margin-bottom:4px">Total</div><div class="serif" style="font-size:26px;font-weight:600;color:#e5e8f2">'+cl.length+'</div></div>'+
+        '<div style="background:#0c0f1a;border-radius:7px;padding:10px 12px"><div style="font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#39495e;margin-bottom:4px">Active</div><div class="serif" style="font-size:26px;font-weight:600;color:#e5e8f2">'+cl.filter(function(c){return c.status!==u.sts[u.sts.length-1];}).length+'</div></div>'+
+      '</div>'+
+    '</div>'+
+    '<div>'+cards+'</div>'+
+  '</div>';
 }
 
 function addClient() {
-var u = t();
-var name = (document.getElementById(“c-n”)||{}).value;
-if (!name || !name.trim()) return;
-var data = {name:name.trim(),phone:((document.getElementById(“c-ph”)||{}).value||””).trim(),email:((document.getElementById(“c-em”)||{}).value||””).trim(),prop:((document.getElementById(“c-pr”)||{}).value||””).trim(),status:((document.getElementById(“c-st”)||{}).value||””),note:((document.getElementById(“c-no”)||{}).value||””).trim()};
-var btn = document.getElementById(“bca”); if(btn){btn.disabled=true;btn.textContent=u.sv2;}
-dbins(“clients”,Object.assign({user_id:S.uid},data))
-.then(function(res){if(Array.isArray(res)&&res[0]){S.clients.unshift(res[0]);showSync(u.sy);renderTab();}})
-.catch(function(e){showErr(e.message);})
-.then(function(){if(btn){btn.disabled=false;btn.textContent=u.ca;}});
+  var u = t();
+  var name = (document.getElementById("c-n")||{}).value;
+  if (!name || !name.trim()) return;
+  var data = {name:name.trim(),phone:((document.getElementById("c-ph")||{}).value||"").trim(),email:((document.getElementById("c-em")||{}).value||"").trim(),prop:((document.getElementById("c-pr")||{}).value||"").trim(),status:((document.getElementById("c-st")||{}).value||""),note:((document.getElementById("c-no")||{}).value||"").trim()};
+  var btn = document.getElementById("bca"); if(btn){btn.disabled=true;btn.textContent=u.sv2;}
+  dbins("clients",Object.assign({user_id:S.uid},data))
+    .then(function(res){if(Array.isArray(res)&&res[0]){S.clients.unshift(res[0]);showSync(u.sy);renderTab();}})
+    .catch(function(e){showErr(e.message);})
+    .then(function(){if(btn){btn.disabled=false;btn.textContent=u.ca;}});
 }
 
 function delClient(id) {
-S.clients = S.clients.filter(function(c){return c.id!==id;});
-renderTab();
-dbdel(“clients”,“id=eq.”+id).catch(function(){});
+  S.clients = S.clients.filter(function(c){return c.id!==id;});
+  renderTab();
+  dbdel("clients","id=eq."+id).catch(function(){});
 }
 
+// ── BOOT ──
 (function() {
-if (S.lang) {
-if (S.uid && S.country) { initDash(); }
-else if (S.uid) { initCountry(); }
-else { initLogin(); showPage(“p-login”); }
-}
+  if (S.lang) {
+    if (S.uid && S.country) { initDash(); }
+    else if (S.uid) { initCountry(); }
+    else { initLogin(); showPage("p-login"); }
+  }
+  // else: lang screen is already shown by default
 })();
 </script>
-
 </body>
 </html>
