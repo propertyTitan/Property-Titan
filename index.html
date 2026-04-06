@@ -411,16 +411,15 @@ function saveKey() {
 
 // ── CLAUDE ──
 function callClaude(prompt) {
-  if (!S.key) { showErr(t().nk); return Promise.reject(new Error("No key")); }
-  return fetch("https://api.anthropic.com/v1/messages", {
+  return fetch("/api/generate", {
     method: "POST",
-    headers: {"content-type":"application/json","x-api-key":S.key,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},
-    body: JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1024,messages:[{role:"user",content:prompt}]})
+    headers: {"content-type":"application/json"},
+    body: JSON.stringify({prompt: prompt})
   }).then(function(r) {
-    if (!r.ok) return r.json().then(function(e) { throw new Error(e.error ? e.error.message : "API " + r.status); });
+    if (!r.ok) return r.json().then(function(e) { throw new Error(e.error || "API " + r.status); });
     return r.json();
   }).then(function(d) {
-    return (d.content || []).filter(function(b) { return b.type === "text"; }).map(function(b) { return b.text; }).join("") || "";
+    return d.text || "";
   });
 }
 
