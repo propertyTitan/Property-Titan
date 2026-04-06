@@ -1118,6 +1118,40 @@ renderTab();
 if (S.lr) showLR(S.lr);
 }
 
+function saveImagesToLS(projId) {
+  if (S.images.length === 0) return;
+  // Compress images for localStorage (max 400px, low quality thumbnails)
+  var saved = 0;
+  var total = S.images.length;
+  var compressed = [];
+  S.images.forEach(function(img, idx) {
+    var pic = new Image();
+    pic.onload = function() {
+      var w = pic.width, h = pic.height;
+      var maxW = 400;
+      if (w > maxW) { h = Math.round(h * maxW / w); w = maxW; }
+      var c = document.createElement("canvas");
+      c.width = w; c.height = h;
+      c.getContext("2d").drawImage(pic, 0, 0, w, h);
+      var smallDataUrl = c.toDataURL("image/jpeg", 0.5);
+      compressed[idx] = {
+        id: img.id,
+        name: img.name,
+        type: "image/jpeg",
+        dataUrl: smallDataUrl,
+        base64: smallDataUrl.split(",")[1],
+        enhanced: img.enhanced,
+        enhancedDataUrl: ""
+      };
+      saved++;
+      if (saved >= total) {
+        try { lsSet("pt_img_"+projId, compressed); } catch(e) {}
+      }
+    };
+    pic.src = img.dataUrl;
+  });
+}
+
 function saveProj() {
 var u = t(); var btn = document.getElementById("bsv");
 if (btn) { btn.disabled = true; btn.textContent = u.sv2; }
@@ -1125,9 +1159,7 @@ dbins("projects", {user_id:S.uid, name:F.name||F.addr||"Project", country:S.coun
 .then(function(res) {
 if (Array.isArray(res) && res[0]) {
 S.projects.unshift(res[0]); S.pid = res[0].id;
-if (S.images.length > 0) {
-try { lsSet("pt_img_"+res[0].id, S.images); } catch(e) {}
-}
+saveImagesToLS(res[0].id);
 showSync(u.sy); renderTab();
 }
 })
