@@ -220,8 +220,16 @@ function showErr(msg) {
 
 // -- LANG --
 function pickLang(code) {
-  localStorage.setItem("pt_lang", JSON.stringify(code));
-  location.reload();
+  lsSet("pt_lang", code);
+  S.lang = code;
+  if (S.uid && S.country) {
+    location.reload();
+  } else if (S.uid) {
+    initCountry();
+  } else {
+    initLogin();
+    showPage("p-login");
+  }
 }
 
 // -- LOGIN --
