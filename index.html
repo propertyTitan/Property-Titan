@@ -1085,7 +1085,7 @@ for (var i = 0; i < S.projects.length; i++) { if (S.projects[i].id === id) { p =
 if (!p) return;
 S.pid = id; F = Object.assign({}, EF, p.data||{});
 S.lr = (p.results && p.results.listing) || "";
-S.images = [];
+S.images = lsGet("pt_img_"+id, []);
 S.imgAnalysis = "";
 renderTab();
 if (S.lr) showLR(S.lr);
@@ -1096,7 +1096,13 @@ var u = t(); var btn = document.getElementById("bsv");
 if (btn) { btn.disabled = true; btn.textContent = u.sv2; }
 dbins("projects", {user_id:S.uid, name:F.name||F.addr||"Project", country:S.country, data:Object.assign({},F), results:{}, perf:{}})
 .then(function(res) {
-if (Array.isArray(res) && res[0]) { S.projects.unshift(res[0]); S.pid = res[0].id; showSync(u.sy); renderTab(); }
+if (Array.isArray(res) && res[0]) {
+S.projects.unshift(res[0]); S.pid = res[0].id;
+if (S.images.length > 0) {
+try { lsSet("pt_img_"+res[0].id, S.images); } catch(e) {}
+}
+showSync(u.sy); renderTab();
+}
 })
 .catch(function(e) { showErr(e.message); })
 .then(function() { if (btn) { btn.disabled = false; btn.textContent = u.sb; } });
@@ -1104,7 +1110,8 @@ if (Array.isArray(res) && res[0]) { S.projects.unshift(res[0]); S.pid = res[0].i
 
 function delProj(id) {
 S.projects = S.projects.filter(function(p) { return p.id !== id; });
-if (S.pid === id) { S.pid = ""; S.lr = ""; }
+if (S.pid === id) { S.pid = ""; S.lr = ""; S.images = []; }
+try { localStorage.removeItem("pt_img_"+JSON.stringify(id)); } catch(e) {}
 renderTab();
 dbdel("projects","id=eq."+id).catch(function(){});
 }
