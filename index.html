@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="hu">
 <head>
 <meta charset="UTF-8"/>
@@ -73,11 +74,28 @@ textarea.finp{resize:vertical;min-height:76px;line-height:1.6}
 .ebar button{background:none;border:none;color:#f87171;cursor:pointer;font-size:18px}
 footer{border-top:1px solid #1a2238;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;flex-shrink:0}
 footer span{font-size:10px;color:#39495e}
+
+/* IMAGE UPLOAD */
+.img-drop{border:2px dashed #232d44;border-radius:12px;padding:32px 20px;text-align:center;cursor:pointer;transition:all .25s;background:#0c0f1a}
+.img-drop:hover,.img-drop.drag{border-color:#c9a84c;background:rgba(201,168,76,.04)}
+.img-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px;margin-top:12px}
+.img-thumb{position:relative;border-radius:10px;overflow:hidden;aspect-ratio:4/3;background:#0c0f1a;border:1px solid #1a2238}
+.img-thumb img{width:100%;height:100%;object-fit:cover}
+.img-thumb .img-del{position:absolute;top:4px;right:4px;width:22px;height:22px;border-radius:50%;background:rgba(0,0,0,.7);border:1px solid rgba(255,255,255,.15);color:#fff;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1}
+.img-thumb .img-badge{position:absolute;bottom:4px;left:4px;padding:2px 7px;border-radius:6px;font-size:8px;font-weight:700;text-transform:uppercase}
+.img-badge.original{background:rgba(59,130,246,.15);color:#93c5fd;border:1px solid rgba(59,130,246,.25)}
+.img-badge.enhanced{background:rgba(16,185,129,.15);color:#6ee7b7;border:1px solid rgba(16,185,129,.25)}
+.img-mode{display:flex;gap:3px;background:#0c0f1a;border-radius:8px;padding:3px;border:1px solid #1a2238;margin-bottom:12px}
+.img-mode button{flex:1;border:none;border-radius:6px;padding:7px 12px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s}
+.ai-feedback{margin-top:12px;background:#0c0f1a;border:1px solid #1a2238;border-radius:10px;padding:14px;font-size:12px;line-height:1.7;color:#7e8fa8;white-space:pre-wrap}
+.ai-feedback h4{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#c9a84c;margin-bottom:8px}
 </style>
+
 </head>
 <body>
 
 <!-- LANG -->
+
 <div id="p-lang" class="page active">
   <div class="grid"></div>
   <div class="wrap">
@@ -101,6 +119,7 @@ footer span{font-size:10px;color:#39495e}
 </div>
 
 <!-- LOGIN -->
+
 <div id="p-login" class="page">
   <div class="grid"></div>
   <div class="login-box" style="position:relative;z-index:1">
@@ -122,6 +141,7 @@ footer span{font-size:10px;color:#39495e}
 </div>
 
 <!-- COUNTRY -->
+
 <div id="p-country" class="page">
   <div class="grid"></div>
   <div style="position:fixed;top:16px;right:16px;display:flex;align-items:center;gap:10px;background:#101524;border:1px solid #1a2238;border-radius:10px;padding:8px 14px;z-index:100">
@@ -151,6 +171,7 @@ footer span{font-size:10px;color:#39495e}
 </div>
 
 <!-- DASHBOARD -->
+
 <div id="dash">
   <div class="topbar">
     <span class="serif" style="font-size:18px;font-weight:600;color:#e5e8f2">Property <span style="background:linear-gradient(135deg,#c9a84c,#e0be70);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">Titan</span></span>
@@ -178,8 +199,11 @@ footer span{font-size:10px;color:#39495e}
   </footer>
 </div>
 
+<!-- HIDDEN FILE INPUT -->
+
+<input type="file" id="img-input" accept="image/*" multiple style="display:none" onchange="handleImageFiles(this.files)"/>
+
 <script>
-"use strict";
 
 // ── SUPABASE ──
 var SBU = "https://lmculupmpfapqonaxfqi.supabase.co/rest/v1";
@@ -229,7 +253,10 @@ var S = {
   pid: "",
   tab: 0,
   lr: "",
-  or: {}
+  or: {},
+  images: [],
+  imgMode: "upload",
+  imgAnalysis: ""
 };
 
 var EF = {isLuxury:false,name:"",addr:"",price:"",rooms:"",size:"",plot:"",year:"",floor:"",park:"",balc:"",cond:"",orient:"",heat:"",energy:"",walls:"",view:"",lift:"",hood:"",extra:""};
@@ -259,14 +286,24 @@ var LW = {
 
 // ── TRANSLATIONS ──
 var UI = {
-  hu:{title:"Bejelentkezés",regTitle:"Regisztráció",el:"Email cím",pl:"Jelszó",lb:"Bejelentkezés",rb:"Regisztráció",na:"Nincs még fiókod?",ha:"Már van fiókod?",li:"Bejelentkezés...",ri:"Regisztráció...",lo:"Kilépés",tabs:["Hirdetés","Brossúra","Lead Mágnes","Email","Hirdetések","Profil","CRM"],akl:"Claude API Kulcs",aks:"Mentés",aka:"✓ Aktív",ft:"Ingatlan Adatok",fn:"Projekt neve",fa:"Cím",fp:"Ár",fr:"Szobák",fs:"Alapterület m²",fpl:"Telek m²",fy:"Építési év",ff:"Emelet",fpk:"Parkolás",fb:"Erkély m²",fc:"Állapot",fo:"Tájolás",fh:"Fűtés",fe:"Energetika",fw:"Szerkezet",fv:"Kilátás",fli:"Lift",fho:"Környék",fx:"Extra jellemzők",std:"Standard",lux:"Luxury",sb:"Projekt Mentése",gb:"AI Szöveg Generálása",gi:"Generálás...",nk:"⚠ Add meg a Claude API kulcsodat fent.",np:"Nincs mentett projekt.",sp:"Válasszon projektet...",gc:"Generálás",re:"AI Eredmény",cp:"Másolás",cd:"✓ Másolva!",pdf:"PDF",cl:"Törlés",bt:"Brossúra",lt:"Lead Mágnes",et:"Email",at:"Hirdetések",agt:"Saját Profil",agn:"Név",agp:"Telefon",age:"Email",aga:"Irodanév",agl:"Logó URL",ags:"Profil Mentése",agsd:"✓ Mentve!",tt:"Sablonok",ct:"Ügyfél CRM",cn:"Ügyfél neve",cph:"Telefon",cem:"Email",cpr:"Ingatlan",cst:"Státusz",cno:"Megjegyzés",ca:"Ügyfél Hozzáadása",cd2:"Törlés",cn2:"Nincs még ügyfél.",sts:["Érdeklődő","Megnézte","Ajánlat","Tárgyalás","Szerződés","Lezárt"],ds:"Méretek",ts:"Műszaki",es:"Egyéb",pr:"Projektek",tl:"Sablonok",ts2:"⏱ Spórolj 45 percet minden hirdetésnél",sy:"✓ Mentve",sv2:"Mentés...",nt:"Nincs sablon.",dt:"Törlés",ut:"Betöltés",pc:"Válasszon országot",ef:"Kérjük töltsd ki mindkét mezőt.",ep:"A jelszó legalább 6 karakter.",ee:"Ez az email már regisztrált.",er:"Regisztrációs hiba.",eli:"Hibás email vagy jelszó.",eg:"Hiba: ",phn:"pl. Budai panorámás penthouse",pha:"Budapest, XII. kerület"},
-  en:{title:"Sign In",regTitle:"Create Account",el:"Email",pl:"Password",lb:"Sign In",rb:"Create Account",na:"Don't have an account?",ha:"Already have an account?",li:"Signing in...",ri:"Creating account...",lo:"Sign out",tabs:["Listing","Brochure","Lead Magnet","Email","Ads","Profile","CRM"],akl:"Claude API Key",aks:"Save",aka:"✓ Active",ft:"Property Details",fn:"Project name",fa:"Address",fp:"Price",fr:"Rooms",fs:"Floor area m²",fpl:"Plot m²",fy:"Year built",ff:"Floor",fpk:"Parking",fb:"Balcony m²",fc:"Condition",fo:"Orientation",fh:"Heating",fe:"Energy rating",fw:"Structure",fv:"View",fli:"Elevator",fho:"Neighbourhood",fx:"Extra features",std:"Standard",lux:"Luxury",sb:"Save project",gb:"Generate AI Copy",gi:"Generating...",nk:"⚠ Enter your Claude API key above.",np:"No saved projects.",sp:"Select project...",gc:"Generate",re:"AI Result",cp:"Copy",cd:"✓ Copied!",pdf:"PDF",cl:"Clear",bt:"Brochure",lt:"Lead Magnet",et:"Email",at:"Ads",agt:"My Profile",agn:"Name",agp:"Phone",age:"Email",aga:"Agency",agl:"Logo URL",ags:"Save Profile",agsd:"✓ Saved!",tt:"Templates",ct:"Client CRM",cn:"Client name",cph:"Phone",cem:"Email",cpr:"Property",cst:"Status",cno:"Note",ca:"Add Client",cd2:"Delete",cn2:"No clients yet.",sts:["Lead","Viewed","Offer","Negotiating","Contract","Closed"],ds:"Dimensions",ts:"Technical",es:"Other",pr:"Projects",tl:"Templates",ts2:"⏱ Save 45 min per listing",sy:"✓ Saved",sv2:"Saving...",nt:"No templates.",dt:"Delete",ut:"Load",pc:"Choose your country",ef:"Please fill in both fields.",ep:"Password must be at least 6 characters.",ee:"This email is already registered.",er:"Registration failed.",eli:"Incorrect email or password.",eg:"Error: ",phn:"e.g. London Penthouse",pha:"London, Chelsea"},
-  sv:{title:"Logga in",regTitle:"Skapa konto",el:"E-postadress",pl:"Lösenord",lb:"Logga in",rb:"Skapa konto",na:"Har du inget konto?",ha:"Har du redan ett konto?",li:"Loggar in...",ri:"Skapar konto...",lo:"Logga ut",tabs:["Annons","Broschyr","Lead Magnet","E-post","Annonser","Profil","CRM"],akl:"Claude API-nyckel",aks:"Spara",aka:"✓ Aktiv",ft:"Fastighetsuppgifter",fn:"Projektnamn",fa:"Adress",fp:"Pris",fr:"Rum",fs:"Boyta m²",fpl:"Tomt m²",fy:"Byggår",ff:"Våning",fpk:"Parkering",fb:"Balkong m²",fc:"Skick",fo:"Orientering",fh:"Uppvärmning",fe:"Energiklass",fw:"Konstruktion",fv:"Utsikt",fli:"Hiss",fho:"Område",fx:"Extra egenskaper",std:"Standard",lux:"Lyx",sb:"Spara projekt",gb:"Generera AI-text",gi:"Genererar...",nk:"⚠ Ange Claude API-nyckel.",np:"Inga sparade projekt.",sp:"Välj projekt...",gc:"Generera",re:"AI-resultat",cp:"Kopiera",cd:"✓ Kopierat!",pdf:"PDF",cl:"Rensa",bt:"Broschyr",lt:"Lead Magnet",et:"E-post",at:"Annonser",agt:"Min profil",agn:"Namn",agp:"Telefon",age:"E-post",aga:"Mäklarbyrå",agl:"Logo URL",ags:"Spara profil",agsd:"✓ Sparat!",tt:"Mallar",ct:"Kund-CRM",cn:"Kundnamn",cph:"Telefon",cem:"E-post",cpr:"Fastighet",cst:"Status",cno:"Anteckning",ca:"Lägg till kund",cd2:"Ta bort",cn2:"Inga kunder ännu.",sts:["Intressent","Visad","Erbjudande","Förhandling","Kontrakt","Avslutat"],ds:"Mått",ts:"Tekniskt",es:"Övrigt",pr:"Projekt",tl:"Mallar",ts2:"⏱ Spara 45 min per annons",sy:"✓ Sparat",sv2:"Sparar...",nt:"Inga mallar.",dt:"Ta bort",ut:"Ladda",pc:"Välj ditt land",ef:"Fyll i båda fälten.",ep:"Lösenordet måste vara minst 6 tecken.",ee:"Denna e-post är redan registrerad.",er:"Registrering misslyckades.",eli:"Fel e-post eller lösenord.",eg:"Fel: ",phn:"t.ex. Stockholm Penthouse",pha:"Stockholm, Östermalm"},
-  no:{title:"Logg inn",regTitle:"Opprett konto",el:"E-postadresse",pl:"Passord",lb:"Logg inn",rb:"Opprett konto",na:"Har du ikke konto?",ha:"Har du allerede konto?",li:"Logger inn...",ri:"Oppretter konto...",lo:"Logg ut",tabs:["Annonse","Brosjyre","Lead Magnet","E-post","Annonser","Profil","CRM"],akl:"Claude API-nøkkel",aks:"Lagre",aka:"✓ Aktiv",ft:"Eiendomsopplysninger",fn:"Prosjektnavn",fa:"Adresse",fp:"Pris",fr:"Rom",fs:"Boligstørrelse m²",fpl:"Tomt m²",fy:"Byggeår",ff:"Etasje",fpk:"Parkering",fb:"Balkong m²",fc:"Stand",fo:"Orientering",fh:"Oppvarming",fe:"Energiklasse",fw:"Konstruksjon",fv:"Utsikt",fli:"Heis",fho:"Nabolag",fx:"Ekstra egenskaper",std:"Standard",lux:"Luksus",sb:"Lagre prosjekt",gb:"Generer AI-tekst",gi:"Genererer...",nk:"⚠ Skriv inn Claude API-nøkkel.",np:"Ingen lagrede prosjekter.",sp:"Velg prosjekt...",gc:"Generer",re:"AI-resultat",cp:"Kopier",cd:"✓ Kopiert!",pdf:"PDF",cl:"Tøm",bt:"Brosjyre",lt:"Lead Magnet",et:"E-post",at:"Annonser",agt:"Min profil",agn:"Navn",agp:"Telefon",age:"E-post",aga:"Eiendomsmegler",agl:"Logo URL",ags:"Lagre profil",agsd:"✓ Lagret!",tt:"Maler",ct:"Kunde-CRM",cn:"Kundenavn",cph:"Telefon",cem:"E-post",cpr:"Eiendom",cst:"Status",cno:"Merknad",ca:"Legg til kunde",cd2:"Slett",cn2:"Ingen kunder ennå.",sts:["Interessert","Vist","Tilbud","Forhandling","Kontrakt","Avsluttet"],ds:"Mål",ts:"Teknisk",es:"Annet",pr:"Prosjekter",tl:"Maler",ts2:"⏱ Spar 45 min per annonse",sy:"✓ Lagret",sv2:"Lagrer...",nt:"Ingen maler.",dt:"Slett",ut:"Last",pc:"Velg ditt land",ef:"Fyll ut begge feltene.",ep:"Passordet må være minst 6 tegn.",ee:"Denne e-posten er allerede registrert.",er:"Registrering mislyktes.",eli:"Feil e-post eller passord.",eg:"Feil: ",phn:"f.eks. Oslo Penthouse",pha:"Oslo, Frogner"},
-  de:{title:"Anmelden",regTitle:"Konto erstellen",el:"E-Mail-Adresse",pl:"Passwort",lb:"Anmelden",rb:"Konto erstellen",na:"Noch kein Konto?",ha:"Bereits ein Konto?",li:"Anmeldung...",ri:"Konto wird erstellt...",lo:"Abmelden",tabs:["Exposé","Broschüre","Lead-Magnet","E-Mail","Anzeigen","Profil","CRM"],akl:"Claude API-Schlüssel",aks:"Speichern",aka:"✓ Aktiv",ft:"Objektdaten",fn:"Projektname",fa:"Adresse",fp:"Preis",fr:"Zimmer",fs:"Wohnfläche m²",fpl:"Grundstück m²",fy:"Baujahr",ff:"Etage",fpk:"Parken",fb:"Balkon m²",fc:"Zustand",fo:"Ausrichtung",fh:"Heizung",fe:"Energieausweis",fw:"Bauweise",fv:"Aussicht",fli:"Aufzug",fho:"Lage",fx:"Besonderheiten",std:"Standard",lux:"Premium",sb:"Speichern",gb:"KI-Text erstellen",gi:"Wird erstellt...",nk:"⚠ API-Schlüssel eingeben.",np:"Keine Projekte.",sp:"Projekt wählen...",gc:"Generieren",re:"KI-Ergebnis",cp:"Kopieren",cd:"✓ Kopiert!",pdf:"PDF",cl:"Löschen",bt:"Broschüre",lt:"Lead-Magnet",et:"E-Mail",at:"Anzeigen",agt:"Mein Profil",agn:"Name",agp:"Telefon",age:"E-Mail",aga:"Maklerbüro",agl:"Logo URL",ags:"Profil speichern",agsd:"✓ Gespeichert!",tt:"Vorlagen",ct:"Kunden-CRM",cn:"Kundenname",cph:"Telefon",cem:"E-Mail",cpr:"Objekt",cst:"Status",cno:"Notiz",ca:"Hinzufügen",cd2:"Löschen",cn2:"Noch keine Kunden.",sts:["Interessent","Besichtigt","Angebot","Verhandlung","Vertrag","Abschluss"],ds:"Maße",ts:"Technisch",es:"Sonstiges",pr:"Projekte",tl:"Vorlagen",ts2:"⏱ 45 Min. pro Exposé sparen",sy:"✓ Gespeichert",sv2:"Speichert...",nt:"Keine Vorlagen.",dt:"Löschen",ut:"Laden",pc:"Wählen Sie Ihr Land",ef:"Bitte füllen Sie beide Felder aus.",ep:"Das Passwort muss mindestens 6 Zeichen haben.",ee:"Diese E-Mail ist bereits registriert.",er:"Registrierung fehlgeschlagen.",eli:"Falsche E-Mail oder Passwort.",eg:"Fehler: ",phn:"z.B. Berliner Penthouse",pha:"Berlin, Mitte"},
-  fr:{title:"Se connecter",regTitle:"Créer un compte",el:"Adresse e-mail",pl:"Mot de passe",lb:"Se connecter",rb:"Créer un compte",na:"Pas encore de compte?",ha:"Déjà un compte?",li:"Connexion...",ri:"Création...",lo:"Se déconnecter",tabs:["Annonce","Brochure","Lead Magnet","E-mail","Publicités","Profil","CRM"],akl:"Clé API Claude",aks:"Enregistrer",aka:"✓ Actif",ft:"Données du bien",fn:"Nom du projet",fa:"Adresse",fp:"Prix",fr:"Pièces",fs:"Surface m²",fpl:"Terrain m²",fy:"Année",ff:"Étage",fpk:"Parking",fb:"Balcon m²",fc:"État",fo:"Orientation",fh:"Chauffage",fe:"DPE",fw:"Construction",fv:"Vue",fli:"Ascenseur",fho:"Quartier",fx:"Caractéristiques",std:"Standard",lux:"Luxe",sb:"Enregistrer",gb:"Générer texte IA",gi:"Génération...",nk:"⚠ Saisir la clé API Claude.",np:"Aucun projet.",sp:"Choisir un projet...",gc:"Générer",re:"Résultat IA",cp:"Copier",cd:"✓ Copié!",pdf:"PDF",cl:"Effacer",bt:"Brochure",lt:"Lead Magnet",et:"E-mail",at:"Publicités",agt:"Mon profil",agn:"Nom",agp:"Téléphone",age:"E-mail",aga:"Agence",agl:"Logo URL",ags:"Enregistrer profil",agsd:"✓ Enregistré!",tt:"Modèles",ct:"CRM Clients",cn:"Nom du client",cph:"Téléphone",cem:"E-mail",cpr:"Bien",cst:"Statut",cno:"Note",ca:"Ajouter client",cd2:"Supprimer",cn2:"Aucun client.",sts:["Prospect","Visité","Offre","Négociation","Compromis","Signé"],ds:"Surfaces",ts:"Technique",es:"Autres",pr:"Projets",tl:"Modèles",ts2:"⏱ Gagnez 45 min par annonce",sy:"✓ Enregistré",sv2:"Enregistrement...",nt:"Aucun modèle.",dt:"Supprimer",ut:"Charger",pc:"Choisissez votre pays",ef:"Veuillez remplir les deux champs.",ep:"Le mot de passe doit avoir au moins 6 caractères.",ee:"Cet email est déjà enregistré.",er:"Échec de l'inscription.",eli:"Email ou mot de passe incorrect.",eg:"Erreur: ",phn:"ex. Penthouse Paris 8ème",pha:"Paris, 8ème"},
-  pl:{title:"Zaloguj się",regTitle:"Utwórz konto",el:"Adres email",pl:"Hasło",lb:"Zaloguj się",rb:"Utwórz konto",na:"Nie masz konta?",ha:"Masz już konto?",li:"Logowanie...",ri:"Tworzenie konta...",lo:"Wyloguj",tabs:["Ogłoszenie","Broszura","Lead Magnet","Email","Reklamy","Profil","CRM"],akl:"Klucz API Claude",aks:"Zapisz",aka:"✓ Aktywny",ft:"Dane nieruchomości",fn:"Nazwa projektu",fa:"Adres",fp:"Cena",fr:"Pokoje",fs:"Powierzchnia m²",fpl:"Działka m²",fy:"Rok budowy",ff:"Piętro",fpk:"Parking",fb:"Balkon m²",fc:"Stan",fo:"Orientacja",fh:"Ogrzewanie",fe:"Klasa energetyczna",fw:"Konstrukcja",fv:"Widok",fli:"Winda",fho:"Okolica",fx:"Dodatkowe cechy",std:"Standard",lux:"Luksus",sb:"Zapisz projekt",gb:"Generuj tekst AI",gi:"Generowanie...",nk:"⚠ Wprowadź klucz API Claude.",np:"Brak projektów.",sp:"Wybierz projekt...",gc:"Generuj",re:"Wynik AI",cp:"Kopiuj",cd:"✓ Skopiowano!",pdf:"PDF",cl:"Wyczyść",bt:"Broszura",lt:"Lead Magnet",et:"Email",at:"Reklamy",agt:"Mój profil",agn:"Imię i nazwisko",agp:"Telefon",age:"Email",aga:"Agencja",agl:"Logo URL",ags:"Zapisz profil",agsd:"✓ Zapisano!",tt:"Szablony",ct:"CRM Klientów",cn:"Imię klienta",cph:"Telefon",cem:"Email",cpr:"Nieruchomość",cst:"Status",cno:"Notatka",ca:"Dodaj klienta",cd2:"Usuń",cn2:"Brak klientów.",sts:["Zainteresowany","Oglądał","Oferta","Negocjacje","Umowa","Zamknięty"],ds:"Wymiary",ts:"Techniczne",es:"Inne",pr:"Projekty",tl:"Szablony",ts2:"⏱ Oszczędź 45 min na ogłoszeniu",sy:"✓ Zapisano",sv2:"Zapisywanie...",nt:"Brak szablonów.",dt:"Usuń",ut:"Wczytaj",pc:"Wybierz swój kraj",ef:"Wypełnij oba pola.",ep:"Hasło musi mieć co najmniej 6 znaków.",ee:"Ten email jest już zarejestrowany.",er:"Rejestracja nie powiodła się.",eli:"Nieprawidłowy email lub hasło.",eg:"Błąd: ",phn:"np. Penthouse Warszawa",pha:"Warszawa, Śródmieście"},
-  ro:{title:"Autentificare",regTitle:"Creare cont",el:"Adresă email",pl:"Parolă",lb:"Autentificare",rb:"Creare cont",na:"Nu ai cont?",ha:"Ai deja cont?",li:"Autentificare...",ri:"Creare cont...",lo:"Deconectare",tabs:["Anunț","Broșură","Lead Magnet","Email","Reclame","Profil","CRM"],akl:"Cheie API Claude",aks:"Salvează",aka:"✓ Activ",ft:"Date proprietate",fn:"Numele proiectului",fa:"Adresă",fp:"Preț",fr:"Camere",fs:"Suprafață m²",fpl:"Teren m²",fy:"An construcție",ff:"Etaj",fpk:"Parcare",fb:"Balcon m²",fc:"Stare",fo:"Orientare",fh:"Încălzire",fe:"Certificat energetic",fw:"Structură",fv:"Vedere",fli:"Lift",fho:"Zonă",fx:"Caracteristici extra",std:"Standard",lux:"Lux",sb:"Salvează proiect",gb:"Generează text AI",gi:"Se generează...",nk:"⚠ Introduceți cheia API Claude.",np:"Niciun proiect.",sp:"Selectați proiectul...",gc:"Generează",re:"Rezultat AI",cp:"Copiați",cd:"✓ Copiat!",pdf:"PDF",cl:"Ștergeți",bt:"Broșură",lt:"Lead Magnet",et:"Email",at:"Reclame",agt:"Profilul meu",agn:"Nume",agp:"Telefon",age:"Email",aga:"Agenție",agl:"Logo URL",ags:"Salvează profil",agsd:"✓ Salvat!",tt:"Șabloane",ct:"CRM Clienți",cn:"Numele clientului",cph:"Telefon",cem:"Email",cpr:"Proprietate",cst:"Status",cno:"Notă",ca:"Adaugă client",cd2:"Șterge",cn2:"Niciun client.",sts:["Interesat","Vizitat","Ofertă","Negociere","Contract","Finalizat"],ds:"Dimensiuni",ts:"Tehnic",es:"Altele",pr:"Proiecte",tl:"Șabloane",ts2:"⏱ Economisiți 45 min per anunț",sy:"✓ Salvat",sv2:"Se salvează...",nt:"Niciun șablon.",dt:"Șterge",ut:"Încarcă",pc:"Alegeți țara",ef:"Completați ambele câmpuri.",ep:"Parola trebuie să aibă cel puțin 6 caractere.",ee:"Acest email este deja înregistrat.",er:"Înregistrarea a eșuat.",eli:"Email sau parolă incorectă.",eg:"Eroare: ",phn:"ex. Penthouse București",pha:"București, Floreasca"}
+  hu:{title:"Bejelentkezés",regTitle:"Regisztráció",el:"Email cím",pl:"Jelszó",lb:"Bejelentkezés",rb:"Regisztráció",na:"Nincs még fiókod?",ha:"Már van fiókod?",li:"Bejelentkezés...",ri:"Regisztráció...",lo:"Kilépés",tabs:["Hirdetés","Brossúra","Lead Mágnes","Email","Hirdetések","Profil","CRM"],akl:"Claude API Kulcs",aks:"Mentés",aka:"✓ Aktív",ft:"Ingatlan Adatok",fn:"Projekt neve",fa:"Cím",fp:"Ár",fr:"Szobák",fs:"Alapterület m²",fpl:"Telek m²",fy:"Építési év",ff:"Emelet",fpk:"Parkolás",fb:"Erkély m²",fc:"Állapot",fo:"Tájolás",fh:"Fűtés",fe:"Energetika",fw:"Szerkezet",fv:"Kilátás",fli:"Lift",fho:"Környék",fx:"Extra jellemzők",std:"Standard",lux:"Luxury",sb:"Projekt Mentése",gb:"AI Szöveg Generálása",gi:"Generálás...",nk:"⚠ Add meg a Claude API kulcsodat fent.",np:"Nincs mentett projekt.",sp:"Válasszon projektet...",gc:"Generálás",re:"AI Eredmény",cp:"Másolás",cd:"✓ Másolva!",pdf:"PDF",cl:"Törlés",bt:"Brossúra",lt:"Lead Mágnes",et:"Email",at:"Hirdetések",agt:"Saját Profil",agn:"Név",agp:"Telefon",age:"Email",aga:"Irodanév",agl:"Logó URL",ags:"Profil Mentése",agsd:"✓ Mentve!",tt:"Sablonok",ct:"Ügyfél CRM",cn:"Ügyfél neve",cph:"Telefon",cem:"Email",cpr:"Ingatlan",cst:"Státusz",cno:"Megjegyzés",ca:"Ügyfél Hozzáadása",cd2:"Törlés",cn2:"Nincs még ügyfél.",sts:["Érdeklődő","Megnézte","Ajánlat","Tárgyalás","Szerződés","Lezárt"],ds:"Méretek",ts:"Műszaki",es:"Egyéb",pr:"Projektek",tl:"Sablonok",ts2:"⏱ Spórolj 45 percet minden hirdetésnél",sy:"✓ Mentve",sv2:"Mentés...",nt:"Nincs sablon.",dt:"Törlés",ut:"Betöltés",pc:"Válasszon országot",ef:"Kérjük töltsd ki mindkét mezőt.",ep:"A jelszó legalább 6 karakter.",ee:"Ez az email már regisztrált.",er:"Regisztrációs hiba.",eli:"Hibás email vagy jelszó.",eg:"Hiba: ",phn:"pl. Budai panorámás penthouse",pha:"Budapest, XII. kerület",
+    imgTitle:"Fotók",imgUpload:"Képek feltöltése",imgDrop:"Húzd ide a képeket vagy kattints a feltöltéshez",imgMax:"Max 10 kép · JPG, PNG · Max 5MB/kép",imgMode1:"Feltöltés",imgMode2:"AI Javítás",imgAnalyze:"📸 AI Elemzés",imgAnalyzing:"Elemzés...",imgCount:" kép feltöltve",imgEnhancing:"Javítás...",imgEnhanced:"✓ Javítva",imgClear:"Összes törlése"},
+  en:{title:"Sign In",regTitle:"Create Account",el:"Email",pl:"Password",lb:"Sign In",rb:"Create Account",na:"Don't have an account?",ha:"Already have an account?",li:"Signing in...",ri:"Creating account...",lo:"Sign out",tabs:["Listing","Brochure","Lead Magnet","Email","Ads","Profile","CRM"],akl:"Claude API Key",aks:"Save",aka:"✓ Active",ft:"Property Details",fn:"Project name",fa:"Address",fp:"Price",fr:"Rooms",fs:"Floor area m²",fpl:"Plot m²",fy:"Year built",ff:"Floor",fpk:"Parking",fb:"Balcony m²",fc:"Condition",fo:"Orientation",fh:"Heating",fe:"Energy rating",fw:"Structure",fv:"View",fli:"Elevator",fho:"Neighbourhood",fx:"Extra features",std:"Standard",lux:"Luxury",sb:"Save project",gb:"Generate AI Copy",gi:"Generating...",nk:"⚠ Enter your Claude API key above.",np:"No saved projects.",sp:"Select project...",gc:"Generate",re:"AI Result",cp:"Copy",cd:"✓ Copied!",pdf:"PDF",cl:"Clear",bt:"Brochure",lt:"Lead Magnet",et:"Email",at:"Ads",agt:"My Profile",agn:"Name",agp:"Phone",age:"Email",aga:"Agency",agl:"Logo URL",ags:"Save Profile",agsd:"✓ Saved!",tt:"Templates",ct:"Client CRM",cn:"Client name",cph:"Phone",cem:"Email",cpr:"Property",cst:"Status",cno:"Note",ca:"Add Client",cd2:"Delete",cn2:"No clients yet.",sts:["Lead","Viewed","Offer","Negotiating","Contract","Closed"],ds:"Dimensions",ts:"Technical",es:"Other",pr:"Projects",tl:"Templates",ts2:"⏱ Save 45 min per listing",sy:"✓ Saved",sv2:"Saving...",nt:"No templates.",dt:"Delete",ut:"Load",pc:"Choose your country",ef:"Please fill in both fields.",ep:"Password must be at least 6 characters.",ee:"This email is already registered.",er:"Registration failed.",eli:"Incorrect email or password.",eg:"Error: ",phn:"e.g. London Penthouse",pha:"London, Chelsea",
+    imgTitle:"Photos",imgUpload:"Upload images",imgDrop:"Drag & drop images here or click to upload",imgMax:"Max 10 images · JPG, PNG · Max 5MB each",imgMode1:"Upload Only",imgMode2:"AI Enhance",imgAnalyze:"📸 AI Analysis",imgAnalyzing:"Analyzing...",imgCount:" images uploaded",imgEnhancing:"Enhancing...",imgEnhanced:"✓ Enhanced",imgClear:"Clear all"},
+  sv:{title:"Logga in",regTitle:"Skapa konto",el:"E-postadress",pl:"Lösenord",lb:"Logga in",rb:"Skapa konto",na:"Har du inget konto?",ha:"Har du redan ett konto?",li:"Loggar in...",ri:"Skapar konto...",lo:"Logga ut",tabs:["Annons","Broschyr","Lead Magnet","E-post","Annonser","Profil","CRM"],akl:"Claude API-nyckel",aks:"Spara",aka:"✓ Aktiv",ft:"Fastighetsuppgifter",fn:"Projektnamn",fa:"Adress",fp:"Pris",fr:"Rum",fs:"Boyta m²",fpl:"Tomt m²",fy:"Byggår",ff:"Våning",fpk:"Parkering",fb:"Balkong m²",fc:"Skick",fo:"Orientering",fh:"Uppvärmning",fe:"Energiklass",fw:"Konstruktion",fv:"Utsikt",fli:"Hiss",fho:"Område",fx:"Extra egenskaper",std:"Standard",lux:"Lyx",sb:"Spara projekt",gb:"Generera AI-text",gi:"Genererar...",nk:"⚠ Ange Claude API-nyckel.",np:"Inga sparade projekt.",sp:"Välj projekt...",gc:"Generera",re:"AI-resultat",cp:"Kopiera",cd:"✓ Kopierat!",pdf:"PDF",cl:"Rensa",bt:"Broschyr",lt:"Lead Magnet",et:"E-post",at:"Annonser",agt:"Min profil",agn:"Namn",agp:"Telefon",age:"E-post",aga:"Mäklarbyrå",agl:"Logo URL",ags:"Spara profil",agsd:"✓ Sparat!",tt:"Mallar",ct:"Kund-CRM",cn:"Kundnamn",cph:"Telefon",cem:"E-post",cpr:"Fastighet",cst:"Status",cno:"Anteckning",ca:"Lägg till kund",cd2:"Ta bort",cn2:"Inga kunder ännu.",sts:["Intressent","Visad","Erbjudande","Förhandling","Kontrakt","Avslutat"],ds:"Mått",ts:"Tekniskt",es:"Övrigt",pr:"Projekt",tl:"Mallar",ts2:"⏱ Spara 45 min per annons",sy:"✓ Sparat",sv2:"Sparar...",nt:"Inga mallar.",dt:"Ta bort",ut:"Ladda",pc:"Välj ditt land",ef:"Fyll i båda fälten.",ep:"Lösenordet måste vara minst 6 tecken.",ee:"Denna e-post är redan registrerad.",er:"Registrering misslyckades.",eli:"Fel e-post eller lösenord.",eg:"Fel: ",phn:"t.ex. Stockholm Penthouse",pha:"Stockholm, Östermalm",
+    imgTitle:"Foton",imgUpload:"Ladda upp bilder",imgDrop:"Dra och släpp bilder här eller klicka",imgMax:"Max 10 bilder · JPG, PNG · Max 5MB/bild",imgMode1:"Uppladdning",imgMode2:"AI Förbättring",imgAnalyze:"📸 AI Analys",imgAnalyzing:"Analyserar...",imgCount:" bilder uppladdade",imgEnhancing:"Förbättrar...",imgEnhanced:"✓ Förbättrad",imgClear:"Rensa alla"},
+  no:{title:"Logg inn",regTitle:"Opprett konto",el:"E-postadresse",pl:"Passord",lb:"Logg inn",rb:"Opprett konto",na:"Har du ikke konto?",ha:"Har du allerede konto?",li:"Logger inn...",ri:"Oppretter konto...",lo:"Logg ut",tabs:["Annonse","Brosjyre","Lead Magnet","E-post","Annonser","Profil","CRM"],akl:"Claude API-nøkkel",aks:"Lagre",aka:"✓ Aktiv",ft:"Eiendomsopplysninger",fn:"Prosjektnavn",fa:"Adresse",fp:"Pris",fr:"Rom",fs:"Boligstørrelse m²",fpl:"Tomt m²",fy:"Byggeår",ff:"Etasje",fpk:"Parkering",fb:"Balkong m²",fc:"Stand",fo:"Orientering",fh:"Oppvarming",fe:"Energiklasse",fw:"Konstruksjon",fv:"Utsikt",fli:"Heis",fho:"Nabolag",fx:"Ekstra egenskaper",std:"Standard",lux:"Luksus",sb:"Lagre prosjekt",gb:"Generer AI-tekst",gi:"Genererer...",nk:"⚠ Skriv inn Claude API-nøkkel.",np:"Ingen lagrede prosjekter.",sp:"Velg prosjekt...",gc:"Generer",re:"AI-resultat",cp:"Kopier",cd:"✓ Kopiert!",pdf:"PDF",cl:"Tøm",bt:"Brosjyre",lt:"Lead Magnet",et:"E-post",at:"Annonser",agt:"Min profil",agn:"Navn",agp:"Telefon",age:"E-post",aga:"Eiendomsmegler",agl:"Logo URL",ags:"Lagre profil",agsd:"✓ Lagret!",tt:"Maler",ct:"Kunde-CRM",cn:"Kundenavn",cph:"Telefon",cem:"E-post",cpr:"Eiendom",cst:"Status",cno:"Merknad",ca:"Legg til kunde",cd2:"Slett",cn2:"Ingen kunder ennå.",sts:["Interessert","Vist","Tilbud","Forhandling","Kontrakt","Avsluttet"],ds:"Mål",ts:"Teknisk",es:"Annet",pr:"Prosjekter",tl:"Maler",ts2:"⏱ Spar 45 min per annonse",sy:"✓ Lagret",sv2:"Lagrer...",nt:"Ingen maler.",dt:"Slett",ut:"Last",pc:"Velg ditt land",ef:"Fyll ut begge feltene.",ep:"Passordet må være minst 6 tegn.",ee:"Denne e-posten er allerede registrert.",er:"Registrering mislyktes.",eli:"Feil e-post eller passord.",eg:"Feil: ",phn:"f.eks. Oslo Penthouse",pha:"Oslo, Frogner",
+    imgTitle:"Bilder",imgUpload:"Last opp bilder",imgDrop:"Dra og slipp bilder her eller klikk",imgMax:"Maks 10 bilder · JPG, PNG · Maks 5MB/bilde",imgMode1:"Opplasting",imgMode2:"AI Forbedring",imgAnalyze:"📸 AI Analyse",imgAnalyzing:"Analyserer...",imgCount:" bilder lastet opp",imgEnhancing:"Forbedrer...",imgEnhanced:"✓ Forbedret",imgClear:"Slett alle"},
+  de:{title:"Anmelden",regTitle:"Konto erstellen",el:"E-Mail-Adresse",pl:"Passwort",lb:"Anmelden",rb:"Konto erstellen",na:"Noch kein Konto?",ha:"Bereits ein Konto?",li:"Anmeldung...",ri:"Konto wird erstellt...",lo:"Abmelden",tabs:["Exposé","Broschüre","Lead-Magnet","E-Mail","Anzeigen","Profil","CRM"],akl:"Claude API-Schlüssel",aks:"Speichern",aka:"✓ Aktiv",ft:"Objektdaten",fn:"Projektname",fa:"Adresse",fp:"Preis",fr:"Zimmer",fs:"Wohnfläche m²",fpl:"Grundstück m²",fy:"Baujahr",ff:"Etage",fpk:"Parken",fb:"Balkon m²",fc:"Zustand",fo:"Ausrichtung",fh:"Heizung",fe:"Energieausweis",fw:"Bauweise",fv:"Aussicht",fli:"Aufzug",fho:"Lage",fx:"Besonderheiten",std:"Standard",lux:"Premium",sb:"Speichern",gb:"KI-Text erstellen",gi:"Wird erstellt...",nk:"⚠ API-Schlüssel eingeben.",np:"Keine Projekte.",sp:"Projekt wählen...",gc:"Generieren",re:"KI-Ergebnis",cp:"Kopieren",cd:"✓ Kopiert!",pdf:"PDF",cl:"Löschen",bt:"Broschüre",lt:"Lead-Magnet",et:"E-Mail",at:"Anzeigen",agt:"Mein Profil",agn:"Name",agp:"Telefon",age:"E-Mail",aga:"Maklerbüro",agl:"Logo URL",ags:"Profil speichern",agsd:"✓ Gespeichert!",tt:"Vorlagen",ct:"Kunden-CRM",cn:"Kundenname",cph:"Telefon",cem:"E-Mail",cpr:"Objekt",cst:"Status",cno:"Notiz",ca:"Hinzufügen",cd2:"Löschen",cn2:"Noch keine Kunden.",sts:["Interessent","Besichtigt","Angebot","Verhandlung","Vertrag","Abschluss"],ds:"Maße",ts:"Technisch",es:"Sonstiges",pr:"Projekte",tl:"Vorlagen",ts2:"⏱ 45 Min. pro Exposé sparen",sy:"✓ Gespeichert",sv2:"Speichert...",nt:"Keine Vorlagen.",dt:"Löschen",ut:"Laden",pc:"Wählen Sie Ihr Land",ef:"Bitte füllen Sie beide Felder aus.",ep:"Das Passwort muss mindestens 6 Zeichen haben.",ee:"Diese E-Mail ist bereits registriert.",er:"Registrierung fehlgeschlagen.",eli:"Falsche E-Mail oder Passwort.",eg:"Fehler: ",phn:"z.B. Berliner Penthouse",pha:"Berlin, Mitte",
+    imgTitle:"Fotos",imgUpload:"Bilder hochladen",imgDrop:"Bilder hierher ziehen oder klicken",imgMax:"Max 10 Bilder · JPG, PNG · Max 5MB/Bild",imgMode1:"Hochladen",imgMode2:"KI Verbesserung",imgAnalyze:"📸 KI Analyse",imgAnalyzing:"Analysiert...",imgCount:" Bilder hochgeladen",imgEnhancing:"Verbessert...",imgEnhanced:"✓ Verbessert",imgClear:"Alle löschen"},
+  fr:{title:"Se connecter",regTitle:"Créer un compte",el:"Adresse e-mail",pl:"Mot de passe",lb:"Se connecter",rb:"Créer un compte",na:"Pas encore de compte?",ha:"Déjà un compte?",li:"Connexion...",ri:"Création...",lo:"Se déconnecter",tabs:["Annonce","Brochure","Lead Magnet","E-mail","Publicités","Profil","CRM"],akl:"Clé API Claude",aks:"Enregistrer",aka:"✓ Actif",ft:"Données du bien",fn:"Nom du projet",fa:"Adresse",fp:"Prix",fr:"Pièces",fs:"Surface m²",fpl:"Terrain m²",fy:"Année",ff:"Étage",fpk:"Parking",fb:"Balcon m²",fc:"État",fo:"Orientation",fh:"Chauffage",fe:"DPE",fw:"Construction",fv:"Vue",fli:"Ascenseur",fho:"Quartier",fx:"Caractéristiques",std:"Standard",lux:"Luxe",sb:"Enregistrer",gb:"Générer texte IA",gi:"Génération...",nk:"⚠ Saisir la clé API Claude.",np:"Aucun projet.",sp:"Choisir un projet...",gc:"Générer",re:"Résultat IA",cp:"Copier",cd:"✓ Copié!",pdf:"PDF",cl:"Effacer",bt:"Brochure",lt:"Lead Magnet",et:"E-mail",at:"Publicités",agt:"Mon profil",agn:"Nom",agp:"Téléphone",age:"E-mail",aga:"Agence",agl:"Logo URL",ags:"Enregistrer profil",agsd:"✓ Enregistré!",tt:"Modèles",ct:"CRM Clients",cn:"Nom du client",cph:"Téléphone",cem:"E-mail",cpr:"Bien",cst:"Statut",cno:"Note",ca:"Ajouter client",cd2:"Supprimer",cn2:"Aucun client.",sts:["Prospect","Visité","Offre","Négociation","Compromis","Signé"],ds:"Surfaces",ts:"Technique",es:"Autres",pr:"Projets",tl:"Modèles",ts2:"⏱ Gagnez 45 min par annonce",sy:"✓ Enregistré",sv2:"Enregistrement...",nt:"Aucun modèle.",dt:"Supprimer",ut:"Charger",pc:"Choisissez votre pays",ef:"Veuillez remplir les deux champs.",ep:"Le mot de passe doit avoir au moins 6 caractères.",ee:"Cet email est déjà enregistré.",er:"Échec de l'inscription.",eli:"Email ou mot de passe incorrect.",eg:"Erreur: ",phn:"ex. Penthouse Paris 8ème",pha:"Paris, 8ème",
+    imgTitle:"Photos",imgUpload:"Télécharger des images",imgDrop:"Glissez-déposez les images ici ou cliquez",imgMax:"Max 10 images · JPG, PNG · Max 5Mo/image",imgMode1:"Télécharger",imgMode2:"Amélioration IA",imgAnalyze:"📸 Analyse IA",imgAnalyzing:"Analyse...",imgCount:" images téléchargées",imgEnhancing:"Amélioration...",imgEnhanced:"✓ Amélioré",imgClear:"Tout supprimer"},
+  pl:{title:"Zaloguj się",regTitle:"Utwórz konto",el:"Adres email",pl:"Hasło",lb:"Zaloguj się",rb:"Utwórz konto",na:"Nie masz konta?",ha:"Masz już konto?",li:"Logowanie...",ri:"Tworzenie konta...",lo:"Wyloguj",tabs:["Ogłoszenie","Broszura","Lead Magnet","Email","Reklamy","Profil","CRM"],akl:"Klucz API Claude",aks:"Zapisz",aka:"✓ Aktywny",ft:"Dane nieruchomości",fn:"Nazwa projektu",fa:"Adres",fp:"Cena",fr:"Pokoje",fs:"Powierzchnia m²",fpl:"Działka m²",fy:"Rok budowy",ff:"Piętro",fpk:"Parking",fb:"Balkon m²",fc:"Stan",fo:"Orientacja",fh:"Ogrzewanie",fe:"Klasa energetyczna",fw:"Konstrukcja",fv:"Widok",fli:"Winda",fho:"Okolica",fx:"Dodatkowe cechy",std:"Standard",lux:"Luksus",sb:"Zapisz projekt",gb:"Generuj tekst AI",gi:"Generowanie...",nk:"⚠ Wprowadź klucz API Claude.",np:"Brak projektów.",sp:"Wybierz projekt...",gc:"Generuj",re:"Wynik AI",cp:"Kopiuj",cd:"✓ Skopiowano!",pdf:"PDF",cl:"Wyczyść",bt:"Broszura",lt:"Lead Magnet",et:"Email",at:"Reklamy",agt:"Mój profil",agn:"Imię i nazwisko",agp:"Telefon",age:"Email",aga:"Agencja",agl:"Logo URL",ags:"Zapisz profil",agsd:"✓ Zapisano!",tt:"Szablony",ct:"CRM Klientów",cn:"Imię klienta",cph:"Telefon",cem:"Email",cpr:"Nieruchomość",cst:"Status",cno:"Notatka",ca:"Dodaj klienta",cd2:"Usuń",cn2:"Brak klientów.",sts:["Zainteresowany","Oglądał","Oferta","Negocjacje","Umowa","Zamknięty"],ds:"Wymiary",ts:"Techniczne",es:"Inne",pr:"Projekty",tl:"Szablony",ts2:"⏱ Oszczędź 45 min na ogłoszeniu",sy:"✓ Zapisano",sv2:"Zapisywanie...",nt:"Brak szablonów.",dt:"Usuń",ut:"Wczytaj",pc:"Wybierz swój kraj",ef:"Wypełnij oba pola.",ep:"Hasło musi mieć co najmniej 6 znaków.",ee:"Ten email jest już zarejestrowany.",er:"Rejestracja nie powiodła się.",eli:"Nieprawidłowy email lub hasło.",eg:"Błąd: ",phn:"np. Penthouse Warszawa",pha:"Warszawa, Śródmieście",
+    imgTitle:"Zdjęcia",imgUpload:"Prześlij zdjęcia",imgDrop:"Przeciągnij i upuść zdjęcia lub kliknij",imgMax:"Maks 10 zdjęć · JPG, PNG · Maks 5MB/zdjęcie",imgMode1:"Przesyłanie",imgMode2:"Ulepszenie AI",imgAnalyze:"📸 Analiza AI",imgAnalyzing:"Analizowanie...",imgCount:" zdjęć przesłanych",imgEnhancing:"Ulepszanie...",imgEnhanced:"✓ Ulepszone",imgClear:"Usuń wszystkie"},
+  ro:{title:"Autentificare",regTitle:"Creare cont",el:"Adresă email",pl:"Parolă",lb:"Autentificare",rb:"Creare cont",na:"Nu ai cont?",ha:"Ai deja cont?",li:"Autentificare...",ri:"Creare cont...",lo:"Deconectare",tabs:["Anunț","Broșură","Lead Magnet","Email","Reclame","Profil","CRM"],akl:"Cheie API Claude",aks:"Salvează",aka:"✓ Activ",ft:"Date proprietate",fn:"Numele proiectului",fa:"Adresă",fp:"Preț",fr:"Camere",fs:"Suprafață m²",fpl:"Teren m²",fy:"An construcție",ff:"Etaj",fpk:"Parcare",fb:"Balcon m²",fc:"Stare",fo:"Orientare",fh:"Încălzire",fe:"Certificat energetic",fw:"Structură",fv:"Vedere",fli:"Lift",fho:"Zonă",fx:"Caracteristici extra",std:"Standard",lux:"Lux",sb:"Salvează proiect",gb:"Generează text AI",gi:"Se generează...",nk:"⚠ Introduceți cheia API Claude.",np:"Niciun proiect.",sp:"Selectați proiectul...",gc:"Generează",re:"Rezultat AI",cp:"Copiați",cd:"✓ Copiat!",pdf:"PDF",cl:"Ștergeți",bt:"Broșură",lt:"Lead Magnet",et:"Email",at:"Reclame",agt:"Profilul meu",agn:"Nume",agp:"Telefon",age:"Email",aga:"Agenție",agl:"Logo URL",ags:"Salvează profil",agsd:"✓ Salvat!",tt:"Șabloane",ct:"CRM Clienți",cn:"Numele clientului",cph:"Telefon",cem:"Email",cpr:"Proprietate",cst:"Status",cno:"Notă",ca:"Adaugă client",cd2:"Șterge",cn2:"Niciun client.",sts:["Interesat","Vizitat","Ofertă","Negociere","Contract","Finalizat"],ds:"Dimensiuni",ts:"Tehnic",es:"Altele",pr:"Proiecte",tl:"Șabloane",ts2:"⏱ Economisiți 45 min per anunț",sy:"✓ Salvat",sv2:"Se salvează...",nt:"Niciun șablon.",dt:"Șterge",ut:"Încarcă",pc:"Alegeți țara",ef:"Completați ambele câmpuri.",ep:"Parola trebuie să aibă cel puțin 6 caractere.",ee:"Acest email este deja înregistrat.",er:"Înregistrarea a eșuat.",eli:"Email sau parolă incorectă.",eg:"Eroare: ",phn:"ex. Penthouse București",pha:"București, Floreasca",
+    imgTitle:"Fotografii",imgUpload:"Încarcă imagini",imgDrop:"Trageți și plasați imaginile aici sau faceți clic",imgMax:"Max 10 imagini · JPG, PNG · Max 5MB/imagine",imgMode1:"Încărcare",imgMode2:"Îmbunătățire AI",imgAnalyze:"📸 Analiză AI",imgAnalyzing:"Se analizează...",imgCount:" imagini încărcate",imgEnhancing:"Se îmbunătățește...",imgEnhanced:"✓ Îmbunătățit",imgClear:"Șterge tot"},
+  da:{title:"Log ind",regTitle:"Opret konto",el:"E-mailadresse",pl:"Adgangskode",lb:"Log ind",rb:"Opret konto",na:"Har du ingen konto?",ha:"Har du allerede en konto?",li:"Logger ind...",ri:"Opretter konto...",lo:"Log ud",tabs:["Annonce","Brochure","Lead Magnet","E-mail","Annoncer","Profil","CRM"],akl:"Claude API-nøgle",aks:"Gem",aka:"✓ Aktiv",ft:"Ejendomsoplysninger",fn:"Projektnavn",fa:"Adresse",fp:"Pris",fr:"Rum",fs:"Boligareal m²",fpl:"Grund m²",fy:"Byggeår",ff:"Etage",fpk:"Parkering",fb:"Altan m²",fc:"Stand",fo:"Orientering",fh:"Opvarmning",fe:"Energimærke",fw:"Konstruktion",fv:"Udsigt",fli:"Elevator",fho:"Kvarter",fx:"Ekstra funktioner",std:"Standard",lux:"Luksus",sb:"Gem projekt",gb:"Generer AI-tekst",gi:"Genererer...",nk:"⚠ Indtast Claude API-nøgle.",np:"Ingen projekter.",sp:"Vælg projekt...",gc:"Generer",re:"AI-resultat",cp:"Kopier",cd:"✓ Kopieret!",pdf:"PDF",cl:"Ryd",bt:"Brochure",lt:"Lead Magnet",et:"E-mail",at:"Annoncer",agt:"Min profil",agn:"Navn",agp:"Telefon",age:"E-mail",aga:"Mægler",agl:"Logo URL",ags:"Gem profil",agsd:"✓ Gemt!",tt:"Skabeloner",ct:"Kunde-CRM",cn:"Kundenavn",cph:"Telefon",cem:"E-mail",cpr:"Ejendom",cst:"Status",cno:"Note",ca:"Tilføj kunde",cd2:"Slet",cn2:"Ingen kunder endnu.",sts:["Interesseret","Vist","Tilbud","Forhandling","Kontrakt","Afsluttet"],ds:"Mål",ts:"Teknisk",es:"Andet",pr:"Projekter",tl:"Skabeloner",ts2:"⏱ Spar 45 min per annonce",sy:"✓ Gemt",sv2:"Gemmer...",nt:"Ingen skabeloner.",dt:"Slet",ut:"Indlæs",pc:"Vælg dit land",ef:"Udfyld begge felter.",ep:"Adgangskoden skal være mindst 6 tegn.",ee:"Denne e-mail er allerede registreret.",er:"Registrering mislykkedes.",eli:"Forkert e-mail eller adgangskode.",eg:"Fejl: ",phn:"f.eks. København Penthouse",pha:"København, Østerbro",
+    imgTitle:"Fotos",imgUpload:"Upload billeder",imgDrop:"Træk og slip billeder her eller klik",imgMax:"Maks 10 billeder · JPG, PNG · Maks 5MB/billede",imgMode1:"Upload",imgMode2:"AI Forbedring",imgAnalyze:"📸 AI Analyse",imgAnalyzing:"Analyserer...",imgCount:" billeder uploadet",imgEnhancing:"Forbedrer...",imgEnhanced:"✓ Forbedret",imgClear:"Slet alle"}
 };
 
 function t() { return UI[S.lang] || UI.en; }
@@ -410,11 +447,17 @@ function saveKey() {
 }
 
 // ── CLAUDE ──
-function callClaude(prompt) {
+function callClaude(prompt, images) {
+  var payload = {prompt: prompt};
+  if (images && images.length > 0) {
+    payload.images = images.map(function(img) {
+      return {data: img.base64, media_type: img.type || "image/jpeg"};
+    });
+  }
   return fetch("/api/generate", {
     method: "POST",
     headers: {"content-type":"application/json"},
-    body: JSON.stringify({prompt: prompt})
+    body: JSON.stringify(payload)
   }).then(function(r) {
     if (!r.ok) return r.json().then(function(e) { throw new Error(e.error || "API " + r.status); });
     return r.json();
@@ -440,333 +483,607 @@ function buildPrompt(type, d, cc, lang) {
   return prompts[type] || prompts.listing;
 }
 
+// ── IMAGE HANDLING ──
+function handleImageFiles(files) {
+  if (!files || files.length === 0) return;
+  var maxImages = 10;
+  var maxSize = 5 * 1024 * 1024;
+  var remaining = maxImages - S.images.length;
+  if (remaining <= 0) { showErr("Max " + maxImages + " images"); return; }
+  var toProcess = Math.min(files.length, remaining);
+  var processed = 0;
+
+  for (var i = 0; i < toProcess; i++) {
+    (function(file) {
+      if (!file.type.match(/^image\/(jpeg|png|webp)$/)) return;
+      if (file.size > maxSize) { showErr(file.name + " > 5MB"); return; }
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        var dataUrl = e.target.result;
+        var base64 = dataUrl.split(",")[1];
+        S.images.push({
+          id: "img_" + Date.now() + "_" + Math.random().toString(36).substr(2,5),
+          name: file.name,
+          type: file.type,
+          dataUrl: dataUrl,
+          base64: base64,
+          enhanced: false,
+          enhancedDataUrl: ""
+        });
+        processed++;
+        if (processed >= toProcess) renderImageGrid();
+      };
+      reader.readAsDataURL(file);
+    })(files[i]);
+  }
+}
+
+function removeImage(id) {
+  S.images = S.images.filter(function(img) { return img.id !== id; });
+  S.imgAnalysis = "";
+  renderImageGrid();
+}
+
+function clearAllImages() {
+  S.images = [];
+  S.imgAnalysis = "";
+  renderImageGrid();
+}
+
+function setImgMode(mode) {
+  S.imgMode = mode;
+  renderImageGrid();
+}
+
+function renderImageGrid() {
+  var el = document.getElementById("img-section");
+  if (!el) return;
+  var u = t();
+  var imgs = S.images;
+  var modeHtml = '<div class="img-mode">' +
+    '<button onclick="setImgMode(\'upload\')" style="background:' + (S.imgMode === "upload" ? "rgba(59,130,246,.1)" : "transparent") + ';color:' + (S.imgMode === "upload" ? "#93c5fd" : "#39495e") + '">' + u.imgMode1 + '</button>' +
+    '<button onclick="setImgMode(\'enhance\')" style="background:' + (S.imgMode === "enhance" ? "rgba(201,168,76,.09)" : "transparent") + ';color:' + (S.imgMode === "enhance" ? "#e0be70" : "#39495e") + '">' + u.imgMode2 + '</button>' +
+    '</div>';
+
+  var dropHtml = '<div class="img-drop" id="img-drop-zone" onclick="document.getElementById(\'img-input\').click()">' +
+    '<div style="font-size:32px;margin-bottom:8px">📷</div>' +
+    '<div style="font-size:13px;color:#7e8fa8">' + u.imgDrop + '</div>' +
+    '<div style="font-size:10px;color:#39495e;margin-top:6px">' + u.imgMax + '</div>' +
+    '</div>';
+
+  var gridHtml = "";
+  if (imgs.length > 0) {
+    gridHtml = '<div style="display:flex;align-items:center;justify-content:space-between;margin-top:12px;margin-bottom:8px">' +
+      '<span style="font-size:11px;font-weight:700;color:#7e8fa8">' + imgs.length + u.imgCount + '</span>' +
+      '<div style="display:flex;gap:6px">';
+    if (S.imgMode === "enhance") {
+      gridHtml += '<button onclick="analyzeImages()" class="bgh" style="font-size:10px;padding:5px 11px;border-color:rgba(201,168,76,.3);color:#e0be70" id="btn-analyze">' + u.imgAnalyze + '</button>';
+    }
+    gridHtml += '<button onclick="clearAllImages()" class="bgh" style="font-size:10px;padding:5px 11px">' + u.imgClear + '</button>' +
+      '</div></div>';
+    gridHtml += '<div class="img-grid">';
+    for (var i = 0; i < imgs.length; i++) {
+      var img = imgs[i];
+      var showUrl = img.enhanced && img.enhancedDataUrl ? img.enhancedDataUrl : img.dataUrl;
+      var badgeClass = img.enhanced ? "enhanced" : "original";
+      var badgeText = img.enhanced ? u.imgEnhanced : (i + 1) + "/" + imgs.length;
+      gridHtml += '<div class="img-thumb">' +
+        '<img src="' + showUrl + '" alt="' + esc(img.name) + '"/>' +
+        '<button class="img-del" onclick="removeImage(\'' + img.id + '\')">×</button>' +
+        '<span class="img-badge ' + badgeClass + '">' + badgeText + '</span>' +
+        '</div>';
+    }
+    gridHtml += '</div>';
+  }
+
+  var analysisHtml = "";
+  if (S.imgAnalysis) {
+    analysisHtml = '<div class="ai-feedback"><h4>🤖 AI Photo Analysis</h4>' + esc(S.imgAnalysis) + '</div>';
+  }
+
+  el.innerHTML = modeHtml + dropHtml + gridHtml + analysisHtml;
+  initDropZone();
+}
+
+function initDropZone() {
+  var zone = document.getElementById("img-drop-zone");
+  if (!zone) return;
+  zone.ondragover = function(e) { e.preventDefault(); zone.classList.add("drag"); };
+  zone.ondragleave = function(e) { e.preventDefault(); zone.classList.remove("drag"); };
+  zone.ondrop = function(e) {
+    e.preventDefault();
+    zone.classList.remove("drag");
+    handleImageFiles(e.dataTransfer.files);
+  };
+}
+
+// ── AI IMAGE ANALYSIS ──
+function analyzeImages() {
+  var u = t();
+  if (S.images.length === 0) return;
+  var btn = document.getElementById("btn-analyze");
+  if (btn) { btn.disabled = true; btn.innerHTML = '<span class="sp"></span> ' + u.imgAnalyzing; }
+  var li = LW[S.lang] || LW.en;
+  var prompt = li + "\n\nYou are a professional real estate photography expert. Analyze these " + S.images.length + " property photos.\n\nFor EACH photo (numbered 1 to " + S.images.length + "):\n1. Brief description of what the photo shows\n2. Quality score (1-10)\n3. Specific improvement suggestions (lighting, angle, staging, composition)\n4. Would this photo help sell the property? Why/why not?\n\nThen provide:\n- Overall photo set rating\n- Which photos are strongest/weakest\n- What additional photos would help complete the listing\n\nBe specific and actionable in your feedback.";
+
+  var imagesToSend = S.images.map(function(img) {
+    return {base64: img.base64, type: img.type};
+  });
+
+  callClaude(prompt, imagesToSend)
+    .then(function(result) {
+      S.imgAnalysis = result;
+      renderImageGrid();
+      // Auto-enhance images based on analysis
+      if (S.imgMode === "enhance") {
+        enhanceAllImages();
+      }
+    })
+    .catch(function(e) { showErr(e.message); })
+    .then(function() {
+      if (btn) { btn.disabled = false; btn.textContent = u.imgAnalyze; }
+    });
+}
+
+// ── CLIENT-SIDE IMAGE ENHANCEMENT ──
+function enhanceAllImages() {
+  for (var i = 0; i < S.images.length; i++) {
+    enhanceSingleImage(i);
+  }
+}
+
+function enhanceSingleImage(index) {
+  var img = S.images[index];
+  if (!img || img.enhanced) return;
+  var image = new Image();
+  image.onload = function() {
+    var canvas = document.createElement("canvas");
+    canvas.width = image.width;
+    canvas.height = image.height;
+    var ctx = canvas.getContext("2d");
+    ctx.drawImage(image, 0, 0);
+    var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    var data = imageData.data;
+
+    // Calculate average brightness
+    var totalBright = 0;
+    var pixelCount = data.length / 4;
+    for (var i = 0; i < data.length; i += 4) {
+      totalBright += (data[i] * 0.299 + data[i+1] * 0.587 + data[i+2] * 0.114);
+    }
+    var avgBright = totalBright / pixelCount;
+
+    // Adaptive brightness & contrast
+    var brightAdjust = 0;
+    var contrastMult = 1.0;
+    if (avgBright < 100) { brightAdjust = 25; contrastMult = 1.15; }
+    else if (avgBright < 130) { brightAdjust = 12; contrastMult = 1.08; }
+    else if (avgBright > 200) { brightAdjust = -10; contrastMult = 1.05; }
+    else { brightAdjust = 5; contrastMult = 1.05; }
+
+    // Slight warmth for real estate (adds inviting feel)
+    var warmR = 4, warmG = 1, warmB = -3;
+
+    // Saturation boost
+    var satBoost = 1.12;
+
+    for (var j = 0; j < data.length; j += 4) {
+      var r = data[j], g = data[j+1], b = data[j+2];
+
+      // Brightness
+      r += brightAdjust; g += brightAdjust; b += brightAdjust;
+
+      // Contrast
+      r = ((r - 128) * contrastMult) + 128;
+      g = ((g - 128) * contrastMult) + 128;
+      b = ((b - 128) * contrastMult) + 128;
+
+      // Warmth
+      r += warmR; g += warmG; b += warmB;
+
+      // Saturation
+      var gray = 0.299 * r + 0.587 * g + 0.114 * b;
+      r = gray + satBoost * (r - gray);
+      g = gray + satBoost * (g - gray);
+      b = gray + satBoost * (b - gray);
+
+      // Clamp
+      data[j]   = Math.max(0, Math.min(255, Math.round(r)));
+      data[j+1] = Math.max(0, Math.min(255, Math.round(g)));
+      data[j+2] = Math.max(0, Math.min(255, Math.round(b)));
+    }
+
+    ctx.putImageData(imageData, 0, 0);
+
+    // Simple unsharp mask (sharpen)
+    var sharpCanvas = document.createElement("canvas");
+    sharpCanvas.width = canvas.width;
+    sharpCanvas.height = canvas.height;
+    var sctx = sharpCanvas.getContext("2d");
+    sctx.drawImage(canvas, 0, 0);
+    sctx.globalAlpha = 0.3;
+    sctx.globalCompositeOperation = "luminosity";
+    sctx.filter = "contrast(1.1) brightness(1.02)";
+    sctx.drawImage(canvas, 0, 0);
+
+    img.enhancedDataUrl = sharpCanvas.toDataURL("image/jpeg", 0.92);
+    img.enhanced = true;
+    renderImageGrid();
+  };
+  image.src = img.dataUrl;
+}
+
 // ── PDF ──
 function exportPDF(text, name) {
   var w = window.open("","_blank"); if (!w) return;
   var ag = S.agent || {};
   var ab = ag.name ? '<div style="display:flex;align-items:center;gap:16px;margin-top:48px;padding-top:24px;border-top:1px solid #ddd">'+(ag.logo?'<img src="'+esc(ag.logo)+'" style="width:56px;height:56px;object-fit:contain;border-radius:8px"/>':"")+'<div><div style="font-size:16px;font-weight:700">'+esc(ag.name)+'</div>'+(ag.agency?'<div style="font-size:13px;color:#555">'+esc(ag.agency)+'</div>':'')+(ag.phone?'<div style="font-size:12px;color:#666">📞 '+esc(ag.phone)+'</div>':'')+(ag.email?'<div style="font-size:12px;color:#666">✉ '+esc(ag.email)+'</div>':'')+'</div></div>' : "";
-  w.document.write('<!DOCTYPE html><html><head><meta charset="utf-8"><title>'+esc(name)+'</title><style>body{font-family:Georgia,serif;max-width:700px;margin:0 auto;padding:48px 40px;color:#111;line-height:1.8;font-size:15px}pre{white-space:pre-wrap;font-family:Georgia,serif}</style></head><body><h1>'+esc(name)+'</h1><p style="color:#888;font-size:11px;margin-bottom:32px">Property Titan AI · '+new Date().toLocaleDateString()+'</p><pre>'+esc(text)+'</pre>'+ab+'<script>window.onload=function(){window.print();}<\/script></body></html>');
-  w.document.close();
+
+  // Build image gallery HTML for PDF
+  var imgHtml = "";
+  if (S.images.length > 0) {
+    imgHtml = '<div style="margin-top:32px;padding-top:24px;border-top:1px solid #ddd"><h3 style="font-size:18px;margin-bottom:16px;color:#333">' + esc(t().imgTitle) + '</h3><div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">';
+    for (var i = 0; i < S.images.length; i++) {
+      var imgSrc = S.images[i].enhanced && S.images[i].enhancedDataUrl ? S.images[i].enhancedDataUrl : S.images[i].dataUrl;
+      imgHtml += '<div style="border-radius:8px;overflow:hidden;border:1px solid #eee"><img src="' + imgSrc + '" style="width:100%;height:auto;display:block"/></div>';
+    }
+    imgHtml += '</div></div>';
+  }
+
+  w.document.write('<!DOCTYPE html><html><head><meta charset="utf-8"><title>'+esc(name)+'</title><style>body{font-family:Georgia,serif;max-width:700px;margin:0 auto;padding:48px 40px;color:#111;line-height:1.8;font-size:15px}pre{white-space:pre-wrap;font-family:Georgia,serif}img{max-width:100%}@media print{body{padding:20px}}</style></head><body><h1>'+esc(name)+'</h1><p style="color:#888;font-size:11px;margin-bottom:32px">Property Titan AI · '+new Date().toLocaleDateString()+'</p><pre>'+esc(text)+'</pre>'+imgHtml+ab+'<script>window.onload=function(){window.print();}<\/script></body></html>');
+
+w.document.close();
 }
 
 // ── DASH ──
 function initDash() {
-  var u = t();
-  var c = CC[S.country] || CC.GB;
-  document.getElementById("d-cc").innerHTML = '<span style="font-size:16px">'+c.flag+'</span><span style="font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#e0be70">'+c.name+'</span>';
-  document.getElementById("d-lo").textContent = u.lo;
-  document.getElementById("d-akl").textContent = u.akl;
-  document.getElementById("d-aks").textContent = u.aks;
-  document.getElementById("d-ts").textContent = u.ts2;
-  document.getElementById("d-ft").textContent = c.flag+" Property Titan · "+S.email;
-  if (S.key) document.getElementById("d-aka").style.display = "inline";
-  renderTabs();
-  showDash();
-  Promise.all([
-    dbsel("projects","user_id=eq."+S.uid+"&order=created_at.desc"),
-    dbsel("clients","user_id=eq."+S.uid+"&order=created_at.desc"),
-    dbsel("templates","user_id=eq."+S.uid+"&order=created_at.desc"),
-    dbsel("agents","user_id=eq."+S.uid)
-  ]).then(function(results) {
-    if (Array.isArray(results[0])) S.projects = results[0];
-    if (Array.isArray(results[1])) S.clients = results[1];
-    if (Array.isArray(results[2])) S.templates = results[2];
-    if (Array.isArray(results[3]) && results[3].length > 0) S.agent = results[3][0];
-    renderTab();
-  }).catch(function(e) { console.error(e); renderTab(); });
+var u = t();
+var c = CC[S.country] || CC.GB;
+document.getElementById(“d-cc”).innerHTML = ‘<span style="font-size:16px">’+c.flag+’</span><span style="font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#e0be70">’+c.name+’</span>’;
+document.getElementById(“d-lo”).textContent = u.lo;
+document.getElementById(“d-akl”).textContent = u.akl;
+document.getElementById(“d-aks”).textContent = u.aks;
+document.getElementById(“d-ts”).textContent = u.ts2;
+document.getElementById(“d-ft”).textContent = c.flag+” Property Titan · “+S.email;
+if (S.key) document.getElementById(“d-aka”).style.display = “inline”;
+renderTabs();
+showDash();
+Promise.all([
+dbsel(“projects”,“user_id=eq.”+S.uid+”&order=created_at.desc”),
+dbsel(“clients”,“user_id=eq.”+S.uid+”&order=created_at.desc”),
+dbsel(“templates”,“user_id=eq.”+S.uid+”&order=created_at.desc”),
+dbsel(“agents”,“user_id=eq.”+S.uid)
+]).then(function(results) {
+if (Array.isArray(results[0])) S.projects = results[0];
+if (Array.isArray(results[1])) S.clients = results[1];
+if (Array.isArray(results[2])) S.templates = results[2];
+if (Array.isArray(results[3]) && results[3].length > 0) S.agent = results[3][0];
+renderTab();
+}).catch(function(e) { console.error(e); renderTab(); });
 }
 
 function renderTabs() {
-  var u = t();
-  var html = "";
-  for (var i = 0; i < u.tabs.length; i++) {
-    html += '<button class="tab'+(i===S.tab?" on":"")+'" onclick="switchTab('+i+')">'+u.tabs[i]+'</button>';
-  }
-  document.getElementById("d-tabs").innerHTML = html;
+var u = t();
+var html = “”;
+for (var i = 0; i < u.tabs.length; i++) {
+html += ‘<button class=“tab’+(i===S.tab?” on”:””)+’” onclick=“switchTab(’+i+’)”>’+u.tabs[i]+’</button>’;
+}
+document.getElementById(“d-tabs”).innerHTML = html;
 }
 
 function switchTab(i) {
-  S.tab = i;
-  var tabs = document.querySelectorAll(".tab");
-  for (var j = 0; j < tabs.length; j++) tabs[j].classList.toggle("on", j===i);
-  renderTab();
+S.tab = i;
+var tabs = document.querySelectorAll(”.tab”);
+for (var j = 0; j < tabs.length; j++) tabs[j].classList.toggle(“on”, j===i);
+renderTab();
 }
 
-var TIDS = ["listing","brochure","lead","email","ads","profile","crm"];
+var TIDS = [“listing”,“brochure”,“lead”,“email”,“ads”,“profile”,“crm”];
 
 function renderTab() {
-  var m = document.getElementById("d-main");
-  if (S.tab === 0) m.innerHTML = rListing();
-  else if (S.tab >= 1 && S.tab <= 4) m.innerHTML = rGenTab(TIDS[S.tab], t().tabs[S.tab]);
-  else if (S.tab === 5) m.innerHTML = rProfile();
-  else if (S.tab === 6) m.innerHTML = rCRM();
+var m = document.getElementById(“d-main”);
+if (S.tab === 0) m.innerHTML = rListing();
+else if (S.tab >= 1 && S.tab <= 4) m.innerHTML = rGenTab(TIDS[S.tab], t().tabs[S.tab]);
+else if (S.tab === 5) m.innerHTML = rProfile();
+else if (S.tab === 6) m.innerHTML = rCRM();
+// Re-init drop zone after render
+if (S.tab === 0) {
+setTimeout(function() { renderImageGrid(); }, 50);
+}
 }
 
 // ── LISTING ──
 function rListing() {
-  var u = t(); var c = CC[S.country]||CC.GB; var ps = S.projects;
-  var projList = ps.length === 0 ? '<p style="font-size:12px;color:#39495e;text-align:center;padding:12px 0">—</p>' :
-    ps.map(function(p) { return '<div style="display:flex;align-items:center;gap:5px"><button onclick="loadProj(\''+p.id+'\')" style="flex:1;text-align:left;padding:8px 10px;border-radius:7px;border:1px solid '+(S.pid===p.id?"#c9a84c":"#1a2238")+';background:'+(S.pid===p.id?"rgba(201,168,76,.09)":"#0c0f1a")+';cursor:pointer;color:inherit;font-family:inherit"><div style="font-size:12px;font-weight:600;color:'+(S.pid===p.id?"#e0be70":"#7e8fa8")+'">'+esc(p.name)+'</div><div style="font-size:9px;color:#39495e">'+(CC[p.country]?CC[p.country].flag:"")+" "+(CC[p.country]?CC[p.country].name:p.country)+'</div></button><button onclick="delProj(\''+p.id+'\')" style="background:none;border:none;color:#39495e;cursor:pointer;font-size:15px;padding:3px 5px">×</button></div>'; }).join("");
+var u = t(); var c = CC[S.country]||CC.GB; var ps = S.projects;
+var projList = ps.length === 0 ? ‘<p style="font-size:12px;color:#39495e;text-align:center;padding:12px 0">—</p>’ :
+ps.map(function(p) { return ‘<div style="display:flex;align-items:center;gap:5px"><button onclick=“loadProj('’+p.id+’')” style=“flex:1;text-align:left;padding:8px 10px;border-radius:7px;border:1px solid ‘+(S.pid===p.id?”#c9a84c”:”#1a2238”)+’;background:’+(S.pid===p.id?“rgba(201,168,76,.09)”:”#0c0f1a”)+’;cursor:pointer;color:inherit;font-family:inherit”><div style=“font-size:12px;font-weight:600;color:’+(S.pid===p.id?”#e0be70”:”#7e8fa8”)+’”>’+esc(p.name)+’</div><div style="font-size:9px;color:#39495e">’+(CC[p.country]?CC[p.country].flag:””)+” “+(CC[p.country]?CC[p.country].name:p.country)+’</div></button><button onclick="delProj(\''+p.id+'\')" style="background:none;border:none;color:#39495e;cursor:pointer;font-size:15px;padding:3px 5px">×</button></div>’; }).join(””);
 
-  return '<div style="display:grid;grid-template-columns:1fr 295px;gap:18px;align-items:start" class="dg">'+
-  '<div class="card">'+
-    '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px">'+
-      '<h2 class="serif" style="font-size:20px;font-weight:600;color:#e5e8f2">'+u.ft+'</h2>'+
-      '<div style="display:flex;gap:3px;background:#0c0f1a;border-radius:8px;padding:3px;border:1px solid #1a2238">'+
-        '<button onclick="setLux(false)" style="border:none;border-radius:6px;padding:5px 12px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;background:'+(F.isLuxury?"transparent":"rgba(59,130,246,.1)")+';color:'+(F.isLuxury?"#39495e":"#93c5fd")+'">'+u.std+'</button>'+
-        '<button onclick="setLux(true)" style="border:none;border-radius:6px;padding:5px 12px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;background:'+(F.isLuxury?"rgba(201,168,76,.09)":"transparent")+';color:'+(F.isLuxury?"#e0be70":"#39495e")+'">'+u.lux+'</button>'+
-      '</div>'+
-    '</div>'+
-    '<div class="g2"><div style="grid-column:1/-1"><div class="flbl">'+u.fn+'</div><input class="finp" value="'+esc(F.name)+'" oninput="F.name=this.value" placeholder="'+u.phn+'"/></div>'+
-    '<div style="grid-column:1/-1"><div class="flbl">'+u.fa+'</div><input class="finp" value="'+esc(F.addr)+'" oninput="F.addr=this.value" placeholder="'+u.pha+'"/></div>'+
-    '<div><div class="flbl">'+u.fp+'</div><input class="finp" value="'+esc(F.price)+'" oninput="F.price=this.value" placeholder="'+c.ph+'"/></div>'+
-    '<div><div class="flbl">'+u.fc+'</div><input class="finp" value="'+esc(F.cond)+'" oninput="F.cond=this.value"/></div></div>'+
-    '<div class="dv"><span>'+u.ds+'</span><hr/></div>'+
-    '<div class="g3">'+[["rooms",u.fr],["size",u.fs],["plot",u.fpl],["floor",u.ff],["balc",u.fb],["orient",u.fo]].map(function(x){return'<div><div class="flbl">'+x[1]+'</div><input class="finp" value="'+esc(F[x[0]])+'" oninput="F.'+x[0]+'=this.value"/></div>';}).join("")+'</div>'+
-    '<div class="dv"><span>'+u.ts+'</span><hr/></div>'+
-    '<div class="g3">'+[["year",u.fy],["energy",u.fe],["heat",u.fh],["walls",u.fw],["park",u.fpk],["lift",u.fli]].map(function(x){return'<div><div class="flbl">'+x[1]+'</div><input class="finp" value="'+esc(F[x[0]])+'" oninput="F.'+x[0]+'=this.value"/></div>';}).join("")+'</div>'+
-    '<div class="dv"><span>'+u.es+'</span><hr/></div>'+
-    '<div class="g2" style="margin-bottom:0"><div><div class="flbl">'+u.fv+'</div><input class="finp" value="'+esc(F.view)+'" oninput="F.view=this.value"/></div><div><div class="flbl">'+u.fho+'</div><input class="finp" value="'+esc(F.hood)+'" oninput="F.hood=this.value"/></div></div>'+
-    '<div class="flbl" style="margin-top:0">'+u.fx+'</div><textarea class="finp" oninput="F.extra=this.value">'+esc(F.extra)+'</textarea>'+
-    '<div style="display:flex;gap:9px;margin-top:16px">'+
-      '<button onclick="saveProj()" class="bgh" id="bsv">'+u.sb+'</button>'+
-      '<button onclick="genList()" style="flex:1;padding:12px;border:none;border-radius:9px;background:linear-gradient(135deg,#c9a84c,#e0be70);color:#07080c;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px" id="bgen">'+u.gb+'</button>'+
-    '</div>'+
-    '<div id="lr"></div>'+
-  '</div>'+
-  '<div style="display:flex;flex-direction:column;gap:14px">'+
-    '<div class="card">'+
-      '<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px"><span style="font-size:22px">'+c.flag+'</span><div><div style="font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#39495e">Active market</div><div class="serif" style="font-size:15px;font-weight:600;color:#e5e8f2">'+c.name+'</div></div></div>'+
-      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:7px">'+
-        [["AI","Sonnet"],[u.pr,S.projects.length],["CRM",S.clients.length],[u.tl,S.templates.length]].map(function(x){return'<div style="background:#0c0f1a;border-radius:7px;padding:8px 10px"><div style="font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#39495e;margin-bottom:3px">'+x[0]+'</div><div style="font-size:12px;font-weight:600;color:#7e8fa8">'+x[1]+'</div></div>';}).join("")+
-      '</div>'+
-    '</div>'+
-    '<div class="card">'+
-      '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"><span style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#39495e">'+u.pr+'</span><span style="padding:2px 8px;border-radius:99px;font-size:9px;font-weight:700;background:rgba(59,130,246,.1);color:#93c5fd;border:1px solid rgba(59,130,246,.2)">'+ps.length+'</span></div>'+
-      '<div style="display:flex;flex-direction:column;gap:5px;max-height:220px;overflow-y:auto">'+projList+'</div>'+
-    '</div>'+
-  '</div>'+
-  '</div>';
+return ‘<div style="display:grid;grid-template-columns:1fr 295px;gap:18px;align-items:start" class="dg">’+
+‘<div>’+
+‘<div class="card">’+
+‘<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px">’+
+‘<h2 class="serif" style="font-size:20px;font-weight:600;color:#e5e8f2">’+u.ft+’</h2>’+
+‘<div style="display:flex;gap:3px;background:#0c0f1a;border-radius:8px;padding:3px;border:1px solid #1a2238">’+
+‘<button onclick=“setLux(false)” style=“border:none;border-radius:6px;padding:5px 12px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;background:’+(F.isLuxury?“transparent”:“rgba(59,130,246,.1)”)+’;color:’+(F.isLuxury?”#39495e”:”#93c5fd”)+’”>’+u.std+’</button>’+
+‘<button onclick=“setLux(true)” style=“border:none;border-radius:6px;padding:5px 12px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;background:’+(F.isLuxury?“rgba(201,168,76,.09)”:“transparent”)+’;color:’+(F.isLuxury?”#e0be70”:”#39495e”)+’”>’+u.lux+’</button>’+
+‘</div>’+
+‘</div>’+
+‘<div class="g2"><div style="grid-column:1/-1"><div class="flbl">’+u.fn+’</div><input class="finp" value="'+esc(F.name)+'" oninput="F.name=this.value" placeholder="'+u.phn+'"/></div>’+
+‘<div style="grid-column:1/-1"><div class="flbl">’+u.fa+’</div><input class="finp" value="'+esc(F.addr)+'" oninput="F.addr=this.value" placeholder="'+u.pha+'"/></div>’+
+‘<div><div class="flbl">’+u.fp+’</div><input class="finp" value="'+esc(F.price)+'" oninput="F.price=this.value" placeholder="'+c.ph+'"/></div>’+
+‘<div><div class="flbl">’+u.fc+’</div><input class="finp" value="'+esc(F.cond)+'" oninput="F.cond=this.value"/></div></div>’+
+‘<div class="dv"><span>’+u.ds+’</span><hr/></div>’+
+‘<div class="g3">’+[[“rooms”,u.fr],[“size”,u.fs],[“plot”,u.fpl],[“floor”,u.ff],[“balc”,u.fb],[“orient”,u.fo]].map(function(x){return’<div><div class="flbl">’+x[1]+’</div><input class="finp" value="'+esc(F[x[0]])+'" oninput="F.'+x[0]+'=this.value"/></div>’;}).join(””)+’</div>’+
+‘<div class="dv"><span>’+u.ts+’</span><hr/></div>’+
+‘<div class="g3">’+[[“year”,u.fy],[“energy”,u.fe],[“heat”,u.fh],[“walls”,u.fw],[“park”,u.fpk],[“lift”,u.fli]].map(function(x){return’<div><div class="flbl">’+x[1]+’</div><input class="finp" value="'+esc(F[x[0]])+'" oninput="F.'+x[0]+'=this.value"/></div>’;}).join(””)+’</div>’+
+‘<div class="dv"><span>’+u.es+’</span><hr/></div>’+
+‘<div class="g2" style="margin-bottom:0"><div><div class="flbl">’+u.fv+’</div><input class="finp" value="'+esc(F.view)+'" oninput="F.view=this.value"/></div><div><div class="flbl">’+u.fho+’</div><input class="finp" value="'+esc(F.hood)+'" oninput="F.hood=this.value"/></div></div>’+
+‘<div class="flbl" style="margin-top:0">’+u.fx+’</div><textarea class="finp" oninput="F.extra=this.value">’+esc(F.extra)+’</textarea>’+
+‘</div>’+
+/* IMAGE UPLOAD SECTION */
+‘<div class="card">’+
+‘<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">’+
+‘<h2 class="serif" style="font-size:20px;font-weight:600;color:#e5e8f2">📷 ‘+u.imgTitle+’</h2>’+
+‘<span style="padding:2px 8px;border-radius:99px;font-size:9px;font-weight:700;background:rgba(201,168,76,.09);color:#e0be70;border:1px solid rgba(201,168,76,.2)">’+S.images.length+’/10</span>’+
+‘</div>’+
+‘<div id="img-section"></div>’+
+‘</div>’+
+/* BUTTONS */
+‘<div class="card" style="border:none;background:transparent;padding:0">’+
+‘<div style="display:flex;gap:9px">’+
+‘<button onclick="saveProj()" class="bgh" id="bsv">’+u.sb+’</button>’+
+‘<button onclick="genList()" style="flex:1;padding:12px;border:none;border-radius:9px;background:linear-gradient(135deg,#c9a84c,#e0be70);color:#07080c;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px" id="bgen">’+u.gb+’</button>’+
+‘</div>’+
+‘<div id="lr"></div>’+
+‘</div>’+
+‘</div>’+
+‘<div style="display:flex;flex-direction:column;gap:14px">’+
+‘<div class="card">’+
+‘<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px"><span style="font-size:22px">’+c.flag+’</span><div><div style="font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#39495e">Active market</div><div class="serif" style="font-size:15px;font-weight:600;color:#e5e8f2">’+c.name+’</div></div></div>’+
+‘<div style="display:grid;grid-template-columns:1fr 1fr;gap:7px">’+
+[[“AI”,“Sonnet”],[u.pr,S.projects.length],[“CRM”,S.clients.length],[u.tl,S.templates.length]].map(function(x){return’<div style="background:#0c0f1a;border-radius:7px;padding:8px 10px"><div style="font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#39495e;margin-bottom:3px">’+x[0]+’</div><div style="font-size:12px;font-weight:600;color:#7e8fa8">’+x[1]+’</div></div>’;}).join(””)+
+‘</div>’+
+‘</div>’+
+‘<div class="card">’+
+‘<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"><span style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#39495e">’+u.pr+’</span><span style="padding:2px 8px;border-radius:99px;font-size:9px;font-weight:700;background:rgba(59,130,246,.1);color:#93c5fd;border:1px solid rgba(59,130,246,.2)">’+ps.length+’</span></div>’+
+‘<div style="display:flex;flex-direction:column;gap:5px;max-height:220px;overflow-y:auto">’+projList+’</div>’+
+‘</div>’+
+‘</div>’+
+‘</div>’;
 }
 
 function setLux(v) { F.isLuxury = v; renderTab(); }
 
 function loadProj(id) {
-  var p = null;
-  for (var i = 0; i < S.projects.length; i++) { if (S.projects[i].id === id) { p = S.projects[i]; break; } }
-  if (!p) return;
-  S.pid = id; F = Object.assign({}, EF, p.data||{});
-  S.lr = (p.results && p.results.listing) || "";
-  renderTab();
-  if (S.lr) showLR(S.lr);
+var p = null;
+for (var i = 0; i < S.projects.length; i++) { if (S.projects[i].id === id) { p = S.projects[i]; break; } }
+if (!p) return;
+S.pid = id; F = Object.assign({}, EF, p.data||{});
+S.lr = (p.results && p.results.listing) || “”;
+S.images = [];
+S.imgAnalysis = “”;
+renderTab();
+if (S.lr) showLR(S.lr);
 }
 
 function saveProj() {
-  var u = t(); var btn = document.getElementById("bsv");
-  if (btn) { btn.disabled = true; btn.textContent = u.sv2; }
-  dbins("projects", {user_id:S.uid, name:F.name||F.addr||"Project", country:S.country, data:Object.assign({},F), results:{}, perf:{}})
-    .then(function(res) {
-      if (Array.isArray(res) && res[0]) { S.projects.unshift(res[0]); S.pid = res[0].id; showSync(u.sy); renderTab(); }
-    })
-    .catch(function(e) { showErr(e.message); })
-    .then(function() { if (btn) { btn.disabled = false; btn.textContent = u.sb; } });
+var u = t(); var btn = document.getElementById(“bsv”);
+if (btn) { btn.disabled = true; btn.textContent = u.sv2; }
+dbins(“projects”, {user_id:S.uid, name:F.name||F.addr||“Project”, country:S.country, data:Object.assign({},F), results:{}, perf:{}})
+.then(function(res) {
+if (Array.isArray(res) && res[0]) { S.projects.unshift(res[0]); S.pid = res[0].id; showSync(u.sy); renderTab(); }
+})
+.catch(function(e) { showErr(e.message); })
+.then(function() { if (btn) { btn.disabled = false; btn.textContent = u.sb; } });
 }
 
 function delProj(id) {
-  S.projects = S.projects.filter(function(p) { return p.id !== id; });
-  if (S.pid === id) { S.pid = ""; S.lr = ""; }
-  renderTab();
-  dbdel("projects","id=eq."+id).catch(function(){});
+S.projects = S.projects.filter(function(p) { return p.id !== id; });
+if (S.pid === id) { S.pid = “”; S.lr = “”; }
+renderTab();
+dbdel(“projects”,“id=eq.”+id).catch(function(){});
 }
 
 function genList() {
-  var u = t(); if (!S.key) { showErr(u.nk); return; }
-  var btn = document.getElementById("bgen");
-  if (btn) { btn.disabled = true; btn.innerHTML = '<span class="sp"></span> '+u.gi; }
-  var lrel = document.getElementById("lr");
-  if (lrel) lrel.innerHTML = '<div style="background:#101524;border:1.5px solid #2c3a54;border-radius:12px;padding:40px;display:flex;align-items:center;justify-content:center;gap:14px;margin-top:14px"><span class="sp"></span><span style="font-size:13px;color:#7e8fa8">'+u.gi+'</span></div>';
-  callClaude(buildPrompt("listing", F, S.country, S.lang))
-    .then(function(r) {
-      if (r) {
-        S.lr = r; showLR(r);
-        if (S.pid) {
-          for (var i = 0; i < S.projects.length; i++) {
-            if (S.projects[i].id === S.pid) {
-              S.projects[i].results = Object.assign({}, S.projects[i].results||{}, {listing:r});
-              dbupd("projects","id=eq."+S.pid,{results:S.projects[i].results}).then(function(){showSync(t().sy);}).catch(function(){});
-              break;
-            }
-          }
-        }
-      }
-    })
-    .catch(function(e) { showErr(e.message); if (lrel) lrel.innerHTML = ""; })
-    .then(function() { if (btn) { btn.disabled = false; btn.textContent = u.gb; } });
+var u = t();
+var btn = document.getElementById(“bgen”);
+if (btn) { btn.disabled = true; btn.innerHTML = ‘<span class="sp"></span> ‘+u.gi; }
+var lrel = document.getElementById(“lr”);
+if (lrel) lrel.innerHTML = ‘<div style="background:#101524;border:1.5px solid #2c3a54;border-radius:12px;padding:40px;display:flex;align-items:center;justify-content:center;gap:14px;margin-top:14px"><span class="sp"></span><span style="font-size:13px;color:#7e8fa8">’+u.gi+’</span></div>’;
+
+var prompt = buildPrompt(“listing”, F, S.country, S.lang);
+
+// If images present, include them for richer description
+var imagesToSend = null;
+if (S.images.length > 0) {
+prompt += “\n\nI have attached “ + S.images.length + “ photos of the property. Use visual details from these photos to enrich your listing description. Mention specific visual features you can see (e.g., natural light, modern kitchen, garden view, etc.).”;
+imagesToSend = S.images.map(function(img) {
+return {base64: img.base64, type: img.type};
+});
+}
+
+callClaude(prompt, imagesToSend)
+.then(function(r) {
+if (r) {
+S.lr = r; showLR(r);
+if (S.pid) {
+for (var i = 0; i < S.projects.length; i++) {
+if (S.projects[i].id === S.pid) {
+S.projects[i].results = Object.assign({}, S.projects[i].results||{}, {listing:r});
+dbupd(“projects”,“id=eq.”+S.pid,{results:S.projects[i].results}).then(function(){showSync(t().sy);}).catch(function(){});
+break;
+}
+}
+}
+}
+})
+.catch(function(e) { showErr(e.message); if (lrel) lrel.innerHTML = “”; })
+.then(function() { if (btn) { btn.disabled = false; btn.textContent = u.gb; } });
 }
 
 function showLR(text) {
-  var u = t(); var el = document.getElementById("lr"); if (!el) return;
-  el.innerHTML = '<div style="margin-top:16px">'+
-    '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px">'+
-      '<div style="display:flex;align-items:center;gap:8px"><span style="width:6px;height:6px;border-radius:50%;background:#c9a84c;display:inline-block;animation:pulse 2s ease infinite;box-shadow:0 0 6px #c9a84c"></span><span style="font-size:10px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:#c9a84c">'+u.re+'</span></div>'+
-      '<div style="display:flex;gap:6px;flex-wrap:wrap">'+
-        '<button class="bgh" style="font-size:11px" onclick="navigator.clipboard.writeText(document.getElementById(\'rtx\').textContent);this.textContent=\''+u.cd+'\';var self=this;setTimeout(function(){self.textContent=\''+u.cp+'\';},2200)">'+u.cp+'</button>'+
-        '<button class="bgh" style="font-size:11px" onclick="exportPDF(document.getElementById(\'rtx\').textContent,\''+esc(F.name||F.addr||"Property")+'\')">'+u.pdf+'</button>'+
-        '<button class="bgh" style="font-size:11px" onclick="document.getElementById(\'lr\').innerHTML=\'\'">'+u.cl+'</button>'+
-      '</div>'+
-    '</div>'+
-    '<div class="result" id="rtx">'+esc(text)+'</div>'+
-  '</div>';
+var u = t(); var el = document.getElementById(“lr”); if (!el) return;
+el.innerHTML = ‘<div style="margin-top:16px">’+
+‘<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px">’+
+‘<div style="display:flex;align-items:center;gap:8px"><span style="width:6px;height:6px;border-radius:50%;background:#c9a84c;display:inline-block;animation:pulse 2s ease infinite;box-shadow:0 0 6px #c9a84c"></span><span style="font-size:10px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:#c9a84c">’+u.re+’</span></div>’+
+‘<div style="display:flex;gap:6px;flex-wrap:wrap">’+
+‘<button class="bgh" style="font-size:11px" onclick="navigator.clipboard.writeText(document.getElementById(\'rtx\').textContent);this.textContent=\''+u.cd+'\';var self=this;setTimeout(function(){self.textContent=\''+u.cp+'\';},2200)">’+u.cp+’</button>’+
+‘<button class=“bgh” style=“font-size:11px” onclick=“exportPDF(document.getElementById('rtx').textContent,'’+esc(F.name||F.addr||“Property”)+’')”>’+u.pdf+’</button>’+
+‘<button class="bgh" style="font-size:11px" onclick="document.getElementById(\'lr\').innerHTML=\'\'">’+u.cl+’</button>’+
+‘</div>’+
+‘</div>’+
+‘<div class="result" id="rtx">’+esc(text)+’</div>’+
+‘</div>’;
 }
 
 // ── GEN TABS ──
 function rGenTab(tid, title) {
-  var u = t(); var ps = S.projects;
-  var sp = null; for (var i=0;i<ps.length;i++){if(ps[i].id===S.pid){sp=ps[i];break;}}
-  var res = (S.or[tid]||(sp&&sp.results&&sp.results[tid]))||"";
-  var opts = '<option value="">'+u.sp+'</option>';
-  for (var j=0;j<ps.length;j++){opts+='<option value="'+ps[j].id+'"'+(S.pid===ps[j].id?" selected":"")+'>'+((CC[ps[j].country]?CC[ps[j].country].flag:""))+" "+esc(ps[j].name)+'</option>';}
-  return '<div style="max-width:760px;margin:0 auto"><div class="card">'+
-    '<h2 class="serif" style="font-size:22px;font-weight:600;color:#e5e8f2;margin-bottom:16px">'+title+'</h2>'+
-    (ps.length===0?'<div style="background:#0c0f1a;border:2px dashed #232d44;border-radius:11px;padding:36px;text-align:center"><p style="font-size:13px;color:#39495e">'+u.np+'</p></div>':
-    '<div style="margin-bottom:14px"><div class="flbl">'+u.sp+'</div><select class="finp" onchange="S.pid=this.value;S.or={};renderTab()">'+opts+'</select></div>'+
-    '<button onclick="genOther(\''+tid+'\')" style="width:100%;padding:12px;border:none;border-radius:9px;background:linear-gradient(135deg,#c9a84c,#e0be70);color:#07080c;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px" id="bgo">'+u.gc+'</button>'+
-    (res?'<div style="margin-top:14px"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px"><div style="display:flex;align-items:center;gap:8px"><span style="width:6px;height:6px;border-radius:50%;background:#c9a84c;display:inline-block;animation:pulse 2s ease infinite"></span><span style="font-size:10px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:#c9a84c">'+u.re+'</span></div><div style="display:flex;gap:6px"><button class="bgh" style="font-size:11px" onclick="navigator.clipboard.writeText(document.getElementById(\'otx\').textContent);this.textContent=\''+u.cd+'\';var s=this;setTimeout(function(){s.textContent=\''+u.cp+'\';},2200)">'+u.cp+'</button><button class="bgh" style="font-size:11px" onclick="exportPDF(document.getElementById(\'otx\').textContent,\''+(sp?esc(sp.name):"")+'\')">'+u.pdf+'</button></div></div><div class="result" id="otx">'+esc(res)+'</div></div>':'')
-    )+'</div></div>';
+var u = t(); var ps = S.projects;
+var sp = null; for (var i=0;i<ps.length;i++){if(ps[i].id===S.pid){sp=ps[i];break;}}
+var res = (S.or[tid]||(sp&&sp.results&&sp.results[tid]))||””;
+var opts = ‘<option value="">’+u.sp+’</option>’;
+for (var j=0;j<ps.length;j++){opts+=’<option value=”’+ps[j].id+’”’+(S.pid===ps[j].id?” selected”:””)+’>’+((CC[ps[j].country]?CC[ps[j].country].flag:””))+” “+esc(ps[j].name)+’</option>’;}
+return ‘<div style="max-width:760px;margin:0 auto"><div class="card">’+
+‘<h2 class="serif" style="font-size:22px;font-weight:600;color:#e5e8f2;margin-bottom:16px">’+title+’</h2>’+
+(ps.length===0?’<div style="background:#0c0f1a;border:2px dashed #232d44;border-radius:11px;padding:36px;text-align:center"><p style="font-size:13px;color:#39495e">’+u.np+’</p></div>’:
+‘<div style="margin-bottom:14px"><div class="flbl">’+u.sp+’</div><select class="finp" onchange="S.pid=this.value;S.or={};renderTab()">’+opts+’</select></div>’+
+‘<button onclick="genOther(\''+tid+'\')" style="width:100%;padding:12px;border:none;border-radius:9px;background:linear-gradient(135deg,#c9a84c,#e0be70);color:#07080c;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px" id="bgo">’+u.gc+’</button>’+
+(res?’<div style="margin-top:14px"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px"><div style="display:flex;align-items:center;gap:8px"><span style="width:6px;height:6px;border-radius:50%;background:#c9a84c;display:inline-block;animation:pulse 2s ease infinite"></span><span style="font-size:10px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:#c9a84c">’+u.re+’</span></div><div style="display:flex;gap:6px"><button class="bgh" style="font-size:11px" onclick="navigator.clipboard.writeText(document.getElementById(\'otx\').textContent);this.textContent=\''+u.cd+'\';var s=this;setTimeout(function(){s.textContent=\''+u.cp+'\';},2200)">’+u.cp+’</button><button class=“bgh” style=“font-size:11px” onclick=“exportPDF(document.getElementById('otx').textContent,'’+(sp?esc(sp.name):””)+’')”>’+u.pdf+’</button></div></div><div class="result" id="otx">’+esc(res)+’</div></div>’:’’)
+)+’</div></div>’;
 }
 
 function genOther(tid) {
-  var u = t(); var sp = null; for(var i=0;i<S.projects.length;i++){if(S.projects[i].id===S.pid){sp=S.projects[i];break;}}
-  if (!sp || !S.key) { if (!S.key) showErr(u.nk); return; }
-  var btn = document.getElementById("bgo");
-  if (btn) { btn.disabled = true; btn.innerHTML = '<span class="sp"></span> '+u.gi; }
-  callClaude(buildPrompt(tid, sp.data||{}, sp.country||S.country, S.lang))
-    .then(function(r) {
-      if (r) {
-        S.or[tid] = r;
-        sp.results = Object.assign({}, sp.results||{});
-        sp.results[tid] = r;
-        dbupd("projects","id=eq."+sp.id,{results:sp.results}).then(function(){showSync(u.sy);}).catch(function(){});
-        renderTab();
-      }
-    })
-    .catch(function(e) { showErr(e.message); })
-    .then(function() { if (btn) { btn.disabled = false; btn.textContent = u.gc; } });
+var u = t(); var sp = null; for(var i=0;i<S.projects.length;i++){if(S.projects[i].id===S.pid){sp=S.projects[i];break;}}
+if (!sp) return;
+var btn = document.getElementById(“bgo”);
+if (btn) { btn.disabled = true; btn.innerHTML = ’<span class="sp"></span> ’+u.gi; }
+callClaude(buildPrompt(tid, sp.data||{}, sp.country||S.country, S.lang))
+.then(function(r) {
+if (r) {
+S.or[tid] = r;
+sp.results = Object.assign({}, sp.results||{});
+sp.results[tid] = r;
+dbupd(“projects”,“id=eq.”+sp.id,{results:sp.results}).then(function(){showSync(u.sy);}).catch(function(){});
+renderTab();
+}
+})
+.catch(function(e) { showErr(e.message); })
+.then(function() { if (btn) { btn.disabled = false; btn.textContent = u.gc; } });
 }
 
 // ── PROFILE ──
 function rProfile() {
-  var u = t(); var ag = S.agent||{};
-  var tmplList = S.templates.length===0 ? '<div style="background:#0c0f1a;border:2px dashed #232d44;border-radius:10px;padding:32px;text-align:center"><p style="font-size:13px;color:#39495e">'+u.nt+'</p></div>' :
-    '<div style="display:flex;flex-direction:column;gap:8px;max-height:380px;overflow-y:auto">'+
-    S.templates.map(function(tmpl){return'<div style="background:#0c0f1a;border:1px solid #1a2238;border-radius:10px;padding:13px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px"><div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:600;color:#7e8fa8;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+esc(tmpl.name)+'</div><div style="font-size:10px;color:#39495e">'+(CC[tmpl.country]?CC[tmpl.country].flag:"")+" "+(CC[tmpl.country]?CC[tmpl.country].name:"")+'</div></div><div style="display:flex;gap:6px"><button onclick="loadTmpl(\''+tmpl.id+'\')" class="bgh" style="font-size:10px;padding:5px 11px">'+u.ut+'</button><button onclick="delTmpl(\''+tmpl.id+'\')" class="bgh" style="font-size:10px;padding:5px 10px">'+u.dt+'</button></div></div>';}).join("")+
-    '</div>';
-  return '<div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;max-width:900px;margin:0 auto" class="dg">'+
-    '<div class="card"><h2 class="serif" style="font-size:20px;font-weight:600;color:#e5e8f2;margin-bottom:18px">'+u.agt+'</h2>'+
-    [["agn","name"],["agp","phone"],["age","email"],["aga","agency"],["agl","logo"]].map(function(x){return'<div class="flbl">'+u[x[0]]+'</div><input class="finp" value="'+esc(ag[x[1]]||"")+'" oninput="S.agent.'+x[1]+'=this.value"'+(x[1]==="email"?' type="email"':"")+'/>';}).join("")+
-    (ag.logo?'<div style="margin-top:4px;padding:12px;background:#0c0f1a;border-radius:8px;text-align:center"><img src="'+esc(ag.logo)+'" style="max-width:120px;max-height:60px;object-fit:contain;border-radius:6px" onerror="this.style.display=\'none\'"/></div>':"")+
-    '<button onclick="saveAgent()" style="width:100%;margin-top:14px;padding:12px;border:none;border-radius:9px;background:linear-gradient(135deg,#c9a84c,#e0be70);color:#07080c;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit" id="bags">'+u.ags+'</button></div>'+
-    '<div class="card"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px"><h2 class="serif" style="font-size:20px;font-weight:600;color:#e5e8f2">'+u.tt+'</h2><span style="padding:2px 8px;border-radius:99px;font-size:9px;font-weight:700;background:rgba(139,92,246,.1);color:#c4b5fd;border:1px solid rgba(139,92,246,.2)">'+S.templates.length+'</span></div>'+tmplList+'</div>'+
-    '</div>';
+var u = t(); var ag = S.agent||{};
+var tmplList = S.templates.length===0 ? ‘<div style="background:#0c0f1a;border:2px dashed #232d44;border-radius:10px;padding:32px;text-align:center"><p style="font-size:13px;color:#39495e">’+u.nt+’</p></div>’ :
+‘<div style="display:flex;flex-direction:column;gap:8px;max-height:380px;overflow-y:auto">’+
+S.templates.map(function(tmpl){return’<div style="background:#0c0f1a;border:1px solid #1a2238;border-radius:10px;padding:13px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px"><div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:600;color:#7e8fa8;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">’+esc(tmpl.name)+’</div><div style="font-size:10px;color:#39495e">’+(CC[tmpl.country]?CC[tmpl.country].flag:””)+” “+(CC[tmpl.country]?CC[tmpl.country].name:””)+’</div></div><div style="display:flex;gap:6px"><button onclick="loadTmpl(\''+tmpl.id+'\')" class="bgh" style="font-size:10px;padding:5px 11px">’+u.ut+’</button><button onclick="delTmpl(\''+tmpl.id+'\')" class="bgh" style="font-size:10px;padding:5px 10px">’+u.dt+’</button></div></div>’;}).join(””)+
+‘</div>’;
+return ‘<div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;max-width:900px;margin:0 auto" class="dg">’+
+‘<div class="card"><h2 class="serif" style="font-size:20px;font-weight:600;color:#e5e8f2;margin-bottom:18px">’+u.agt+’</h2>’+
+[[“agn”,“name”],[“agp”,“phone”],[“age”,“email”],[“aga”,“agency”],[“agl”,“logo”]].map(function(x){return’<div class="flbl">’+u[x[0]]+’</div><input class=“finp” value=”’+esc(ag[x[1]]||””)+’” oninput=“S.agent.’+x[1]+’=this.value”’+(x[1]===“email”?’ type=“email”’:””)+’/>’;}).join(””)+
+(ag.logo?’<div style="margin-top:4px;padding:12px;background:#0c0f1a;border-radius:8px;text-align:center"><img src="'+esc(ag.logo)+'" style="max-width:120px;max-height:60px;object-fit:contain;border-radius:6px" onerror="this.style.display=\'none\'"/></div>’:””)+
+‘<button onclick="saveAgent()" style="width:100%;margin-top:14px;padding:12px;border:none;border-radius:9px;background:linear-gradient(135deg,#c9a84c,#e0be70);color:#07080c;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit" id="bags">’+u.ags+’</button></div>’+
+‘<div class="card"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px"><h2 class="serif" style="font-size:20px;font-weight:600;color:#e5e8f2">’+u.tt+’</h2><span style="padding:2px 8px;border-radius:99px;font-size:9px;font-weight:700;background:rgba(139,92,246,.1);color:#c4b5fd;border:1px solid rgba(139,92,246,.2)">’+S.templates.length+’</span></div>’+tmplList+’</div>’+
+‘</div>’;
 }
 
 function saveAgent() {
-  var u = t(); var btn = document.getElementById("bags");
-  if (btn) { btn.disabled = true; btn.textContent = u.sv2; }
-  dbupsert("agents", Object.assign({user_id:S.uid}, S.agent, {updated_at:new Date().toISOString()}))
-    .then(function(res) { if (Array.isArray(res)&&res[0]) S.agent=res[0]; showSync(u.sy); if(btn){btn.textContent=u.agsd;setTimeout(function(){btn.textContent=u.ags;},2200);} })
-    .catch(function(e) { showErr(e.message); })
-    .then(function() { if(btn) btn.disabled=false; });
+var u = t(); var btn = document.getElementById(“bags”);
+if (btn) { btn.disabled = true; btn.textContent = u.sv2; }
+dbupsert(“agents”, Object.assign({user_id:S.uid}, S.agent, {updated_at:new Date().toISOString()}))
+.then(function(res) { if (Array.isArray(res)&&res[0]) S.agent=res[0]; showSync(u.sy); if(btn){btn.textContent=u.agsd;setTimeout(function(){btn.textContent=u.ags;},2200);} })
+.catch(function(e) { showErr(e.message); })
+.then(function() { if(btn) btn.disabled=false; });
 }
 
 function loadTmpl(id) {
-  var tmpl = null; for(var i=0;i<S.templates.length;i++){if(S.templates[i].id===id){tmpl=S.templates[i];break;}}
-  if (!tmpl) return;
-  F = Object.assign({}, EF, tmpl.form_data||{});
-  S.tab = 0;
-  var tabs = document.querySelectorAll(".tab");
-  for (var j=0;j<tabs.length;j++) tabs[j].classList.toggle("on",j===0);
-  renderTab();
+var tmpl = null; for(var i=0;i<S.templates.length;i++){if(S.templates[i].id===id){tmpl=S.templates[i];break;}}
+if (!tmpl) return;
+F = Object.assign({}, EF, tmpl.form_data||{});
+S.tab = 0;
+var tabs = document.querySelectorAll(”.tab”);
+for (var j=0;j<tabs.length;j++) tabs[j].classList.toggle(“on”,j===0);
+renderTab();
 }
 
 function delTmpl(id) {
-  S.templates = S.templates.filter(function(x){return x.id!==id;});
-  renderTab();
-  dbdel("templates","id=eq."+id).catch(function(){});
+S.templates = S.templates.filter(function(x){return x.id!==id;});
+renderTab();
+dbdel(“templates”,“id=eq.”+id).catch(function(){});
 }
 
 // ── CRM ──
 function rCRM() {
-  var u = t(); var cl = S.clients||[];
-  var cards = cl.length===0 ? '<div class="card" style="border:2px dashed #1a2238;padding:52px;text-align:center"><p style="font-size:14px;color:#39495e">'+u.cn2+'</p></div>' :
-    '<div style="display:flex;flex-direction:column;gap:9px">'+
-    cl.map(function(c){
-      var si = u.sts.indexOf(c.status);
-      var sc = si<1?"rgba(59,130,246,.12)":si<4?"rgba(201,168,76,.12)":"rgba(16,185,129,.12)";
-      var st = si<1?"#93c5fd":si<4?"#e0be70":"#6ee7b7";
-      var sb = si<1?"rgba(59,130,246,.25)":si<4?"rgba(201,168,76,.25)":"rgba(16,185,129,.25)";
-      return'<div class="card">'+
-        '<div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:9px">'+
-          '<div><h4 style="font-size:14px;font-weight:700;color:#e5e8f2;margin-bottom:6px">'+esc(c.name)+'</h4>'+(c.status?'<span style="padding:3px 9px;border-radius:99px;font-size:10px;font-weight:700;text-transform:uppercase;background:'+sc+';color:'+st+';border:1px solid '+sb+'">'+esc(c.status)+'</span>':'')+'</div>'+
-          '<div style="display:flex;gap:6px;align-items:center">'+
-            (c.phone?'<a href="https://wa.me/'+c.phone.replace(/\D/g,"")+'" target="_blank" style="padding:5px 10px;border-radius:7px;border:1px solid rgba(16,185,129,.25);background:rgba(16,185,129,.08);color:#6ee7b7;font-size:10px;font-weight:700;text-decoration:none">💬</a>':"")+
-            (c.email?'<a href="mailto:'+esc(c.email)+'" style="padding:5px 10px;border-radius:7px;border:1px solid rgba(59,130,246,.25);background:rgba(59,130,246,.08);color:#93c5fd;font-size:10px;font-weight:700;text-decoration:none">✉</a>':"")+
-            '<button onclick="delClient(\''+c.id+'\')" class="bgh" style="font-size:11px;padding:3px 8px">'+u.cd2+'</button>'+
-          '</div>'+
-        '</div>'+
-        [[c.phone,"📞"],[c.email,"✉"],[c.prop,"🏠"]].filter(function(x){return x[0];}).map(function(x){return'<span style="font-size:12px;color:#39495e;margin-right:14px">'+x[1]+" "+esc(x[0])+'</span>';}).join("")+
-        (c.note?'<p style="font-size:12px;color:#39495e;font-style:italic;margin-top:9px;padding-top:9px;border-top:1px solid #1a2238">"'+esc(c.note)+'"</p>':"")+
-      '</div>';
-    }).join("")+'</div>';
+var u = t(); var cl = S.clients||[];
+var cards = cl.length===0 ? ‘<div class="card" style="border:2px dashed #1a2238;padding:52px;text-align:center"><p style="font-size:14px;color:#39495e">’+u.cn2+’</p></div>’ :
+‘<div style="display:flex;flex-direction:column;gap:9px">’+
+cl.map(function(c){
+var si = u.sts.indexOf(c.status);
+var sc = si<1?“rgba(59,130,246,.12)”:si<4?“rgba(201,168,76,.12)”:“rgba(16,185,129,.12)”;
+var st = si<1?”#93c5fd”:si<4?”#e0be70”:”#6ee7b7”;
+var sb = si<1?“rgba(59,130,246,.25)”:si<4?“rgba(201,168,76,.25)”:“rgba(16,185,129,.25)”;
+return’<div class="card">’+
+‘<div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:9px">’+
+‘<div><h4 style="font-size:14px;font-weight:700;color:#e5e8f2;margin-bottom:6px">’+esc(c.name)+’</h4>’+(c.status?’<span style="padding:3px 9px;border-radius:99px;font-size:10px;font-weight:700;text-transform:uppercase;background:'+sc+';color:'+st+';border:1px solid '+sb+'">’+esc(c.status)+’</span>’:’’)+’</div>’+
+‘<div style="display:flex;gap:6px;align-items:center">’+
+(c.phone?’<a href=“https://wa.me/’+c.phone.replace(/\D/g,””)+’” target=”_blank” style=“padding:5px 10px;border-radius:7px;border:1px solid rgba(16,185,129,.25);background:rgba(16,185,129,.08);color:#6ee7b7;font-size:10px;font-weight:700;text-decoration:none”>💬</a>’:””)+
+(c.email?’<a href="mailto:'+esc(c.email)+'" style="padding:5px 10px;border-radius:7px;border:1px solid rgba(59,130,246,.25);background:rgba(59,130,246,.08);color:#93c5fd;font-size:10px;font-weight:700;text-decoration:none">✉</a>’:””)+
+‘<button onclick="delClient(\''+c.id+'\')" class="bgh" style="font-size:11px;padding:3px 8px">’+u.cd2+’</button>’+
+‘</div>’+
+‘</div>’+
+[[c.phone,“📞”],[c.email,“✉”],[c.prop,“🏠”]].filter(function(x){return x[0];}).map(function(x){return’<span style="font-size:12px;color:#39495e;margin-right:14px">’+x[1]+” “+esc(x[0])+’</span>’;}).join(””)+
+(c.note?’<p style="font-size:12px;color:#39495e;font-style:italic;margin-top:9px;padding-top:9px;border-top:1px solid #1a2238">”’+esc(c.note)+’”</p>’:””)+
+‘</div>’;
+}).join(””)+’</div>’;
 
-  var opts = '<option value="">—</option>'+u.sts.map(function(s){return'<option>'+s+'</option>';}).join("");
-  return '<div style="display:grid;grid-template-columns:320px 1fr;gap:18px;align-items:start" class="cg">'+
-    '<div class="card">'+
-      '<h2 class="serif" style="font-size:20px;font-weight:600;color:#e5e8f2;margin-bottom:18px">'+u.ct+'</h2>'+
-      '<div class="flbl">'+u.cn+'</div><input class="finp" id="c-n" placeholder="'+u.cn+'"/>'+
-      '<div class="flbl">'+u.cph+'</div><input class="finp" id="c-ph" placeholder="+..."/>'+
-      '<div class="flbl">'+u.cem+'</div><input class="finp" id="c-em" type="email"/>'+
-      '<div class="flbl">'+u.cpr+'</div><input class="finp" id="c-pr"/>'+
-      '<div class="flbl">'+u.cst+'</div><select class="finp" id="c-st">'+opts+'</select>'+
-      '<div class="flbl">'+u.cno+'</div><textarea class="finp" id="c-no"></textarea>'+
-      '<button onclick="addClient()" style="width:100%;padding:12px;border:none;border-radius:9px;background:linear-gradient(135deg,#c9a84c,#e0be70);color:#07080c;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit" id="bca">'+u.ca+'</button>'+
-      '<div style="height:1px;background:#1a2238;margin:14px 0"></div>'+
-      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:7px">'+
-        '<div style="background:#0c0f1a;border-radius:7px;padding:10px 12px"><div style="font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#39495e;margin-bottom:4px">Total</div><div class="serif" style="font-size:26px;font-weight:600;color:#e5e8f2">'+cl.length+'</div></div>'+
-        '<div style="background:#0c0f1a;border-radius:7px;padding:10px 12px"><div style="font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#39495e;margin-bottom:4px">Active</div><div class="serif" style="font-size:26px;font-weight:600;color:#e5e8f2">'+cl.filter(function(c){return c.status!==u.sts[u.sts.length-1];}).length+'</div></div>'+
-      '</div>'+
-    '</div>'+
-    '<div>'+cards+'</div>'+
-  '</div>';
+var opts = ‘<option value="">—</option>’+u.sts.map(function(s){return’<option>’+s+’</option>’;}).join(””);
+return ‘<div style="display:grid;grid-template-columns:320px 1fr;gap:18px;align-items:start" class="cg">’+
+‘<div class="card">’+
+‘<h2 class="serif" style="font-size:20px;font-weight:600;color:#e5e8f2;margin-bottom:18px">’+u.ct+’</h2>’+
+‘<div class="flbl">’+u.cn+’</div><input class="finp" id="c-n" placeholder="'+u.cn+'"/>’+
+‘<div class="flbl">’+u.cph+’</div><input class="finp" id="c-ph" placeholder="+..."/>’+
+‘<div class="flbl">’+u.cem+’</div><input class="finp" id="c-em" type="email"/>’+
+‘<div class="flbl">’+u.cpr+’</div><input class="finp" id="c-pr"/>’+
+‘<div class="flbl">’+u.cst+’</div><select class="finp" id="c-st">’+opts+’</select>’+
+‘<div class="flbl">’+u.cno+’</div><textarea class="finp" id="c-no"></textarea>’+
+‘<button onclick="addClient()" style="width:100%;padding:12px;border:none;border-radius:9px;background:linear-gradient(135deg,#c9a84c,#e0be70);color:#07080c;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit" id="bca">’+u.ca+’</button>’+
+‘<div style="height:1px;background:#1a2238;margin:14px 0"></div>’+
+‘<div style="display:grid;grid-template-columns:1fr 1fr;gap:7px">’+
+‘<div style="background:#0c0f1a;border-radius:7px;padding:10px 12px"><div style="font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#39495e;margin-bottom:4px">Total</div><div class="serif" style="font-size:26px;font-weight:600;color:#e5e8f2">’+cl.length+’</div></div>’+
+‘<div style="background:#0c0f1a;border-radius:7px;padding:10px 12px"><div style="font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#39495e;margin-bottom:4px">Active</div><div class="serif" style="font-size:26px;font-weight:600;color:#e5e8f2">’+cl.filter(function(c){return c.status!==u.sts[u.sts.length-1];}).length+’</div></div>’+
+‘</div>’+
+‘</div>’+
+‘<div>’+cards+’</div>’+
+‘</div>’;
 }
 
 function addClient() {
-  var u = t();
-  var name = (document.getElementById("c-n")||{}).value;
-  if (!name || !name.trim()) return;
-  var data = {name:name.trim(),phone:((document.getElementById("c-ph")||{}).value||"").trim(),email:((document.getElementById("c-em")||{}).value||"").trim(),prop:((document.getElementById("c-pr")||{}).value||"").trim(),status:((document.getElementById("c-st")||{}).value||""),note:((document.getElementById("c-no")||{}).value||"").trim()};
-  var btn = document.getElementById("bca"); if(btn){btn.disabled=true;btn.textContent=u.sv2;}
-  dbins("clients",Object.assign({user_id:S.uid},data))
-    .then(function(res){if(Array.isArray(res)&&res[0]){S.clients.unshift(res[0]);showSync(u.sy);renderTab();}})
-    .catch(function(e){showErr(e.message);})
-    .then(function(){if(btn){btn.disabled=false;btn.textContent=u.ca;}});
+var u = t();
+var name = (document.getElementById(“c-n”)||{}).value;
+if (!name || !name.trim()) return;
+var data = {name:name.trim(),phone:((document.getElementById(“c-ph”)||{}).value||””).trim(),email:((document.getElementById(“c-em”)||{}).value||””).trim(),prop:((document.getElementById(“c-pr”)||{}).value||””).trim(),status:((document.getElementById(“c-st”)||{}).value||””),note:((document.getElementById(“c-no”)||{}).value||””).trim()};
+var btn = document.getElementById(“bca”); if(btn){btn.disabled=true;btn.textContent=u.sv2;}
+dbins(“clients”,Object.assign({user_id:S.uid},data))
+.then(function(res){if(Array.isArray(res)&&res[0]){S.clients.unshift(res[0]);showSync(u.sy);renderTab();}})
+.catch(function(e){showErr(e.message);})
+.then(function(){if(btn){btn.disabled=false;btn.textContent=u.ca;}});
 }
 
 function delClient(id) {
-  S.clients = S.clients.filter(function(c){return c.id!==id;});
-  renderTab();
-  dbdel("clients","id=eq."+id).catch(function(){});
+S.clients = S.clients.filter(function(c){return c.id!==id;});
+renderTab();
+dbdel(“clients”,“id=eq.”+id).catch(function(){});
 }
 
 // ── BOOT ──
 (function() {
-  if (S.lang) {
-    if (S.uid && S.country) { initDash(); }
-    else if (S.uid) { initCountry(); }
-    else { initLogin(); showPage("p-login"); }
-  }
-  // else: lang screen is already shown by default
+if (S.lang) {
+if (S.uid && S.country) { initDash(); }
+else if (S.uid) { initCountry(); }
+else { initLogin(); showPage(“p-login”); }
+}
 })();
 </script>
+
 </body>
 </html>
