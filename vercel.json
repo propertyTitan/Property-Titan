@@ -1,0 +1,15 @@
+{
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "(?!propertytitan\\.eu).*"
+        }
+      ],
+      "destination": "https://propertytitan.eu/:path*",
+      "permanent": true
+    }
+  ]
+}
