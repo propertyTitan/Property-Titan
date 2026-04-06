@@ -792,11 +792,6 @@ function renderImageGrid() {
   if (!el) return;
   var u = t();
   var imgs = S.images;
-  var modeHtml = '<div class="img-mode">' +
-    '<button onclick="setImgMode(\'upload\')" style="background:' + (S.imgMode === "upload" ? "rgba(59,130,246,.1)" : "transparent") + ';color:' + (S.imgMode === "upload" ? "#93c5fd" : "#39495e") + '">' + u.imgMode1 + '</button>' +
-    '<button onclick="setImgMode(\'enhance\')" style="background:' + (S.imgMode === "enhance" ? "rgba(201,168,76,.09)" : "transparent") + ';color:' + (S.imgMode === "enhance" ? "#e0be70" : "#39495e") + '">' + u.imgMode2 + '</button>' +
-    '</div>';
-
   var dropHtml = '<div class="img-drop" id="img-drop-zone" onclick="document.getElementById(\'img-input\').click()">' +
     '<div style="font-size:32px;margin-bottom:8px">📷</div>' +
     '<div style="font-size:13px;color:#7e8fa8">' + u.imgDrop + '</div>' +
@@ -807,18 +802,16 @@ function renderImageGrid() {
   if (imgs.length > 0) {
     gridHtml = '<div style="display:flex;align-items:center;justify-content:space-between;margin-top:12px;margin-bottom:8px">' +
       '<span style="font-size:11px;font-weight:700;color:#7e8fa8">' + imgs.length + u.imgCount + '</span>' +
-      '<div style="display:flex;gap:6px">';
-    if (S.imgMode === "enhance") {
-      gridHtml += '<button onclick="analyzeImages()" class="bgh" style="font-size:10px;padding:5px 11px;border-color:rgba(201,168,76,.3);color:#e0be70" id="btn-analyze">' + u.imgAnalyze + '</button>';
-    }
-    gridHtml += '<button onclick="clearAllImages()" class="bgh" style="font-size:10px;padding:5px 11px">' + u.imgClear + '</button>' +
+      '<div style="display:flex;gap:6px">' +
+      '<button onclick="analyzeImages()" class="bgh" style="font-size:10px;padding:5px 11px;border-color:rgba(201,168,76,.3);color:#e0be70" id="btn-analyze">' + u.imgAnalyze + '</button>' +
+      '<button onclick="clearAllImages()" class="bgh" style="font-size:10px;padding:5px 11px">' + u.imgClear + '</button>' +
       '</div></div>';
     gridHtml += '<div class="img-grid">';
     for (var i = 0; i < imgs.length; i++) {
       var img = imgs[i];
-      var showUrl = img.enhanced && img.enhancedDataUrl ? img.enhancedDataUrl : img.dataUrl;
-      var badgeClass = img.enhanced ? "enhanced" : "original";
-      var badgeText = img.enhanced ? u.imgEnhanced : (i + 1) + "/" + imgs.length;
+      var showUrl = img.dataUrl;
+      var badgeClass = "original";
+      var badgeText = (i + 1) + "/" + imgs.length;
       gridHtml += '<div class="img-thumb">' +
         '<img src="' + showUrl + '" alt="' + esc(img.name) + '"/>' +
         '<button class="img-del" onclick="removeImage(\'' + img.id + '\')">×</button>' +
@@ -833,7 +826,7 @@ function renderImageGrid() {
     analysisHtml = '<div class="ai-feedback"><h4>🤖 AI Photo Analysis</h4>' + esc(S.imgAnalysis) + '</div>';
   }
 
-  el.innerHTML = modeHtml + dropHtml + gridHtml + analysisHtml;
+  el.innerHTML = dropHtml + gridHtml + analysisHtml;
   initDropZone();
 }
 
@@ -866,103 +859,11 @@ function analyzeImages() {
     .then(function(result) {
       S.imgAnalysis = result;
       renderImageGrid();
-      // Auto-enhance images based on analysis
-      if (S.imgMode === "enhance") {
-        enhanceAllImages();
-      }
     })
     .catch(function(e) { showErr(e.message); })
     .then(function() {
       if (btn) { btn.disabled = false; btn.textContent = u.imgAnalyze; }
     });
-}
-
-// ── CLIENT-SIDE IMAGE ENHANCEMENT ──
-function enhanceAllImages() {
-  for (var i = 0; i < S.images.length; i++) {
-    enhanceSingleImage(i);
-  }
-}
-
-function enhanceSingleImage(index) {
-  var img = S.images[index];
-  if (!img || img.enhanced) return;
-  var image = new Image();
-  image.onload = function() {
-    var canvas = document.createElement("canvas");
-    canvas.width = image.width;
-    canvas.height = image.height;
-    var ctx = canvas.getContext("2d");
-    ctx.drawImage(image, 0, 0);
-    var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    var data = imageData.data;
-
-    // Calculate average brightness
-    var totalBright = 0;
-    var pixelCount = data.length / 4;
-    for (var i = 0; i < data.length; i += 4) {
-      totalBright += (data[i] * 0.299 + data[i+1] * 0.587 + data[i+2] * 0.114);
-    }
-    var avgBright = totalBright / pixelCount;
-
-    // Adaptive brightness & contrast
-    var brightAdjust = 0;
-    var contrastMult = 1.0;
-    if (avgBright < 100) { brightAdjust = 25; contrastMult = 1.15; }
-    else if (avgBright < 130) { brightAdjust = 12; contrastMult = 1.08; }
-    else if (avgBright > 200) { brightAdjust = -10; contrastMult = 1.05; }
-    else { brightAdjust = 5; contrastMult = 1.05; }
-
-    // Slight warmth for real estate (adds inviting feel)
-    var warmR = 4, warmG = 1, warmB = -3;
-
-    // Saturation boost
-    var satBoost = 1.12;
-
-    for (var j = 0; j < data.length; j += 4) {
-      var r = data[j], g = data[j+1], b = data[j+2];
-
-      // Brightness
-      r += brightAdjust; g += brightAdjust; b += brightAdjust;
-
-      // Contrast
-      r = ((r - 128) * contrastMult) + 128;
-      g = ((g - 128) * contrastMult) + 128;
-      b = ((b - 128) * contrastMult) + 128;
-
-      // Warmth
-      r += warmR; g += warmG; b += warmB;
-
-      // Saturation
-      var gray = 0.299 * r + 0.587 * g + 0.114 * b;
-      r = gray + satBoost * (r - gray);
-      g = gray + satBoost * (g - gray);
-      b = gray + satBoost * (b - gray);
-
-      // Clamp
-      data[j]   = Math.max(0, Math.min(255, Math.round(r)));
-      data[j+1] = Math.max(0, Math.min(255, Math.round(g)));
-      data[j+2] = Math.max(0, Math.min(255, Math.round(b)));
-    }
-
-    ctx.putImageData(imageData, 0, 0);
-
-    // Simple unsharp mask (sharpen)
-    var sharpCanvas = document.createElement("canvas");
-    sharpCanvas.width = canvas.width;
-    sharpCanvas.height = canvas.height;
-    var sctx = sharpCanvas.getContext("2d");
-    sctx.drawImage(canvas, 0, 0);
-    sctx.globalAlpha = 0.3;
-    sctx.globalCompositeOperation = "luminosity";
-    sctx.filter = "contrast(1.1) brightness(1.02)";
-    sctx.drawImage(canvas, 0, 0);
-
-    img.enhancedDataUrl = sharpCanvas.toDataURL("image/jpeg", 0.92);
-    img.enhanced = true;
-    renderImageGrid();
-  };
-  image.src = img.dataUrl;
 }
 
 // ── PDF ──
