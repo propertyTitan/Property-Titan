@@ -366,12 +366,14 @@ function showPage(id) {
     el.style.display = "flex";
     el.classList.add("active");
   }
+  window.scrollTo(0, 0);
 }
 
 function showDash() {
   var pages = document.querySelectorAll(".page");
   for (var i = 0; i < pages.length; i++) pages[i].classList.remove("active");
   document.getElementById("dash").style.display = "flex";
+  window.scrollTo(0, 0);
 }
 
 function showSync(msg) {
