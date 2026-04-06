@@ -131,6 +131,9 @@ footer span{font-size:10px;color:#39495e}
       <div class="badge"><span class="dot"></span><span style="font-size:10px;font-weight:700;letter-spacing:.26em;text-transform:uppercase;color:#e0be70">DEMO</span></div>
       <h1 class="serif gold" style="font-size:36px;font-weight:600;font-style:italic;margin-bottom:8px">Property Titan</h1>
       <p id="demo-sub" style="font-size:14px;color:#7e8fa8"></p>
+      <div style="margin-top:18px;display:inline-flex;align-items:center;gap:10px">
+        <select id="demo-country" onchange="switchDemoCountry(this.value)" style="padding:10px 16px;border:1.5px solid #232d44;border-radius:10px;background:#101524;color:#e5e8f2;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;appearance:auto"></select>
+      </div>
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:start" class="cg">
       <div class="card">
@@ -384,11 +387,10 @@ function showErr(msg) {
 
 // ── DEMO ──
 var DEMO = {
-hu:{
+HU:{lang:"hu",
   sub:"Nézd meg milyen AI hirdetést készít a Property Titan!",
   title:"Ingatlan Adatok",
   label:"AI Generált Hirdetés",
-  flag:"🇭🇺",
   cta:"Tetszik? Regisztrálj és készítsd el a sajátod!",
   btn:"Regisztráció",
   tabs:["Hirdetés","Brossúra","Email"],
@@ -397,11 +399,10 @@ hu:{
   brochure:"EXKLUZÍV PENTHOUSE A BUDAI HEGYEK ÖLÉN\n\nVan egy hely Budapest felett, ahol a város zaja elhal, és csak a természet hangjai maradnak. A XII. kerület szívében, a Normafa közelében született meg ez a kivételes otthon.\n\nEz nem csupán egy lakás – ez egy életérzés. 187 négyzetméter gondosan megtervezett tér, ahol minden részlet a harmóniát szolgálja.\n\nAz 5 szoba között megtalálja a tágas, fényes nappalit panorámás üvegfallal, a három hálószobát, amelyek mindegyike csendes és privát, valamint a dolgozószobát – az otthoni munkavégzés tökéletes helyszínét.\n\nA 32 m²-es teraszon állva a budai hegyek zöldje és a Duna csillogása egyszerre kínálkozik.\n\nMűszaki kiválóság:\n• 2023-as építés, legmodernebb technológia\n• AA++ energetikai tanúsítvány\n• Intelligens padlófűtés minden helyiségben\n• Privát lift közvetlenül a lakásba\n• Dupla garázs\n\nFelhívás: +36 XX XXX XXXX",
   email:"Tárgy: Exkluzív penthouse – Buda legszebb panorámájával\n\nKedves Érdeklődő!\n\nSzeretném bemutatni Budapest egyik legkülönlegesebb ingatlanát: egy 187 m²-es, 5 szobás penthouse lakást a XII. kerületben, közvetlen normafai panorámával.\n\n2023-ban épült, újszerű állapotú, AA++ energetikájú – a legmagasabb igényeknek is megfelel.\n\nSzívesen egyeztetek egy személyes bemutatót!\n\nÜdvözlettel,\nProperty Titan"
 },
-en:{
+GB:{lang:"en",
   sub:"See what AI-powered listings Property Titan creates!",
   title:"Property Details",
   label:"AI Generated Listing",
-  flag:"🇬🇧",
   cta:"Like what you see? Sign up and create your own!",
   btn:"Get Started",
   tabs:["Listing","Brochure","Email"],
@@ -410,11 +411,10 @@ en:{
   brochure:"A RESIDENCE ABOVE THE THAMES\n\nSome addresses need no introduction. Chelsea Embankment has been synonymous with prestige for over a century. Now, rising above this iconic stretch of the Thames, a new landmark emerges.\n\nThis 205 m² penthouse is not merely a home – it is a statement. Four bedrooms, each a sanctuary of calm. A reception room that captures the river in all its moods. A 28 m² terrace where sunsets over Battersea Park become your evening ritual.\n\nEvery detail has been considered:\n• 2024 new build with premium specifications\n• EPC A rating – future-proof efficiency\n• Underfloor heating in every room\n• Private lift directly to your door\n• Secure underground parking\n\nChelsea is not just a location. It is a lifestyle.\n\nContact us for a private viewing.",
   email:"Subject: Exclusive Chelsea Penthouse – Unrivalled Thames Views\n\nDear Prospective Buyer,\n\nI am delighted to present one of Chelsea's most remarkable properties: a 205 m², 4-bedroom penthouse on Chelsea Embankment with panoramic Thames views.\n\nCompleted in 2024, this home represents the pinnacle of riverside living in London's most coveted neighbourhood.\n\nI would welcome the opportunity to arrange a private viewing at your convenience.\n\nKind regards,\nProperty Titan"
 },
-sv:{
+SE:{lang:"sv",
   sub:"Se vilka AI-annonser Property Titan skapar!",
   title:"Fastighetsuppgifter",
   label:"AI-genererad Annons",
-  flag:"🇸🇪",
   cta:"Gillar du det? Registrera dig och skapa din egen!",
   btn:"Kom igång",
   tabs:["Annons","Broschyr","E-post"],
@@ -423,9 +423,9 @@ sv:{
   brochure:"ETT LIV OVANFÖR STRANDVÄGEN\n\nDet finns adresser som talar för sig själva. Strandvägen 42 är en sådan plats.\n\nDenna takvåning på 195 m² erbjuder fem rum av oöverträffad kvalitet. Varje detalj är genomtänkt.\n\n24 m² terrass med utsikt som sträcker sig från Djurgården till Saltsjön.\n\nTeknisk specifikation:\n• Byggår 2023, premiumutförande\n• Energiklass A\n• Golvvärme i samtliga rum\n• Privat hissaccess\n• Garageplats\n\nKontakta oss för privat visning.",
   email:"Ämne: Exklusiv takvåning – Strandvägen med Djurgårdsutsikt\n\nHej,\n\nJag vill presentera en av Stockholms mest remarkabla fastigheter: en 195 m² takvåning vid Strandvägen med panoramautsikt.\n\nNybyggd 2023, premiumstandard genomgående.\n\nVälkommen att boka en privat visning!\n\nMed vänliga hälsningar,\nProperty Titan"
 },
-de:{
+DE:{lang:"de",
   sub:"Entdecken Sie, welche KI-Exposés Property Titan erstellt!",
-  title:"Objektdaten",label:"KI-generiertes Exposé",flag:"🇩🇪",
+  title:"Objektdaten",label:"KI-generiertes Exposé",
   cta:"Überzeugt? Registrieren Sie sich und erstellen Sie Ihr eigenes!",btn:"Jetzt starten",
   tabs:["Exposé","Broschüre","E-Mail"],
   props:{name:"Charlottenburg Penthouse",addr:"Berlin, Kurfürstendamm 180",price:"1.950.000 €",rooms:"4",size:"178 m²",balc:"22 m²",floor:"6. OG",year:"2024",cond:"Erstbezug",view:"Tiergarten",park:"Tiefgarage",heat:"Fußbodenheizung",energy:"A+",lift:"Privater Aufzug"},
@@ -433,9 +433,9 @@ de:{
   brochure:"WOHNEN ÜBER DEM KURFÜRSTENDAMM\n\nManche Adressen sprechen für sich. Am Kurfürstendamm 180 entsteht ein neues Kapitel Berliner Wohnkultur.\n\n178 m² durchdachter Grundriss, vier Zimmer von unvergleichlicher Qualität. Jedes Detail wurde mit Sorgfalt gewählt.\n\nDie 22 m² Dachterrasse bietet einen Panoramablick vom Tiergarten bis zum Funkturm.\n\nTechnische Highlights:\n• Baujahr 2024, Erstbezug\n• Energieausweis A+\n• Fußbodenheizung in allen Räumen\n• Privater Aufzugszugang\n• Tiefgaragenstellplatz\n\nKontaktieren Sie uns für eine private Besichtigung.",
   email:"Betreff: Exklusives Penthouse – Kurfürstendamm mit Tiergarten-Blick\n\nSehr geehrte Interessenten,\n\ngerne präsentiere ich Ihnen eine der bemerkenswertesten Immobilien Berlins: ein 178 m² Penthouse am Kurfürstendamm mit Panoramablick.\n\nErstbezug 2024, Premiumausstattung durchgehend.\n\nIch freue mich auf Ihre Kontaktaufnahme für einen Besichtigungstermin.\n\nMit freundlichen Grüßen,\nProperty Titan"
 },
-fr:{
+FR:{lang:"fr",
   sub:"Découvrez les annonces IA créées par Property Titan !",
-  title:"Données du bien",label:"Annonce générée par IA",flag:"🇫🇷",
+  title:"Données du bien",label:"Annonce générée par IA",
   cta:"Convaincu ? Inscrivez-vous et créez la vôtre !",btn:"Commencer",
   tabs:["Annonce","Brochure","E-mail"],
   props:{name:"Penthouse Trocadéro",addr:"Paris, 16ème, Avenue Paul Doumer",price:"3 200 000 €",rooms:"5",size:"210 m²",balc:"35 m²",floor:"8ème étage",year:"2023",cond:"Neuf",view:"Tour Eiffel",park:"2 places",heat:"Chauffage au sol",energy:"A",lift:"Ascenseur privé"},
@@ -443,9 +443,9 @@ fr:{
   brochure:"UN APPARTEMENT D'EXCEPTION FACE À LA TOUR EIFFEL\n\nIl est des adresses qui font rêver. Avenue Paul Doumer, face au Trocadéro, ce penthouse de 210 m² incarne l'art de vivre parisien.\n\n5 pièces d'une élégance rare. Une terrasse de 35 m² où la Tour Eiffel s'illumine chaque soir devant vos yeux.\n\nPrestations :\n• Neuf – livraison 2023\n• DPE classe A\n• Chauffage au sol\n• Ascenseur privatif\n• 2 places de parking\n\nContactez-nous pour organiser une visite.",
   email:"Objet : Penthouse d'exception – Vue Tour Eiffel, Trocadéro\n\nMadame, Monsieur,\n\nJ'ai le plaisir de vous présenter un bien exceptionnel : un penthouse de 210 m² face à la Tour Eiffel, au 8ème étage.\n\nNeuf, livré en 2023, prestations premium.\n\nJe me tiens à votre disposition pour organiser une visite privée.\n\nCordialement,\nProperty Titan"
 },
-no:{
+NO:{lang:"no",
   sub:"Se hvilke AI-annonser Property Titan lager!",
-  title:"Eiendomsopplysninger",label:"AI-generert Annonse",flag:"🇳🇴",
+  title:"Eiendomsopplysninger",label:"AI-generert Annonse",
   cta:"Liker du det? Registrer deg og lag din egen!",btn:"Kom i gang",
   tabs:["Annonse","Brosjyre","E-post"],
   props:{name:"Aker Brygge Penthouse",addr:"Oslo, Aker Brygge",price:"18 500 000 kr",rooms:"4",size:"165 m²",balc:"20 m²",floor:"6. etasje",year:"2024",cond:"Ny",view:"Oslofjorden",park:"Garasje",heat:"Gulvvarme",energy:"A",lift:"Heis"},
@@ -453,9 +453,9 @@ no:{
   brochure:"ET LIV VED FJORDEN\n\nAker Brygge trenger ingen introduksjon. Her møtes urbant liv og fjordens ro.\n\n165 m² penthouse med fire rom av uovertruffen kvalitet. 20 m² terrasse med fjordutsikt.\n\nTeknisk:\n• Nybygg 2024\n• Energiklasse A\n• Gulvvarme i alle rom\n• Heisadgang\n• Garasjeplass\n\nKontakt oss for privat visning.",
   email:"Emne: Eksklusiv penthouse – Aker Brygge med fjordutsikt\n\nHei,\n\nJeg presenterer en av Oslos mest eksklusive eiendommer: 165 m² penthouse ved Aker Brygge med panoramautsikt.\n\nNybygg 2024, gjennomført toppstandard.\n\nTa gjerne kontakt for visning!\n\nMed vennlig hilsen,\nProperty Titan"
 },
-da:{
+DK:{lang:"da",
   sub:"Se hvilke AI-annoncer Property Titan laver!",
-  title:"Ejendomsoplysninger",label:"AI-genereret Annonce",flag:"🇩🇰",
+  title:"Ejendomsoplysninger",label:"AI-genereret Annonce",
   cta:"Kan du lide det? Tilmeld dig og lav din egen!",btn:"Kom i gang",
   tabs:["Annonce","Brochure","E-mail"],
   props:{name:"Frederiksberg Penthouse",addr:"København, Frederiksberg Allé",price:"12 800 000 kr",rooms:"4",size:"155 m²",balc:"18 m²",floor:"5. sal",year:"2023",cond:"Nybygget",view:"Frederiksberg Have",park:"Parkeringsplads",heat:"Gulvvarme",energy:"A",lift:"Elevator"},
@@ -463,9 +463,9 @@ da:{
   brochure:"ET HJEM OVER FREDERIKSBERG\n\nFrederiksberg Allé er en af Københavns mest eftertragtede adresser.\n\n155 m² penthouse med fire værelser. 18 m² tagterrasse med udsigt over Frederiksberg Have.\n\nTeknisk:\n• Nybygget 2023\n• Energimærke A\n• Gulvvarme overalt\n• Elevator\n• Parkeringsplads\n\nKontakt os for en privat fremvisning.",
   email:"Emne: Eksklusiv penthouse – Frederiksberg med haveudsigt\n\nKære interesserede,\n\nJeg præsenterer en af Københavns fineste ejendomme: 155 m² penthouse ved Frederiksberg Have.\n\nNybygget 2023, gennemført premium kvalitet.\n\nKontakt mig gerne for fremvisning!\n\nMed venlig hilsen,\nProperty Titan"
 },
-pl:{
+PL:{lang:"pl",
   sub:"Zobacz jakie ogłoszenia AI tworzy Property Titan!",
-  title:"Dane nieruchomości",label:"Ogłoszenie wygenerowane przez AI",flag:"🇵🇱",
+  title:"Dane nieruchomości",label:"Ogłoszenie wygenerowane przez AI",
   cta:"Podoba Ci się? Zarejestruj się i stwórz własne!",btn:"Rozpocznij",
   tabs:["Ogłoszenie","Broszura","Email"],
   props:{name:"Penthouse Złota 44",addr:"Warszawa, Złota 44",price:"4 200 000 zł",rooms:"4",size:"145 m²",balc:"15 m²",floor:"42. piętro",year:"2024",cond:"Deweloperski",view:"Panorama Warszawy",park:"Garaż podziemny",heat:"Ogrzewanie podłogowe",energy:"A",lift:"Prywatna winda"},
@@ -473,36 +473,59 @@ pl:{
   brochure:"ŻYCIE PONAD MIASTEM\n\nZłota 44 to ikona warszawskiej architektury. Na 42. piętrze tego wyjątkowego budynku powstało mieszkanie, które redefiniuje pojęcie luksusu.\n\n145 m² przestrzeni zaprojektowanej z dbałością o każdy detal. 15 m² tarasu z widokiem na panoramę miasta.\n\nSpecyfikacja:\n• Rok 2024, standard deweloperski\n• Klasa energetyczna A\n• Ogrzewanie podłogowe\n• Prywatna winda\n• Garaż podziemny\n\nSkontaktuj się z nami.",
   email:"Temat: Ekskluzywny penthouse – Złota 44 z panoramą Warszawy\n\nSzanowni Państwo,\n\nMam przyjemność zaprezentować jedną z najbardziej wyjątkowych nieruchomości w Warszawie: 145 m² penthouse na 42. piętrze Złota 44.\n\nStandard deweloperski 2024, klasa premium.\n\nZapraszam do kontaktu w celu umówienia prezentacji.\n\nZ poważaniem,\nProperty Titan"
 },
-ro:{
+RO:{lang:"ro",
   sub:"Vezi ce anunțuri AI creează Property Titan!",
-  title:"Date proprietate",label:"Anunț generat de AI",flag:"🇷🇴",
+  title:"Date proprietate",label:"Anunț generat de AI",
   cta:"Îți place? Înregistrează-te și creează-ți propriul anunț!",btn:"Începe acum",
   tabs:["Anunț","Broșură","Email"],
   props:{name:"Penthouse Herăstrău",addr:"București, Nordului, Herăstrău",price:"520 000 €",rooms:"4",size:"175 m²",balc:"25 m²",floor:"Etaj 10",year:"2024",cond:"Nou",view:"Parcul Herăstrău",park:"2 locuri garaj",heat:"Pardoseală radiantă",energy:"A",lift:"Lift privat"},
   listing:"PENTHOUSE HERĂSTRĂU – CEL MAI EXCLUSIVIST CARTIER DIN BUCUREȘTI\n\nDescoperiți acest penthouse excepțional de 175 m² cu vedere directă asupra Parcului Herăstrău. 4 camere de lux la etajul 10.\n\n✦ 175 m² cu terasă de 25 m²\n✦ 4 camere – living cu vedere panoramică\n✦ Construcție nouă 2024, finisaje premium\n✦ Pardoseală radiantă, certificat energetic A\n✦ Lift privat și 2 locuri de garaj\n✦ Etaj 10, vedere neobstrucționată\n\nParcul Herăstrău, restaurante de top și acces rapid la centrul orașului.\n\nProgramați o vizionare.\n\n💰 Preț: 520 000 €",
   brochure:"UN PENTHOUSE DEASUPRA PARCULUI\n\nZona Nordului-Herăstrău este adresa cea mai căutată din București.\n\n175 m² de spațiu proiectat cu atenție la detalii. Terasa de 25 m² oferă o priveliște unică asupra parcului.\n\nSpecificații:\n• Construcție 2024, finisaje premium\n• Certificat energetic A\n• Pardoseală radiantă\n• Lift privat\n• 2 locuri garaj subteran\n\nContactați-ne pentru o vizionare privată.",
   email:"Subiect: Penthouse exclusiv – Herăstrău cu vedere la parc\n\nStimați interesați,\n\nVă prezint una dintre cele mai remarcabile proprietăți din București: 175 m² penthouse la etajul 10, cu vedere la Parcul Herăstrău.\n\nConstrucție 2024, finisaje premium.\n\nVă aștept cu drag pentru o vizionare!\n\nCu stimă,\nProperty Titan"
+},
+AT:{lang:"de",
+  sub:"Entdecken Sie, welche KI-Exposés Property Titan erstellt!",
+  title:"Objektdaten",label:"KI-generiertes Exposé",
+  cta:"Überzeugt? Registrieren Sie sich und erstellen Sie Ihr eigenes!",btn:"Jetzt starten",
+  tabs:["Exposé","Broschüre","E-Mail"],
+  props:{name:"Penthouse am Wiener Ring",addr:"Wien, 1. Bezirk, Ringstraße",price:"2.350.000 €",rooms:"4",size:"185 m²",balc:"20 m²",floor:"5. OG",year:"2023",cond:"Erstbezug",view:"Wiener Staatsoper",park:"Tiefgarage",heat:"Fußbodenheizung",energy:"A+",lift:"Privater Aufzug"},
+  listing:"PENTHOUSE AN DER RINGSTRASSE – WIENS PRESTIGETRÄCHTIGSTE LAGE\n\nErleben Sie imperiales Wohnen im Herzen Wiens: Dieses 4-Zimmer-Penthouse bietet 185 m² exklusiven Wohnraum mit Blick auf die Wiener Staatsoper.\n\n✦ 185 m² Wohnfläche mit 20 m² Dachterrasse\n✦ 4 Zimmer – Salon mit Stuckdecken und Kamin\n✦ Erstbezug 2023, höchste Qualitätsstandards\n✦ Fußbodenheizung, Energieausweis A+\n✦ Privater Aufzug und Tiefgaragenstellplatz\n✦ 5. OG mit Panoramablick\n\nStaatsoper, Albertina und Kärntner Straße in unmittelbarer Nähe.\n\nVereinbaren Sie Ihren Besichtigungstermin.\n\n💰 Preis: 2.350.000 €",
+  brochure:"RESIDENZ AN DER RINGSTRASSE\n\nDie Wiener Ringstraße – seit Jahrhunderten Synonym für Eleganz und Prestige.\n\n185 m² Penthouse mit vier Zimmern von unvergleichlicher Qualität. 20 m² Dachterrasse mit Blick auf die Staatsoper.\n\nAusstattung:\n• Erstbezug 2023\n• Energieausweis A+\n• Fußbodenheizung\n• Privater Aufzug\n• Tiefgaragenstellplatz\n\nKontaktieren Sie uns für eine private Besichtigung.",
+  email:"Betreff: Exklusives Penthouse – Ringstraße mit Opernblick\n\nSehr geehrte Interessenten,\n\ngerne präsentiere ich Ihnen ein einzigartiges Penthouse an der Wiener Ringstraße: 185 m² mit Panoramablick auf die Staatsoper.\n\nErstbezug 2023, höchste Qualitätsstandards.\n\nIch freue mich auf Ihre Kontaktaufnahme.\n\nMit freundlichen Grüßen,\nProperty Titan"
 }
 };
-var DEMO_LANG = "en";
+var DEMO_CC = "GB";
 var DEMO_TAB = 0;
 
 function openDemo() {
-  var lang = S.lang || "en";
-  DEMO_LANG = DEMO[lang] ? lang : "en";
   DEMO_TAB = 0;
+  DEMO_CC = "GB";
   showPage("p-demo");
   renderDemo();
 }
 
 function renderDemo() {
-  var d = DEMO[DEMO_LANG];
+  var d = DEMO[DEMO_CC] || DEMO.GB;
+  // Set lang temporarily for t() labels
+  var origLang = S.lang;
+  S.lang = d.lang;
   document.getElementById("demo-sub").textContent = d.sub;
-  document.getElementById("demo-flag").textContent = d.flag;
+  var c = CC[DEMO_CC] || CC.GB;
+  document.getElementById("demo-flag").textContent = c.flag;
   document.getElementById("demo-title").textContent = d.title;
   document.getElementById("demo-label").textContent = d.label;
   document.getElementById("demo-cta-text").textContent = d.cta;
   document.getElementById("demo-cta-btn").textContent = d.btn;
+  // Country dropdown
+  var sel = document.getElementById("demo-country");
+  var opts = "";
+  var ccs = ["SE","NO","DK","PL","DE","FR","GB","HU","RO","AT"];
+  for (var x = 0; x < ccs.length; x++) {
+    var cc = ccs[x]; var ci = CC[cc];
+    opts += '<option value="'+cc+'"'+(cc===DEMO_CC?' selected':'')+'>'+ci.flag+' '+ci.name+'</option>';
+  }
+  sel.innerHTML = opts;
+  // Property details
   var ph = d.props;
   var u = t();
   var labels = {name:u.fn,addr:u.fa,price:u.fp,rooms:u.fr,size:u.fs,balc:u.fb,floor:u.ff,year:u.fy,cond:u.fc,view:u.fv,park:u.fpk,heat:u.fh,energy:u.fe,lift:u.fli};
@@ -513,6 +536,7 @@ function renderDemo() {
     if (ph[k]) html += '<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #1a2238"><span style="font-size:12px;color:#39495e">'+(labels[k]||k)+'</span><span style="font-size:12px;font-weight:600;color:#e5e8f2">'+esc(ph[k])+'</span></div>';
   }
   document.getElementById("demo-props").innerHTML = html;
+  // Tabs
   var tabs = d.tabs;
   var tabHtml = "";
   for (var j = 0; j < tabs.length; j++) {
@@ -521,6 +545,14 @@ function renderDemo() {
   document.getElementById("demo-tabs").innerHTML = tabHtml;
   var contents = [d.listing, d.brochure, d.email];
   document.getElementById("demo-result").textContent = contents[DEMO_TAB] || contents[0];
+  // Restore lang
+  S.lang = origLang;
+}
+
+function switchDemoCountry(cc) {
+  DEMO_CC = cc;
+  DEMO_TAB = 0;
+  renderDemo();
 }
 
 function switchDemoTab(i) {
