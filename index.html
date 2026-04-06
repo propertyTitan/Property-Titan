@@ -239,7 +239,7 @@ function pickLang(code) {
       document.getElementById("p-login").style.display = "flex";
     }
   } catch(ex) {
-    alert("Hiba: " + ex.message + " | stack: " + (ex.stack||"").slice(0,200));
+    alert("Hiba: " + ex.message);
   }
 }
 
@@ -316,7 +316,7 @@ function pickCountry(code) {
       lsSet("pt_lang", S.lang);
     }
     showDash();
-    updateDashUI();
+    try { updateDashUI(); } catch(ex) { alert("updateDashUI hiba: "+ex.message); return; }
     // Load data
     Promise.all([
       dbsel("projects","user_id=eq."+S.uid+"&order=created_at.desc"),
@@ -356,16 +356,15 @@ function saveKey() {
 
 // -- CLAUDE --
 function callClaude(prompt) {
-  if (!S.key) { showErr(t().nk); return Promise.reject(new Error("No key")); }
-  return fetch("https://api.anthropic.com/v1/messages", {
+  return fetch("/api/generate", {
     method: "POST",
-    headers: {"content-type":"application/json","x-api-key":S.key,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},
-    body: JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1024,messages:[{role:"user",content:prompt}]})
+    headers: {"content-type":"application/json"},
+    body: JSON.stringify({prompt: prompt})
   }).then(function(r) {
-    if (!r.ok) return r.json().then(function(e) { throw new Error(e.error ? e.error.message : "API " + r.status); });
+    if (!r.ok) return r.json().then(function(e) { throw new Error(e.error || "API " + r.status); });
     return r.json();
   }).then(function(d) {
-    return (d.content || []).filter(function(b) { return b.type === "text"; }).map(function(b) { return b.text; }).join("") || "";
+    return d.text || "";
   });
 }
 
@@ -391,7 +390,8 @@ function exportPDF(text, name) {
   var w = window.open("","_blank"); if (!w) return;
   var ag = S.agent || {};
   var ab = ag.name ? '<div style="display:flex;align-items:center;gap:16px;margin-top:48px;padding-top:24px;border-top:1px solid #ddd">'+(ag.logo?'<img src="'+esc(ag.logo)+'" style="width:56px;height:56px;object-fit:contain;border-radius:8px"/>':"")+'<div><div style="font-size:16px;font-weight:700">'+esc(ag.name)+'</div>'+(ag.agency?'<div style="font-size:13px;color:#555">'+esc(ag.agency)+'</div>':'')+(ag.phone?'<div style="font-size:12px;color:#666">📞 '+esc(ag.phone)+'</div>':'')+(ag.email?'<div style="font-size:12px;color:#666">✉ '+esc(ag.email)+'</div>':'')+'</div></div>' : "";
-  w.document.write('<!DOCTYPE html><html><head><meta charset="utf-8"><title>'+esc(name)+'</title><style>body{font-family:Georgia,serif;max-width:700px;margin:0 auto;padding:48px 40px;color:#111;line-height:1.8;font-size:15px}pre{white-space:pre-wrap;font-family:Georgia,serif}</style></head><body><h1>'+esc(name)+'</h1><p style="color:#888;font-size:11px;margin-bottom:32px">Property Titan AI · '+new Date().toLocaleDateString()+'</p><pre>'+esc(text)+'</pre>'+ab+'<script>window.onload=function(){window.print();}<\/script></body></html>');
+  var imgHtml = IMGS.length > 0 ? '<div style="display:flex;flex-wrap:wrap;gap:10px;margin:24px 0">' + IMGS.map(function(i){return '<img src="'+i.url+'" style="width:180px;height:130px;object-fit:cover;border-radius:8px;border:1px solid #ddd"/>';}).join('') + '</div>' : '';
+  w.document.write('<!DOCTYPE html><html><head><meta charset="utf-8"><title>'+esc(name)+'</title><style>body{font-family:Georgia,serif;max-width:700px;margin:0 auto;padding:48px 40px;color:#111;line-height:1.8;font-size:15px}pre{white-space:pre-wrap;font-family:Georgia,serif}</style></head><body><h1>'+esc(name)+'</h1><p style="color:#888;font-size:11px;margin-bottom:32px">Property Titan AI · '+new Date().toLocaleDateString()+'</p>'+imgHtml+'<pre>'+esc(text)+'</pre>'+ab+'<script>window.onload=function(){window.print();}<\/script></body></html>');
 
 w.document.close();
 }
@@ -411,7 +411,7 @@ if (dlo) dlo.textContent = u.lo;
 if (dakl) dakl.textContent = u.akl;
 if (daks) daks.textContent = u.aks;
 if (dts) dts.textContent = u.ts2;
-if (dft) dft.textContent = c.flag+” Property Titan · “+S.email;
+if (dft) dft.textContent = c.flag+” Property Titan \u00B7 “+S.email;
 if (S.key) { var daka = document.getElementById(“d-aka”); if (daka) daka.style.display = “inline”; }
 renderTabs();
 renderTab();
@@ -439,7 +439,7 @@ function renderTabs() {
 var u = t();
 var html = “”;
 for (var i = 0; i < u.tabs.length; i++) {
-html += ‘<button class=“tab’+(i===S.tab?” on”:””)+’” onclick=“switchTab(’+i+’)”>’+u.tabs[i]+’</button>’;
+html += ‘<button class=“tab’+(i===S.tab?” on”:””)+’” onclick=“switchTab(’+i+’)”>’+ u.tabs[i]+’</button>’;
 }
 document.getElementById(“d-tabs”).innerHTML = html;
 }
@@ -465,7 +465,9 @@ else if (S.tab === 6) m.innerHTML = rCRM();
 function rListing() {
 var u = t(); var c = CC[S.country]||CC.GB; var ps = S.projects;
 var projList = ps.length === 0 ? ‘<p style="font-size:12px;color:#39495e;text-align:center;padding:12px 0">—</p>’ :
-ps.map(function(p) { return ‘<div style="display:flex;align-items:center;gap:5px"><button onclick=“loadProj(’’+p.id+’’)” style=“flex:1;text-align:left;padding:8px 10px;border-radius:7px;border:1px solid ‘+(S.pid===p.id?”#c9a84c”:”#1a2238”)+’;background:’+(S.pid===p.id?“rgba(201,168,76,.09)”:”#0c0f1a”)+’;cursor:pointer;color:inherit;font-family:inherit”><div style=“font-size:12px;font-weight:600;color:’+(S.pid===p.id?”#e0be70”:”#7e8fa8”)+’”>’+esc(p.name)+’</div><div style="font-size:9px;color:#39495e">’+(CC[p.country]?CC[p.country].flag:””)+” “+(CC[p.country]?CC[p.country].name:p.country)+’</div></button><button onclick="delProj(\''+p.id+'\')" style="background:none;border:none;color:#39495e;cursor:pointer;font-size:15px;padding:3px 5px">×</button></div>’; }).join(””);
+ps.map(function(p) {
+return ‘<div style="display:flex;align-items:center;gap:5px"><button onclick=“loadProj('’+p.id+’')” style=“flex:1;text-align:left;padding:8px 10px;border-radius:7px;border:1px solid ‘+(S.pid===p.id?”#c9a84c”:”#1a2238”)+’;background:’+(S.pid===p.id?“rgba(201,168,76,.09)”:”#0c0f1a”)+’;cursor:pointer;color:inherit;font-family:inherit”><div style=“font-size:12px;font-weight:600;color:’+(S.pid===p.id?”#e0be70”:”#7e8fa8”)+’”>’+ esc(p.name)+’</div><div style="font-size:9px;color:#39495e">’+(CC[p.country]?CC[p.country].flag:””)+’ ‘+(CC[p.country]?CC[p.country].name:p.country)+’</div></button><button onclick="delProj(\''+p.id+'\')" style="background:none;border:none;color:#39495e;cursor:pointer;font-size:15px;padding:3px 5px">×</button></div>’;
+}).join(””);
 
 return ‘<div style="display:grid;grid-template-columns:1fr 295px;gap:18px;align-items:start" class="dg">’+
 ‘<div class="card">’+
@@ -474,9 +476,9 @@ return ‘<div style="display:grid;grid-template-columns:1fr 295px;gap:18px;alig
 ‘<div style="display:flex;gap:3px;background:#0c0f1a;border-radius:8px;padding:3px;border:1px solid #1a2238">’+
 ‘<button onclick=“setLux(false)” style=“border:none;border-radius:6px;padding:5px 12px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;background:’+(F.isLuxury?“transparent”:“rgba(59,130,246,.1)”)+’;color:’+(F.isLuxury?”#39495e”:”#93c5fd”)+’”>’+u.std+’</button>’+
 ‘<button onclick=“setLux(true)” style=“border:none;border-radius:6px;padding:5px 12px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;background:’+(F.isLuxury?“rgba(201,168,76,.09)”:“transparent”)+’;color:’+(F.isLuxury?”#e0be70”:”#39495e”)+’”>’+u.lux+’</button>’+
-‘</div>’+
-‘</div>’+
-‘<div class="g2"><div style="grid-column:1/-1"><div class="flbl">’+u.fn+’</div><input class="finp" value="'+esc(F.name)+'" oninput="F.name=this.value" placeholder="'+u.phn+'"/></div>’+
+‘</div></div>’+
+‘<div class="g2">’+
+‘<div style="grid-column:1/-1"><div class="flbl">’+u.fn+’</div><input class="finp" value="'+esc(F.name)+'" oninput="F.name=this.value" placeholder="'+u.phn+'"/></div>’+
 ‘<div style="grid-column:1/-1"><div class="flbl">’+u.fa+’</div><input class="finp" value="'+esc(F.addr)+'" oninput="F.addr=this.value" placeholder="'+u.pha+'"/></div>’+
 ‘<div><div class="flbl">’+u.fp+’</div><input class="finp" value="'+esc(F.price)+'" oninput="F.price=this.value" placeholder="'+c.ph+'"/></div>’+
 ‘<div><div class="flbl">’+u.fc+’</div><input class="finp" value="'+esc(F.cond)+'" oninput="F.cond=this.value"/></div></div>’+
@@ -485,28 +487,29 @@ return ‘<div style="display:grid;grid-template-columns:1fr 295px;gap:18px;alig
 ‘<div class="dv"><span>’+u.ts+’</span><hr/></div>’+
 ‘<div class="g3">’+[[“year”,u.fy],[“energy”,u.fe],[“heat”,u.fh],[“walls”,u.fw],[“park”,u.fpk],[“lift”,u.fli]].map(function(x){return’<div><div class="flbl">’+x[1]+’</div><input class="finp" value="'+esc(F[x[0]])+'" oninput="F.'+x[0]+'=this.value"/></div>’;}).join(””)+’</div>’+
 ‘<div class="dv"><span>’+u.es+’</span><hr/></div>’+
-‘<div class="g2" style="margin-bottom:0"><div><div class="flbl">’+u.fv+’</div><input class="finp" value="'+esc(F.view)+'" oninput="F.view=this.value"/></div><div><div class="flbl">’+u.fho+’</div><input class="finp" value="'+esc(F.hood)+'" oninput="F.hood=this.value"/></div></div>’+
-‘<div class="flbl" style="margin-top:0">’+u.fx+’</div><textarea class="finp" oninput="F.extra=this.value">’+esc(F.extra)+’</textarea>’+
-‘<div style="font-size:20px;margin-bottom:4px">📷</div><div style="font-size:11px;color:#39495e">Kattints vagy h\u00FAzd ide a k\u00E9peket</div>’+
+‘<div class="g2" style="margin-bottom:0">’+
+‘<div><div class="flbl">’+u.fv+’</div><input class="finp" value="'+esc(F.view)+'" oninput="F.view=this.value"/></div>’+
+‘<div><div class="flbl">’+u.fho+’</div><input class="finp" value="'+esc(F.hood)+'" oninput="F.hood=this.value"/></div></div>’+
+‘<div class="flbl">’+u.fx+’</div>’+
+‘<textarea class="finp" oninput="F.extra=this.value">’+esc(F.extra)+’</textarea>’+
 ‘<div style="display:flex;gap:9px;margin-top:16px">’+
 ‘<button onclick="saveProj()" class="bgh" id="bsv">’+u.sb+’</button>’+
 ‘<button onclick="genList()" style="flex:1;padding:12px;border:none;border-radius:9px;background:linear-gradient(135deg,#c9a84c,#e0be70);color:#07080c;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px" id="bgen">’+u.gb+’</button>’+
-‘</div>’+
-‘<div id="lr"></div>’+
-‘</div>’+
+‘</div><div id="lr"></div></div>’+
 ‘<div style="display:flex;flex-direction:column;gap:14px">’+
 ‘<div class="card">’+
-‘<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px"><span style="font-size:22px">’+c.flag+’</span><div><div style="font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#39495e">Active market</div><div class="serif" style="font-size:15px;font-weight:600;color:#e5e8f2">’+c.name+’</div></div></div>’+
+‘<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px"><span style="font-size:22px">’+c.flag+’</span>’+
+‘<div><div style="font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#39495e">Active market</div>’+
+‘<div class="serif" style="font-size:15px;font-weight:600;color:#e5e8f2">’+c.name+’</div></div></div>’+
 ‘<div style="display:grid;grid-template-columns:1fr 1fr;gap:7px">’+
 [[“AI”,“Sonnet”],[u.pr,S.projects.length],[“CRM”,S.clients.length],[u.tl,S.templates.length]].map(function(x){return’<div style="background:#0c0f1a;border-radius:7px;padding:8px 10px"><div style="font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#39495e;margin-bottom:3px">’+x[0]+’</div><div style="font-size:12px;font-weight:600;color:#7e8fa8">’+x[1]+’</div></div>’;}).join(””)+
-‘</div>’+
-‘</div>’+
+‘</div></div>’+
 ‘<div class="card">’+
-‘<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"><span style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#39495e">’+u.pr+’</span><span style="padding:2px 8px;border-radius:99px;font-size:9px;font-weight:700;background:rgba(59,130,246,.1);color:#93c5fd;border:1px solid rgba(59,130,246,.2)">’+ps.length+’</span></div>’+
+‘<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">’+
+‘<span style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#39495e">’+u.pr+’</span>’+
+‘<span style="padding:2px 8px;border-radius:99px;font-size:9px;font-weight:700;background:rgba(59,130,246,.1);color:#93c5fd;border:1px solid rgba(59,130,246,.2)">’+ps.length+’</span></div>’+
 ‘<div style="display:flex;flex-direction:column;gap:5px;max-height:220px;overflow-y:auto">’+projList+’</div>’+
-‘</div>’+
-‘</div>’+
-‘</div>’;
+‘</div></div></div>’;
 }
 
 function setLux(v) { F.isLuxury = v; renderTab(); }
@@ -568,15 +571,14 @@ function showLR(text) {
 var u = t(); var el = document.getElementById(“lr”); if (!el) return;
 el.innerHTML = ‘<div style="margin-top:16px">’+
 ‘<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px">’+
-‘<div style="display:flex;align-items:center;gap:8px"><span style="width:6px;height:6px;border-radius:50%;background:#c9a84c;display:inline-block;animation:pulse 2s ease infinite;box-shadow:0 0 6px #c9a84c"></span><span style="font-size:10px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:#c9a84c">’+u.re+’</span></div>’+
+‘<div style="display:flex;align-items:center;gap:8px"><span style="width:6px;height:6px;border-radius:50%;background:#c9a84c;display:inline-block;animation:pulse 2s ease infinite;box-shadow:0 0 6px #c9a84c"></span>’+
+‘<span style="font-size:10px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:#c9a84c">’+u.re+’</span></div>’+
 ‘<div style="display:flex;gap:6px;flex-wrap:wrap">’+
 ‘<button class="bgh" style="font-size:11px" onclick="navigator.clipboard.writeText(document.getElementById(\'rtx\').textContent);this.textContent=\''+u.cd+'\';var self=this;setTimeout(function(){self.textContent=\''+u.cp+'\';},2200)">’+u.cp+’</button>’+
-‘<button class=“bgh” style=“font-size:11px” onclick=“exportPDF(document.getElementById(‘rtx’).textContent,’’+esc(F.name||F.addr||“Property”)+’’)”>’+u.pdf+’</button>’+
+‘<button class="bgh" style="font-size:11px" onclick="exportPDF(document.getElementById(\'rtx\').textContent,\''+esc(F.name||F.addr||'Property')+'\')">’+u.pdf+’</button>’+
 ‘<button class="bgh" style="font-size:11px" onclick="document.getElementById(\'lr\').innerHTML=\'\'">’+u.cl+’</button>’+
-‘</div>’+
-‘</div>’+
-‘<div class="result" id="rtx">’+esc(text)+’</div>’+
-‘</div>’;
+‘</div></div>’+
+‘<div class="result" id="rtx">’+esc(text)+’</div></div>’;
 }
 
 // – GEN TABS –
@@ -591,12 +593,20 @@ return ‘<div style="max-width:760px;margin:0 auto"><div class="card">’+
 (ps.length===0?’<div style="background:#0c0f1a;border:2px dashed #232d44;border-radius:11px;padding:36px;text-align:center"><p style="font-size:13px;color:#39495e">’+u.np+’</p></div>’:
 ‘<div style="margin-bottom:14px"><div class="flbl">’+u.sp+’</div><select class="finp" onchange="S.pid=this.value;S.or={};renderTab()">’+opts+’</select></div>’+
 ‘<button onclick="genOther(\''+tid+'\')" style="width:100%;padding:12px;border:none;border-radius:9px;background:linear-gradient(135deg,#c9a84c,#e0be70);color:#07080c;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px" id="bgo">’+u.gc+’</button>’+
-(res?’<div style="margin-top:14px"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px"><div style="display:flex;align-items:center;gap:8px"><span style="width:6px;height:6px;border-radius:50%;background:#c9a84c;display:inline-block;animation:pulse 2s ease infinite"></span><span style="font-size:10px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:#c9a84c">’+u.re+’</span></div><div style="display:flex;gap:6px"><button class="bgh" style="font-size:11px" onclick="navigator.clipboard.writeText(document.getElementById(\'otx\').textContent);this.textContent=\''+u.cd+'\';var s=this;setTimeout(function(){s.textContent=\''+u.cp+'\';},2200)">’+u.cp+’</button><button class=“bgh” style=“font-size:11px” onclick=“exportPDF(document.getElementById(‘otx’).textContent,’’+(sp?esc(sp.name):””)+’’)”>’+u.pdf+’</button></div></div><div class="result" id="otx">’+esc(res)+’</div></div>’:’’)
+(res?’<div style="margin-top:14px">’+
+‘<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px">’+
+‘<div style="display:flex;align-items:center;gap:8px"><span style="width:6px;height:6px;border-radius:50%;background:#c9a84c;display:inline-block;animation:pulse 2s ease infinite"></span>’+
+‘<span style="font-size:10px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:#c9a84c">’+u.re+’</span></div>’+
+‘<div style="display:flex;gap:6px">’+
+‘<button class="bgh" style="font-size:11px" onclick="navigator.clipboard.writeText(document.getElementById(\'otx\').textContent);this.textContent=\''+u.cd+'\';var s=this;setTimeout(function(){s.textContent=\''+u.cp+'\';},2200)">’+u.cp+’</button>’+
+‘<button class=“bgh” style=“font-size:11px” onclick=“exportPDF(document.getElementById('otx').textContent,'’+(sp?esc(sp.name):””)+’')”>’ +u.pdf+’</button>’+
+‘</div></div><div class="result" id="otx">’+esc(res)+’</div></div>’:’’)
 )+’</div></div>’;
 }
 
 function genOther(tid) {
-var u = t(); var sp = null; for(var i=0;i<S.projects.length;i++){if(S.projects[i].id===S.pid){sp=S.projects[i];break;}}
+var u = t(); var sp = null;
+for(var i=0;i<S.projects.length;i++){if(S.projects[i].id===S.pid){sp=S.projects[i];break;}}
 if (!sp || !S.key) { if (!S.key) showErr(u.nk); return; }
 var btn = document.getElementById(“bgo”);
 if (btn) { btn.disabled = true; btn.innerHTML = ’<span class="sp"></span> ’+u.gi; }
@@ -617,17 +627,29 @@ renderTab();
 // – PROFILE –
 function rProfile() {
 var u = t(); var ag = S.agent||{};
-var tmplList = S.templates.length===0 ? ‘<div style="background:#0c0f1a;border:2px dashed #232d44;border-radius:10px;padding:32px;text-align:center"><p style="font-size:13px;color:#39495e">’+u.nt+’</p></div>’ :
+var tmplList = S.templates.length===0 ?
+‘<div style="background:#0c0f1a;border:2px dashed #232d44;border-radius:10px;padding:32px;text-align:center"><p style="font-size:13px;color:#39495e">’+u.nt+’</p></div>’ :
 ‘<div style="display:flex;flex-direction:column;gap:8px;max-height:380px;overflow-y:auto">’+
-S.templates.map(function(tmpl){return’<div style="background:#0c0f1a;border:1px solid #1a2238;border-radius:10px;padding:13px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px"><div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:600;color:#7e8fa8;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">’+esc(tmpl.name)+’</div><div style="font-size:10px;color:#39495e">’+(CC[tmpl.country]?CC[tmpl.country].flag:””)+” “+(CC[tmpl.country]?CC[tmpl.country].name:””)+’</div></div><div style="display:flex;gap:6px"><button onclick="loadTmpl(\''+tmpl.id+'\')" class="bgh" style="font-size:10px;padding:5px 11px">’+u.ut+’</button><button onclick="delTmpl(\''+tmpl.id+'\')" class="bgh" style="font-size:10px;padding:5px 10px">’+u.dt+’</button></div></div>’;}).join(””)+
-‘</div>’;
+S.templates.map(function(tmpl){
+return ‘<div style="background:#0c0f1a;border:1px solid #1a2238;border-radius:10px;padding:13px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px">’+
+‘<div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:600;color:#7e8fa8;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">’+esc(tmpl.name)+’</div>’+
+‘<div style="font-size:10px;color:#39495e">’+(CC[tmpl.country]?CC[tmpl.country].flag:””)+’ ‘+(CC[tmpl.country]?CC[tmpl.country].name:””)+’</div></div>’+
+‘<div style="display:flex;gap:6px">’+
+‘<button onclick="loadTmpl(\''+tmpl.id+'\')" class="bgh" style="font-size:10px;padding:5px 11px">’+u.ut+’</button>’+
+‘<button onclick="delTmpl(\''+tmpl.id+'\')" class="bgh" style="font-size:10px;padding:5px 10px">’+u.dt+’</button></div></div>’;
+}).join(””)+’</div>’;
 return ‘<div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;max-width:900px;margin:0 auto" class="dg">’+
 ‘<div class="card"><h2 class="serif" style="font-size:20px;font-weight:600;color:#e5e8f2;margin-bottom:18px">’+u.agt+’</h2>’+
-[[“agn”,“name”],[“agp”,“phone”],[“age”,“email”],[“aga”,“agency”],[“agl”,“logo”]].map(function(x){return’<div class="flbl">’+u[x[0]]+’</div><input class=“finp” value=”’+esc(ag[x[1]]||””)+’” oninput=“S.agent.’+x[1]+’=this.value”’+(x[1]===“email”?’ type=“email”’:””)+’/>’;}).join(””)+
+[[“agn”,“name”],[“agp”,“phone”],[“age”,“email”],[“aga”,“agency”],[“agl”,“logo”]].map(function(x){
+return ‘<div class="flbl">’+u[x[0]]+’</div><input class=“finp” value=”’+esc(ag[x[1]]||””)+’” oninput=“S.agent.’+x[1]+’=this.value”’+(x[1]===“email”?’ type=“email”’:”’”)+ ‘/>’;
+}).join(””)+
 (ag.logo?’<div style="margin-top:4px;padding:12px;background:#0c0f1a;border-radius:8px;text-align:center"><img src="'+esc(ag.logo)+'" style="max-width:120px;max-height:60px;object-fit:contain;border-radius:6px" onerror="this.style.display=\'none\'"/></div>’:””)+
 ‘<button onclick="saveAgent()" style="width:100%;margin-top:14px;padding:12px;border:none;border-radius:9px;background:linear-gradient(135deg,#c9a84c,#e0be70);color:#07080c;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit" id="bags">’+u.ags+’</button></div>’+
-‘<div class="card"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px"><h2 class="serif" style="font-size:20px;font-weight:600;color:#e5e8f2">’+u.tt+’</h2><span style="padding:2px 8px;border-radius:99px;font-size:9px;font-weight:700;background:rgba(139,92,246,.1);color:#c4b5fd;border:1px solid rgba(139,92,246,.2)">’+S.templates.length+’</span></div>’+tmplList+’</div>’+
-‘</div>’;
+‘<div class="card">’+
+‘<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">’+
+‘<h2 class="serif" style="font-size:20px;font-weight:600;color:#e5e8f2">’+u.tt+’</h2>’+
+‘<span style="padding:2px 8px;border-radius:99px;font-size:9px;font-weight:700;background:rgba(139,92,246,.1);color:#c4b5fd;border:1px solid rgba(139,92,246,.2)">’+S.templates.length+’</span></div>’+
+tmplList+’</div></div>’;
 }
 
 function saveAgent() {
@@ -640,7 +662,8 @@ dbupsert(“agents”, Object.assign({user_id:S.uid}, S.agent, {updated_at:new D
 }
 
 function loadTmpl(id) {
-var tmpl = null; for(var i=0;i<S.templates.length;i++){if(S.templates[i].id===id){tmpl=S.templates[i];break;}}
+var tmpl = null;
+for(var i=0;i<S.templates.length;i++){if(S.templates[i].id===id){tmpl=S.templates[i];break;}}
 if (!tmpl) return;
 F = Object.assign({}, EF, tmpl.form_data||{});
 S.tab = 0;
@@ -658,27 +681,27 @@ dbdel(“templates”,“id=eq.”+id).catch(function(){});
 // – CRM –
 function rCRM() {
 var u = t(); var cl = S.clients||[];
-var cards = cl.length===0 ? ‘<div class="card" style="border:2px dashed #1a2238;padding:52px;text-align:center"><p style="font-size:14px;color:#39495e">’+u.cn2+’</p></div>’ :
+var cards = cl.length===0 ?
+‘<div class="card" style="border:2px dashed #1a2238;padding:52px;text-align:center"><p style="font-size:14px;color:#39495e">’+u.cn2+’</p></div>’ :
 ‘<div style="display:flex;flex-direction:column;gap:9px">’+
 cl.map(function(c){
 var si = u.sts.indexOf(c.status);
 var sc = si<1?“rgba(59,130,246,.12)”:si<4?“rgba(201,168,76,.12)”:“rgba(16,185,129,.12)”;
 var st = si<1?”#93c5fd”:si<4?”#e0be70”:”#6ee7b7”;
-var sb = si<1?“rgba(59,130,246,.25)”:si<4?“rgba(201,168,76,.25)”:“rgba(16,185,129,.25)”;
-return’<div class="card">’+
+var sb2 = si<1?“rgba(59,130,246,.25)”:si<4?“rgba(201,168,76,.25)”:“rgba(16,185,129,.25)”;
+return ‘<div class="card">’+
 ‘<div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:9px">’+
-‘<div><h4 style="font-size:14px;font-weight:700;color:#e5e8f2;margin-bottom:6px">’+esc(c.name)+’</h4>’+(c.status?’<span style="padding:3px 9px;border-radius:99px;font-size:10px;font-weight:700;text-transform:uppercase;background:'+sc+';color:'+st+';border:1px solid '+sb+'">’+esc(c.status)+’</span>’:’’)+’</div>’+
+‘<div><h4 style="font-size:14px;font-weight:700;color:#e5e8f2;margin-bottom:6px">’+esc(c.name)+’</h4>’+
+(c.status?’<span style="padding:3px 9px;border-radius:99px;font-size:10px;font-weight:700;text-transform:uppercase;background:'+sc+';color:'+st+';border:1px solid '+sb2+'">’+esc(c.status)+’</span>’:’’)+’</div>’+
 ‘<div style="display:flex;gap:6px;align-items:center">’+
 (c.phone?’<a href=“https://wa.me/’+c.phone.replace(/\D/g,””)+’” target=”_blank” style=“padding:5px 10px;border-radius:7px;border:1px solid rgba(16,185,129,.25);background:rgba(16,185,129,.08);color:#6ee7b7;font-size:10px;font-weight:700;text-decoration:none”>💬</a>’:””)+
 (c.email?’<a href="mailto:'+esc(c.email)+'" style="padding:5px 10px;border-radius:7px;border:1px solid rgba(59,130,246,.25);background:rgba(59,130,246,.08);color:#93c5fd;font-size:10px;font-weight:700;text-decoration:none">✉</a>’:””)+
 ‘<button onclick="delClient(\''+c.id+'\')" class="bgh" style="font-size:11px;padding:3px 8px">’+u.cd2+’</button>’+
-‘</div>’+
-‘</div>’+
-[[c.phone,“📞”],[c.email,“✉”],[c.prop,“🏠”]].filter(function(x){return x[0];}).map(function(x){return’<span style="font-size:12px;color:#39495e;margin-right:14px">’+x[1]+” “+esc(x[0])+’</span>’;}).join(””)+
-(c.note?’<p style="font-size:12px;color:#39495e;font-style:italic;margin-top:9px;padding-top:9px;border-top:1px solid #1a2238">”’+esc(c.note)+’”</p>’:””)+
+‘</div></div>’+
+[[c.phone,”📞”],[c.email,”✉”],[c.prop,”🏠”]].filter(function(x){return x[0];}).map(function(x){return’<span style="font-size:12px;color:#39495e;margin-right:14px">’+x[1]+” “+esc(x[0])+’</span>’;}).join(””)+
+(c.note?’<p style="font-size:12px;color:#39495e;font-style:italic;margin-top:9px;padding-top:9px;border-top:1px solid #1a2238">”’+ esc(c.note)+’”</p>’:””)+
 ‘</div>’;
 }).join(””)+’</div>’;
-
 var opts = ‘<option value="">—</option>’+u.sts.map(function(s){return’<option>’+s+’</option>’;}).join(””);
 return ‘<div style="display:grid;grid-template-columns:320px 1fr;gap:18px;align-items:start" class="cg">’+
 ‘<div class="card">’+
@@ -694,10 +717,8 @@ return ‘<div style="display:grid;grid-template-columns:320px 1fr;gap:18px;alig
 ‘<div style="display:grid;grid-template-columns:1fr 1fr;gap:7px">’+
 ‘<div style="background:#0c0f1a;border-radius:7px;padding:10px 12px"><div style="font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#39495e;margin-bottom:4px">Total</div><div class="serif" style="font-size:26px;font-weight:600;color:#e5e8f2">’+cl.length+’</div></div>’+
 ‘<div style="background:#0c0f1a;border-radius:7px;padding:10px 12px"><div style="font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#39495e;margin-bottom:4px">Active</div><div class="serif" style="font-size:26px;font-weight:600;color:#e5e8f2">’+cl.filter(function(c){return c.status!==u.sts[u.sts.length-1];}).length+’</div></div>’+
-‘</div>’+
-‘</div>’+
-‘<div>’+cards+’</div>’+
-‘</div>’;
+‘</div></div>’+
+‘<div>’+cards+’</div></div>’;
 }
 
 function addClient() {
@@ -730,8 +751,8 @@ alert(“Boot hiba: “ + ex.message + “ | “ + (ex.stack||””).slice(0,30
 }
 }
 })();
-
 </script>
+
 </head>
 <body>
 
@@ -799,16 +820,16 @@ alert(“Boot hiba: “ + ex.message + “ | “ + (ex.stack||””).slice(0,30
     </div>
     <p style="font-size:11px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:#39495e;margin-bottom:16px" id="c-pc"></p>
     <div class="country-grid">
-      <button class="country-btn" onclick="pickCountry('SE')"><div class="flag">??</div><div style="font-size:12px;font-weight:700;color:#7e8fa8">Sverige</div><div style="font-size:10px;color:#39495e">Svenska</div></button>
-      <button class="country-btn" onclick="pickCountry('NO')"><div class="flag">??</div><div style="font-size:12px;font-weight:700;color:#7e8fa8">Norge</div><div style="font-size:10px;color:#39495e">Norsk</div></button>
-      <button class="country-btn" onclick="pickCountry('DK')"><div class="flag">??</div><div style="font-size:12px;font-weight:700;color:#7e8fa8">Danmark</div><div style="font-size:10px;color:#39495e">Dansk</div></button>
-      <button class="country-btn" onclick="pickCountry('PL')"><div class="flag">??</div><div style="font-size:12px;font-weight:700;color:#7e8fa8">Polska</div><div style="font-size:10px;color:#39495e">Polski</div></button>
-      <button class="country-btn" onclick="pickCountry('DE')"><div class="flag">??</div><div style="font-size:12px;font-weight:700;color:#7e8fa8">Deutschland</div><div style="font-size:10px;color:#39495e">Deutsch</div></button>
-      <button class="country-btn" onclick="pickCountry('FR')"><div class="flag">??</div><div style="font-size:12px;font-weight:700;color:#7e8fa8">France</div><div style="font-size:10px;color:#39495e">Fran&#231;ais</div></button>
-      <button class="country-btn" onclick="pickCountry('GB')"><div class="flag">??</div><div style="font-size:12px;font-weight:700;color:#7e8fa8">United Kingdom</div><div style="font-size:10px;color:#39495e">English</div></button>
-      <button class="country-btn" onclick="pickCountry('HU')"><div class="flag">??</div><div style="font-size:12px;font-weight:700;color:#7e8fa8">Magyarorsz?g</div><div style="font-size:10px;color:#39495e">Magyar</div></button>
-      <button class="country-btn" onclick="pickCountry('RO')"><div class="flag">??</div><div style="font-size:12px;font-weight:700;color:#7e8fa8">Rom?nia</div><div style="font-size:10px;color:#39495e">Rom&#226;n&#259;</div></button>
-      <button class="country-btn" onclick="pickCountry('AT')"><div class="flag">??</div><div style="font-size:12px;font-weight:700;color:#7e8fa8">?&#214;sterreich</div><div style="font-size:10px;color:#39495e">Deutsch</div></button>
+      <button class="country-btn" onclick="pickCountry('SE')"><div class="flag">&#127480;&#127466;</div><div style="font-size:12px;font-weight:700;color:#7e8fa8">Sverige</div><div style="font-size:10px;color:#39495e">Svenska</div></button>
+      <button class="country-btn" onclick="pickCountry('NO')"><div class="flag">&#127475;&#127476;</div><div style="font-size:12px;font-weight:700;color:#7e8fa8">Norge</div><div style="font-size:10px;color:#39495e">Norsk</div></button>
+      <button class="country-btn" onclick="pickCountry('DK')"><div class="flag">&#127465;&#127472;</div><div style="font-size:12px;font-weight:700;color:#7e8fa8">Danmark</div><div style="font-size:10px;color:#39495e">Dansk</div></button>
+      <button class="country-btn" onclick="pickCountry('PL')"><div class="flag">&#127477;&#127473;</div><div style="font-size:12px;font-weight:700;color:#7e8fa8">Polska</div><div style="font-size:10px;color:#39495e">Polski</div></button>
+      <button class="country-btn" onclick="pickCountry('DE')"><div class="flag">&#127465;&#127466;</div><div style="font-size:12px;font-weight:700;color:#7e8fa8">Deutschland</div><div style="font-size:10px;color:#39495e">Deutsch</div></button>
+      <button class="country-btn" onclick="pickCountry('FR')"><div class="flag">&#127467;&#127479;</div><div style="font-size:12px;font-weight:700;color:#7e8fa8">France</div><div style="font-size:10px;color:#39495e">Fran&#231;ais</div></button>
+      <button class="country-btn" onclick="pickCountry('GB')"><div class="flag">&#127468;&#127463;</div><div style="font-size:12px;font-weight:700;color:#7e8fa8">United Kingdom</div><div style="font-size:10px;color:#39495e">English</div></button>
+      <button class="country-btn" onclick="pickCountry('HU')"><div class="flag">&#127469;&#127482;</div><div style="font-size:12px;font-weight:700;color:#7e8fa8">Magyarorsz?g</div><div style="font-size:10px;color:#39495e">Magyar</div></button>
+      <button class="country-btn" onclick="pickCountry('RO')"><div class="flag">&#127479;&#127476;</div><div style="font-size:12px;font-weight:700;color:#7e8fa8">Rom?nia</div><div style="font-size:10px;color:#39495e">Rom&#226;n&#259;</div></button>
+      <button class="country-btn" onclick="pickCountry('AT')"><div class="flag">&#127462;&#127481;</div><div style="font-size:12px;font-weight:700;color:#7e8fa8">?&#214;sterreich</div><div style="font-size:10px;color:#39495e">Deutsch</div></button>
     </div>
   </div>
 </div>
@@ -824,7 +845,7 @@ alert(“Boot hiba: “ + ex.message + “ | “ + (ex.stack||””).slice(0,30
     <button onclick="showPage('p-country')" class="bgh" style="font-size:10px;padding:5px 10px">?</button>
     <button onclick="doLogout()" class="bgh" id="d-lo" style="font-size:10px;padding:5px 10px"></button>
   </div>
-  <div class="apibar">
+  <div class="apibar" style="display:none">
     <div class="apibar-inner">
       <span style="font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#1a3358;white-space:nowrap" id="d-akl"></span>
       <input type="password" id="d-ak" class="api-inp" placeholder="sk-ant-api03-..."/>
