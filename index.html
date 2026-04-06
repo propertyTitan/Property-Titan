@@ -735,6 +735,7 @@ function buildPrompt(type, d, cc, lang) {
 // ── IMAGE HANDLING ──
 function handleImageFiles(files) {
   if (!files || files.length === 0) return;
+  var inp = document.getElementById("img-input"); if (inp) inp.value = "";
   var maxImages = 10;
   var maxSize = 5 * 1024 * 1024;
   var remaining = maxImages - S.images.length;
@@ -760,7 +761,7 @@ function handleImageFiles(files) {
           enhancedDataUrl: ""
         });
         processed++;
-        if (processed >= toProcess) renderImageGrid();
+        renderImageGrid();
       };
       reader.readAsDataURL(file);
     })(files[i]);
