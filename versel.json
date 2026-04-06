@@ -1,7 +1,3 @@
 {
-  "functions": {
-    "api/generate.mjs": {
-      "runtime": "nodejs20.x"
-    }
-  }
+  "version": 2
 }
