@@ -1373,7 +1373,7 @@ dbdel("clients","id=eq."+id).catch(function(){});
 if (S.lang) {
 if (S.uid && S.country) { initDash(); }
 else if (S.uid) { initCountry(); }
-else { initLogin(); showPage("p-login"); }
+else { showPage("p-lang"); }
 }
 })();
 </script>
